@@ -8,7 +8,7 @@ Description: Functional enrichment from a list of features (genes, proteins, etc
     using hypergeometric distribution. Optimised for speed for use in interactive
     applications, e.g., Shiny.
 Depends: R (>= 4.1)
-License: GPL-2
+License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports:
