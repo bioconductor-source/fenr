@@ -11,7 +11,7 @@ Description: Functional enrichment from a list of features (genes, proteins, etc
 Depends: R (>= 4.1)
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Imports:
     stats,
     dplyr,
