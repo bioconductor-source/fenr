@@ -67,3 +67,8 @@ The columns are as follows
  - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
  
  
+## Contact
+
+Marek Gierlinski
+M.Gierlinski@dundee.ac.uk
+
