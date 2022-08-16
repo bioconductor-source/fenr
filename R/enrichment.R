@@ -1,39 +1,46 @@
 #' Prepare term data for enrichment analysis
 #'
-#' @details Takes simple data frames with functional term information and gene
-#'   mapping and converts it into an object required by `functional_enrichment`
-#'   for fast analysis.
+#' Prepare term data downloaded with \code{fetch_*} functions for fast
+#' enrichment analysis.
 #'
-#' @param term_info Information about term names/descriptions. A tibble with
-#'   `term_id` and `term_name`
+#' @details
+#'
+#' Takes two data frames with functional term information and gene mapping and
+#' converts them into an object required by `functional_enrichment` for fast
+#' analysis.
+#'
+#' @param terms Information about term names/descriptions. A tibble with
+#'   columns \code{term_id} and \code{term_name}.
 #' @param mapping Information about term-feature mapping. A tibble with
-#'   `term_id` and a feature id, as identified with `feature_name` argument. For
-#'   example, if this tibble contains `gene_name` and `term_id`, then
-#'   `feature_name = "gene_name"`.
-#' @param all_features A vector with all feature ids (background for enrichment).
-#' @param feature_name Which column to use from mapping table, e.g. "gene_name" or "gene_id".
+#'   \code{term_id} and a feature id, as identified with \code{feature_name} argument. For
+#'   example, if this tibble contains \code{gene_symbol} and \code{term_id}, then
+#'   `feature_name = "gene_symbol"`.
+#' @param all_features A vector with all feature ids (background for
+#'   enrichment).
+#' @param feature_name Which column to use from mapping table, e.g. "gene_symbol"
+#'   or "ensembl_gene_id".
 #'
-#' @return A list required by `functional_enrichment`.
+#' @return An object required by `functional_enrichment`.
 #' @export
-prepare_for_enrichment <- function(term_info, mapping, all_features, feature_name = "gene_id") {
+prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = "gene_id") {
   # Check for column name
   if (!(feature_name %in% colnames(mapping))) {
     stop(paste(feature_name, "column not found in mapping table. Check feature_name argument."))
   }
 
   # Check for missing term descriptions
-  mis_term <- setdiff(mapping$term_id, term_info$term_id)
+  mis_term <- setdiff(mapping$term_id, terms$term_id)
   if (length(mis_term) > 0) {
     dummy <- tibble::tibble(
       term_id = mis_term,
       term_name = rep(NA_character_, length(mis_term))
     )
-    term_info <- dplyr::bind_rows(term_info, dummy)
+    terms <- dplyr::bind_rows(terms, dummy)
   }
 
   # List to select term name
-  term2name <- term_info$term_name |>
-    purrr::set_names(term_info$term_id)
+  term2name <- terms$term_name |>
+    purrr::set_names(terms$term_id)
 
   # feature-term tibble
   feature_term <- mapping |>

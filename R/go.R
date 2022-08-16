@@ -45,19 +45,23 @@ fetch_go_genes_go <- function(species) {
   stopifnot(url_exists(gaf_file))
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
-    dplyr::mutate(gene_name = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
-    dplyr::select(gene_name, uniprot_id = db_id, term_id = go_term) |>
+    dplyr::mutate(gene_symbol = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
+    dplyr::select(gene_symbol, uniprot_id = db_id, term_id = go_term) |>
     dplyr::distinct()
 }
 
 
 #' Get functional term data from gene ontology
 #'
+#' Download term information (GO term ID and name) and gene-term mapping
+#' (gene symbol and GO term ID) from gene ontology.
+#'
+#'
 #' @param species Root name for species file under
 #'   \code{http://current.geneontology.org/annotations}. Examples are
 #'   \code{"goa_human"} for human, \code{"mgi"} for mouse or \code{"sgd"} for yeast.
 #'
-#' @return A list with terms and mapping tibbles.
+#' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #'
 #' @examples
@@ -77,17 +81,17 @@ fetch_go_from_go <- function(species) {
 
 
 fetch_go_genes_bm <- function(mart) {
-  gene2go <- getBM(
+  gene2go <- biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
     mart = mart
   ) |>
-    rename(
+    dplyr::rename(
       gene_id = ensembl_gene_id,
       gene_name = external_gene_name,
       term_id = go_id
     ) |>
-    filter(term_id != "") |>
-    as_tibble()
+    dplyr::filter(term_id != "") |>
+    tibble::as_tibble()
 }
 
 

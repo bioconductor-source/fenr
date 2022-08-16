@@ -1,6 +1,6 @@
 #' Get functional term data from BioPlanet
 #'
-#' @return A list with terms and mapping tibbles.
+#' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #'
 #' @examples
@@ -16,7 +16,7 @@ fetch_bp <- function() {
     dplyr::distinct()
 
   mapping <- paths |>
-    dplyr::select(term_id = PATHWAY_ID, ncbi_id = GENE_ID, gene_name = GENE_SYMBOL) |>
+    dplyr::select(term_id = PATHWAY_ID, ncbi_id = GENE_ID, gene_symbol = GENE_SYMBOL) |>
     dplyr::distinct()
 
   list(
