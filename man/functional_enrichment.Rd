@@ -54,8 +54,10 @@ id => term name; `term2feature` - a list term_id => vector of feature_ids;
 by `prepare_for_enrichment` function.
 }
 \examples{
+\dontrun{
 bp <- fetch_bp()
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
+}
 
 }

@@ -103,9 +103,11 @@ prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = 
 #'   approach.
 #'
 #' @examples
+#' \dontrun{
 #' bp <- fetch_bp()
 #' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 #' enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
+#' }
 #'
 #' @export
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
