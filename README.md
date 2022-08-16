@@ -14,19 +14,19 @@ remotes::install_github("bartongroup/fenr")
 
 ## Usage
 
-The first step is to download functional term data. `fenr` package supporst downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mappint from BioPlanet.
+The first step is to download functional term data. `fenr` package supporst downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
 
 ```
 bp <- fetch_bp()
 ```
 
-This is a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert it into an object suitable for fast functional enrichment.
+This is a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert it into an object suitable for fast functional enrichment. `exmpl_all` is the attached example of gene background - a vector with gene symbols related to all detections in an experiment.
 
 ```
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-This is a list with a few lists containing all the mappings in quickly accessible form. From this point on, `bm_term` can be used to do multiple functional enrichment on various gene selection. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest, functional enrichment can be found using
+`bp_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_term` can be used to do multiple functional enrichments on various gene selections. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest (both attached to the package), functional enrichment can be found using
 
 ```
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
