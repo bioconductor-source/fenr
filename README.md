@@ -1,4 +1,6 @@
-# fenr
+# Fast functional enrichment
+
+Maintainer: Marek Gierlinski (<M.Gierlinski@dundee.ac.uk>)
 
 A simple R package for fast functional enrichment. It is optimised for speed and designed to be used in interactive applications, e.g. Shiny apps.
 
