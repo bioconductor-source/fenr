@@ -21,7 +21,7 @@ bp <- fetch_bp()
 This is a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert it into an object suitable for fast functional enrichment.
 
 ```
-bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_name")
+bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
 This is a list with a few lists containing all the mappings in quickly accessible form. From this point on, `bm_term` can be used to do multiple functional enrichment on various gene selection. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest, functional enrichment can be found using
