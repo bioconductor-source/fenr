@@ -45,8 +45,8 @@ fetch_go_genes_go <- function(species) {
   stopifnot(url_exists(gaf_file))
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
-    dplyr::mutate(gene_symbol = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
-    dplyr::select(gene_symbol, uniprot_id = db_id, term_id = go_term) |>
+    dplyr::mutate(gene_synomym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
+    dplyr::select(gene_symbol = symbol, gene_synomym, uniprot_id = db_id, term_id = go_term) |>
     dplyr::distinct()
 }
 

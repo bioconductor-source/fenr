@@ -17,10 +17,10 @@ fetch_reactome_pathways <- function(spec) {
 #' @return A tibble with \code{gene_id} and \code{term_id}
 fetch_reactome_ensembl_genes <- function(spec) {
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  colms <- c("ensembl_gene_id", "term_id", "url", "event", "evidence", "species")
+  colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
-    dplyr::select(ensembl_gene_id, term_id) |>
+    dplyr::select(gene_id, term_id) |>
     dplyr::distinct()
 }
 
@@ -30,7 +30,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' @export
 fetch_reactome_species <- function() {
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  colms <- c("ensembl_gene_id", "term_id", "url", "event", "evidence", "species")
+  colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
     dplyr::pull(species) |>
     unique()
