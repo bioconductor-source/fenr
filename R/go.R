@@ -33,7 +33,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 }
 
 
-#' Download GO term gene mapping
+#' Download GO term gene mapping from geneontology.org
 #'
 #' @param species Root name for species file under
 #'   \code{http://current.geneontology.org/annotations}. Examples are
@@ -80,14 +80,19 @@ fetch_go_from_go <- function(species) {
 
 
 
+#' Download GO term gene mapping from Ensembl
+#'
+#' @param mart Object class \code{Mart} representing connection to BioMart
+#'   database, created with, e.g., \code{useEnsembl}.
+#'
+#' @return A tibble with ensembl_gene_is, gene_symbol and term_id.
 fetch_go_genes_bm <- function(mart) {
   gene2go <- biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
     mart = mart
   ) |>
     dplyr::rename(
-      gene_id = ensembl_gene_id,
-      gene_name = external_gene_name,
+      gene_symbol = external_gene_name,
       term_id = go_id
     ) |>
     dplyr::filter(term_id != "") |>
@@ -95,7 +100,23 @@ fetch_go_genes_bm <- function(mart) {
 }
 
 
-# gene names and ensembl ids
+
+#' Get functional term data from Ensembl
+#'
+#' Download term information (GO term ID and name) and gene-term mapping
+#' (gene ID, symbol and GO term ID) from Ensembl.
+#'
+#' @param mart Object class \code{Mart} representing connection to BioMart
+#'   database, created with, e.g., \code{useEnsembl}.
+#'
+#' @return A list with \code{terms} and \code{mapping} tibbles.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+#' go_terms <- fetch_go_from_bm(mart)
+#' }
 fetch_go_from_bm <- function(mart) {
   terms <- fetch_go_terms()
   mapping <- fetch_go_genes_bm(mart)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/go.R
 \name{fetch_go_genes_go}
 \alias{fetch_go_genes_go}
-\title{Download GO term gene mapping}
+\title{Download GO term gene mapping from geneontology.org}
 \usage{
 fetch_go_genes_go(species)
 }
@@ -15,5 +15,5 @@ fetch_go_genes_go(species)
 A tibble with gene_name, uniprot_id and term_id.
 }
 \description{
-Download GO term gene mapping
+Download GO term gene mapping from geneontology.org
 }
