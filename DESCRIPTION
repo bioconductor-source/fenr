@@ -25,4 +25,5 @@ Imports:
     KEGGREST,
     ontologyIndex,
     biomaRt
+Suggests: testthat
 RoxygenNote: 7.2.1
