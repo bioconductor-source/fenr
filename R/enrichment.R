@@ -5,27 +5,49 @@
 #'
 #' @details
 #'
-#' Takes two data frames with functional term information and gene mapping and
-#' converts them into an object required by `functional_enrichment` for fast
-#' analysis.
+#' Takes two data frames with functional term information (\code{terms}) and
+#' gene mapping (\code{mapping}) and converts them into an object required by
+#' \code{functional_enrichment} for fast analysis. Terms and mapping can be
+#' created with database access functions in this package, for example
+#' \code{fetch_reactome} or \code{fetch_go_from_go}.
 #'
-#' @param terms Information about term names/descriptions. A tibble with
-#'   columns \code{term_id} and \code{term_name}.
+#' @param terms Information about term names/descriptions. A tibble with columns
+#'   \code{term_id} and \code{term_name}.
 #' @param mapping Information about term-feature mapping. A tibble with
-#'   \code{term_id} and a feature id, as identified with \code{feature_name} argument. For
-#'   example, if this tibble contains \code{gene_symbol} and \code{term_id}, then
-#'   `feature_name = "gene_symbol"`.
-#' @param all_features A vector with all feature ids (background for
-#'   enrichment).
-#' @param feature_name Which column to use from mapping table, e.g. "gene_symbol"
-#'   or "ensembl_gene_id".
+#'   \code{term_id} and a feature id, as identified with \code{feature_name}
+#'   argument. For example, if this tibble contains \code{gene_symbol} and
+#'   \code{term_id}, then \code{feature_name = "gene_symbol"}.
+#' @param all_features A vector with all feature ids used as background for
+#'   enrichment. If not specified, all features from \code{mapping} will be
+#'   used, resulting in a larger objects size.
+#' @param feature_name Which column to use from mapping table, e.g.
+#'   "gene_symbol" or "ensembl_gene_id".
 #'
-#' @return An object required by `functional_enrichment`.
+#' @return An object class \code{fterms} required by
+#'   \code{functional_enrichment}.
 #' @export
-prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = "gene_id") {
-  # Check for column name
-  if (!(feature_name %in% colnames(mapping))) {
+prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
+  # Check terms
+  if (!all(c("term_id", "term_name") %in% colnames(terms)))
+    stop("Column names in 'terms' should be 'term_id' and 'term_name'.")
+
+  # Check mapping
+  if (!("term_id" %in% colnames(mapping)))
+    stop("'mapping' should contain a column named 'term_id'.")
+
+  # Check for feature name
+  if (!(feature_name %in% colnames(mapping)))
     stop(paste(feature_name, "column not found in mapping table. Check feature_name argument."))
+
+  # Replace empty all_features with everything from mapping
+  map_features <- mapping[[feature_name]] |>
+    unique()
+  if (is.null(all_features)) {
+    all_features <- map_features
+  } else {
+    # Check if mapping is contained in all features
+    if (length(intersect(all_features, map_features)) == 0)
+      stop("No overlap between 'all_features' and features found in 'mapping'. Did you provide correct 'all_features'?")
   }
 
   # Check for missing term descriptions
@@ -63,13 +85,15 @@ prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = 
     term2name = term2name,
     term2feature = term2feature,
     feature2term = feature2term
-  )
+  ) |>
+    structure(class = "fterms")
 }
 
 
 #' Fast functional enrichment
 #'
-#' Fast functional enrichment based on hypergeometric distribution. Can be used in interactive applications.
+#' Fast functional enrichment based on hypergeometric distribution. Can be used
+#' in interactive applications.
 #'
 #' @details
 #'
@@ -84,8 +108,8 @@ prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = 
 #' @param feat_all A character vector with all feature identifiers. This is the
 #'   background for enrichment.
 #' @param feat_sel A character vector with feature identifiers in the selection.
-#' @param term_data Functional term data, as explained in details. It can be
-#'   created using \code{prepare_for_enrichment}.
+#' @param term_data An object class \code{fterms}, as explained in details.
+#'   It can be created using \code{prepare_for_enrichment}.
 #' @param feat2name An optional named list to convert feature id into feature
 #'   name.
 #' @param min_count Minimal count of features with term in the selection to be
@@ -110,6 +134,9 @@ prepare_for_enrichment <- function(terms, mapping, all_features, feature_name = 
 #' @export
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
                                   min_count = 2, fdr_limit = 0.05) {
+
+  if (!(class(term_data) == "fterms"))
+    stop("'term_data' should be an object of class 'fterms'.")
 
   # all terms present in the selection
   our_terms <- feat_sel |>

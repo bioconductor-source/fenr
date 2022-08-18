@@ -19,8 +19,8 @@ background for enrichment.}
 
 \item{feat_sel}{A character vector with feature identifiers in the selection.}
 
-\item{term_data}{Functional term data, as explained in details. It can be
-created using \code{prepare_for_enrichment}.}
+\item{term_data}{An object class \code{fterms}, as explained in details.
+It can be created using \code{prepare_for_enrichment}.}
 
 \item{feat2name}{An optional named list to convert feature id into feature
 name.}
@@ -42,7 +42,8 @@ A tibble with enrichment results. For each term the following
   approach.
 }
 \description{
-Fast functional enrichment based on hypergeometric distribution. Can be used in interactive applications.
+Fast functional enrichment based on hypergeometric distribution. Can be used
+in interactive applications.
 }
 \details{
 Functional enrichment in a selection (e.g. significantly DE features) of

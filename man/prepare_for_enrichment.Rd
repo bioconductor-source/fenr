@@ -4,32 +4,41 @@
 \alias{prepare_for_enrichment}
 \title{Prepare term data for enrichment analysis}
 \usage{
-prepare_for_enrichment(terms, mapping, all_features, feature_name = "gene_id")
+prepare_for_enrichment(
+  terms,
+  mapping,
+  all_features = NULL,
+  feature_name = "gene_id"
+)
 }
 \arguments{
-\item{terms}{Information about term names/descriptions. A tibble with
-columns \code{term_id} and \code{term_name}.}
+\item{terms}{Information about term names/descriptions. A tibble with columns
+\code{term_id} and \code{term_name}.}
 
 \item{mapping}{Information about term-feature mapping. A tibble with
-\code{term_id} and a feature id, as identified with \code{feature_name} argument. For
-example, if this tibble contains \code{gene_symbol} and \code{term_id}, then
-`feature_name = "gene_symbol"`.}
+\code{term_id} and a feature id, as identified with \code{feature_name}
+argument. For example, if this tibble contains \code{gene_symbol} and
+\code{term_id}, then \code{feature_name = "gene_symbol"}.}
 
-\item{all_features}{A vector with all feature ids (background for
-enrichment).}
+\item{all_features}{A vector with all feature ids used as background for
+enrichment. If not specified, all features from \code{mapping} will be
+used, resulting in a larger objects size.}
 
-\item{feature_name}{Which column to use from mapping table, e.g. "gene_symbol"
-or "ensembl_gene_id".}
+\item{feature_name}{Which column to use from mapping table, e.g.
+"gene_symbol" or "ensembl_gene_id".}
 }
 \value{
-An object required by `functional_enrichment`.
+An object class \code{fterms} required by
+  \code{functional_enrichment}.
 }
 \description{
 Prepare term data downloaded with \code{fetch_*} functions for fast
 enrichment analysis.
 }
 \details{
-Takes two data frames with functional term information and gene mapping and
-converts them into an object required by `functional_enrichment` for fast
-analysis.
+Takes two data frames with functional term information (\code{terms}) and
+gene mapping (\code{mapping}) and converts them into an object required by
+\code{functional_enrichment} for fast analysis. Terms and mapping can be
+created with database access functions in this package, for example
+\code{fetch_reactome} or \code{fetch_go_from_go}.
 }
