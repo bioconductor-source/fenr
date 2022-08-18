@@ -4,13 +4,16 @@
 \alias{fetch_kegg}
 \title{Get functional term data from KEGG}
 \usage{
-fetch_kegg(species)
+fetch_kegg(species, batch_size = 10)
 }
 \arguments{
 \item{species}{KEGG species code, for example \code{"hsa"} for human. The
 full list of available KEGG species can be found by using
 \code{KEGGREST::keggList("organism")}. The column \code{organism} contains
 the codes used here.}
+
+\item{batch_size}{Nubmer of pathways sent to KEGG database in one query. The
+maximum allowed is 10.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
