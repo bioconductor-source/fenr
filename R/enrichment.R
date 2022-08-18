@@ -135,8 +135,13 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
                                   min_count = 2, fdr_limit = 0.05) {
 
+  # Check term_data class
   if (!(class(term_data) == "fterms"))
     stop("'term_data' should be an object of class 'fterms'.")
+
+  # If no overlap between selection and all, return NULL
+  if(!any(feat_sel %in% feat_all))
+    return(NULL)
 
   # all terms present in the selection
   our_terms <- feat_sel |>
