@@ -9,6 +9,7 @@
 #'        arises a warning message will be displayed. Default is `FALSE`.
 #' @param ... other params (`timeout()` would be a good one) passed directly
 #'        to `httr::HEAD()` and/or `httr::GET()`
+#' @return TRUE or FALSE
 url_exists <- function(x, non_2xx_return_value = FALSE, quiet = FALSE, ...) {
 
   # you don't need thse two functions if you're alread using `purrr`

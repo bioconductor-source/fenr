@@ -18,8 +18,8 @@ Download term information (GO term ID and name) and gene-term mapping
 (gene ID, symbol and GO term ID) from Ensembl.
 }
 \examples{
-\dontrun{
-mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+\donttest{
+mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
 go_terms <- fetch_go_from_bm(mart)
 }
 }

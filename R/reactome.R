@@ -5,7 +5,7 @@
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 fetch_reactome_pathways <- function(spec) {
   # Binding variables from non-standard evaluation locally
-  species <- spec <- NULL
+  species <- NULL
 
   u <- "https://reactome.org/download/current/ReactomePathways.txt"
   stopifnot(url_exists(u))
@@ -21,7 +21,7 @@ fetch_reactome_pathways <- function(spec) {
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 fetch_reactome_ensembl_genes <- function(spec) {
   # Binding variables from non-standard evaluation locally
-  species <- spec <- gene_id <- term_id <- NULL
+  species <- gene_id <- term_id <- NULL
 
   u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   stopifnot(url_exists(u))
@@ -36,6 +36,8 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #'
 #' @return A character vector with species names used by Reactome.
 #' @export
+#' @examples
+#' re <- fetch_reactome_species()
 fetch_reactome_species <- function() {
   # Binding variables from non-standard evaluation locally
   species <- NULL
@@ -62,9 +64,7 @@ fetch_reactome_species <- function() {
 #' @import assertthat
 #'
 #' @examples
-#' \dontrun{
 #' reactome_data <- fetch_reactome("Homo sapiens")
-#' }
 fetch_reactome <- function(species) {
   assert_that(is.string(species))
 

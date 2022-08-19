@@ -8,12 +8,13 @@ Maintainer: Marek Gierlinski <M.Gierlinski@dundee.ac.uk>
 Description: Functional enrichment from a list of features (genes, proteins, etc)
     using hypergeometric distribution. Optimised for speed for use in interactive
     applications, e.g., Shiny.
-Depends: R (>= 4.1)
+Depends: R (>= 4.2.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-biocViews:
+biocViews: FunctionalPrediction, GeneSetEnrichment, GO, KEGG, Reactome, Proteomics
 Imports:
+    methods,
     assertthat,
     dplyr,
     httr,

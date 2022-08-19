@@ -12,3 +12,6 @@ A character vector with species names used by Reactome.
 \description{
 List of available Reactome species
 }
+\examples{
+re <- fetch_reactome_species()
+}

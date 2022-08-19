@@ -13,3 +13,6 @@ A tibble, in which column \code{organism} contains species
 \description{
 Find all species available from KEGG
 }
+\examples{
+spe <- fetch_kegg_species()
+}

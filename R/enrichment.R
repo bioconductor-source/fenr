@@ -26,6 +26,10 @@
 #' @return An object class \code{fenr_terms} required by
 #'   \code{functional_enrichment}.
 #' @export
+#'
+#' @examples
+#' bp <- fetch_bp()
+#' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
   # Binding variables from non-standard evaluation locally
   feature_id <- term_id <- NULL
@@ -40,7 +44,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 
   # Check for feature name
   if (!(feature_name %in% colnames(mapping)))
-    stop(paste(feature_name, "column not found in mapping table. Check feature_name argument."))
+    stop(feature_name, "column not found in mapping table. Check feature_name argument.")
 
   # Replace empty all_features with everything from mapping
   map_features <- mapping[[feature_name]] |>
@@ -136,6 +140,8 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 #' enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
 #'
+#' @import assertthat
+#' @importFrom methods is
 #' @export
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
                                   min_count = 2, fdr_limit = 0.05) {
@@ -145,8 +151,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
   desc <- p_value <- p_adjust <- NULL
 
   # Check term_data class
-  if (!(class(term_data) == "fenr_terms"))
-    stop("'term_data' should be an object of class 'fenr_terms'.")
+  assert_that(is(term_data, "fenr_terms"))
 
   # If no overlap between selection and all, return NULL
   if(!any(feat_sel %in% feat_all))

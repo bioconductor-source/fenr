@@ -19,7 +19,5 @@ Download term information (GO term ID and name) and gene-term mapping
 (gene symbol and GO term ID) from gene ontology.
 }
 \examples{
-\dontrun{
 go_data <- fetch_go_from_go("sgd")
-}
 }

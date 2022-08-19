@@ -41,6 +41,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' This function attempts to scrape HTML web page containing a table of available species and corresponding file names. If the structure of the page changes one day and the function stops working, go to \url{http://current.geneontology.org/products/pages/downloads.html} and check file names. The species designation used in this package is the GAF file name without extension (e.g. for a file \file{goa_chicken.gaf} the designation is \file{goa_chicken}).
 #'
 #' @return A tibble with columns \code{species} and \code{designation}.
+#' @import XML
 #' @export
 fetch_go_species <- function() {
   # Binding variables from non-standard evaluation locally
@@ -102,9 +103,7 @@ fetch_go_genes_go <- function(species) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' go_data <- fetch_go_from_go("sgd")
-#' }
 fetch_go_from_go <- function(species) {
   terms <- fetch_go_terms()
   mapping <- fetch_go_genes_go(species)
@@ -153,14 +152,15 @@ fetch_go_genes_bm <- function(mart) {
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @import assertthat
+#' @importFrom methods is
 #'
 #' @examples
-#' \dontrun{
-#' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+#' \donttest{
+#' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
 #' go_terms <- fetch_go_from_bm(mart)
 #' }
 fetch_go_from_bm <- function(mart) {
-  assert_that(class(mart) == "Mart")
+  assert_that(is(mart, "Mart"))
 
   terms <- fetch_go_terms()
   mapping <- fetch_go_genes_bm(mart)

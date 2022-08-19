@@ -24,7 +24,5 @@ returned instead of entrez IDs and not in gene description. This function is
 based on BioConductor package \pkg{KEGGREST}.
 }
 \examples{
-\dontrun{
-kegg_data <- fetch_kegg("hsa")
-}
+kegg_data <- fetch_kegg("sce")
 }

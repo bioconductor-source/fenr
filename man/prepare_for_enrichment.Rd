@@ -42,3 +42,7 @@ gene mapping (\code{mapping}) and converts them into an object required by
 created with database access functions in this package, for example
 \code{fetch_reactome} or \code{fetch_go_from_go}.
 }
+\examples{
+bp <- fetch_bp()
+bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
+}

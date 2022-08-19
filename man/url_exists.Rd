@@ -18,6 +18,9 @@ arises a warning message will be displayed. Default is `FALSE`.}
 \item{...}{other params (`timeout()` would be a good one) passed directly
 to `httr::HEAD()` and/or `httr::GET()`}
 }
+\value{
+TRUE or FALSE
+}
 \description{
 From \url{https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r}.
 }

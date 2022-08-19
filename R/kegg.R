@@ -3,6 +3,8 @@
 #' @return A tibble, in which column \code{organism} contains species
 #'   designations used in function \code{fetch_kegg}.
 #' @export
+#' @examples
+#' spe <- fetch_kegg_species()
 fetch_kegg_species <- function() {
   KEGGREST::keggList("organism") |>
     tibble::as_tibble()
@@ -27,9 +29,7 @@ fetch_kegg_species <- function() {
 #' @import assertthat
 #'
 #' @examples
-#' \dontrun{
-#' kegg_data <- fetch_kegg("hsa")
-#' }
+#' kegg_data <- fetch_kegg("sce")
 fetch_kegg <- function(species, batch_size = 10) {
   # Binding variables from non-standard evaluation locally
   path_id <- NULL

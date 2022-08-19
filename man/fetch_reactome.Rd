@@ -19,7 +19,5 @@ Download term information (pathway ID and name) and gene-pathway mapping
 (Ensembl gene ID and pathway ID) from Reactome.
 }
 \examples{
-\dontrun{
 reactome_data <- fetch_reactome("Homo sapiens")
-}
 }
