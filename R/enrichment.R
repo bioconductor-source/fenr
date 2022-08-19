@@ -27,6 +27,9 @@
 #'   \code{functional_enrichment}.
 #' @export
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
+  # Binding variables from non-standard evaluation locally
+  feature_id <- term_id <- NULL
+
   # Check terms
   if (!all(c("term_id", "term_name") %in% colnames(terms)))
     stop("Column names in 'terms' should be 'term_id' and 'term_name'.")
@@ -137,6 +140,10 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
                                   min_count = 2, fdr_limit = 0.05) {
 
+  # Binding variables from non-standard evaluation locally
+  N_with <- n_with_sel <- n_expect <- enrichment <- odds_ratio <- NULL
+  desc <- p_value <- p_adjust <- NULL
+
   # Check term_data class
   if (!(class(term_data) == "fenr_terms"))
     stop("'term_data' should be an object of class 'fenr_terms'.")
@@ -212,10 +219,10 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
   if (nrow(res > 0)) {
     res |>
       dplyr::mutate(
-        across(c(N_with, n_with_sel), as.integer),
-        across(c(n_expect, enrichment, odds_ratio, p_value), as.numeric),
-        p_adjust = p.adjust(p_value, method = "BH"),
-        across(c(enrichment, odds_ratio, p_value, p_adjust), ~signif(.x, 3)),
+        dplyr::across(c(N_with, n_with_sel), as.integer),
+        dplyr::across(c(n_expect, enrichment, odds_ratio, p_value), as.numeric),
+        p_adjust = stats::p.adjust(p_value, method = "BH"),
+        dplyr::across(c(enrichment, odds_ratio, p_value, p_adjust), ~signif(.x, 3)),
         n_expect = round(n_expect, 2)
       ) |>
       dplyr::arrange(desc(odds_ratio)) |>

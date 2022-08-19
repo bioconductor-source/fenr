@@ -25,6 +25,9 @@ GAF_COLUMNS <- c(
 #'
 #' @return A tibble with term_id and term_name.
 fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
+  # Binding variables from non-standard evaluation locally
+  term_id <- term_name <- NULL
+
   stopifnot(url_exists(obo_file))
   go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
   tibble::tibble(
@@ -40,6 +43,9 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @export
 fetch_go_species <- function() {
+  # Binding variables from non-standard evaluation locally
+  species <- designation <- `Species/Database` <- File <- NULL
+
   u <- "http://current.geneontology.org/products/pages/downloads.html"
   stopifnot(url_exists(u))
   u <- httr::GET(u) |>
@@ -67,6 +73,11 @@ fetch_go_species <- function() {
 #'
 #' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 fetch_go_genes_go <- function(species) {
+  # Binding variables from non-standard evaluation locally
+  gene_synonym <- db_object_synonym <- gene_symbol <- symbol <- NULL
+  uniprot_id <- db_id <- term_id <- go_term <- NULL
+
+
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   if (!url_exists(gaf_file))
     stop(stringr::str_glue("Cannot download {gaf_file}. Check if {species} is correct species name. Or, perhaps, the server is down. Or your internet is not working."))
@@ -114,6 +125,9 @@ fetch_go_from_go <- function(species) {
 #' @return A tibble with columns \code{ensembl_gene_id}, \code{gene_symbol} and
 #'   \code{term_id}.
 fetch_go_genes_bm <- function(mart) {
+  # Binding variables from non-standard evaluation locally
+  gene_symbol <- external_gene_name <- term_id <- go_id <- NULL
+
   biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
     mart = mart

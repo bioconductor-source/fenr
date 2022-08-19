@@ -31,6 +31,9 @@ fetch_kegg_species <- function() {
 #' kegg_data <- fetch_kegg("hsa")
 #' }
 fetch_kegg <- function(species, batch_size = 10) {
+  # Binding variables from non-standard evaluation locally
+  path_id <- NULL
+
   assert_that(is.string(species))
   assert_that(is.count(batch_size))
   assert_that(batch_size <= 10, msg = "batch_size needs to be between 1 and 10")

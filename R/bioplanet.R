@@ -11,6 +11,10 @@
 #' bioplanet_data <- fetch_bp()
 #' }
 fetch_bp <- function() {
+  # Binding variables from non-standard evaluation locally
+  PATHWAY_ID <- PATHWAY_NAME <- GENE_ID <- GENE_SYMBOL <- NULL
+  term_id <- term_name <- ncbi_id <- gene_symbol <- NULL
+
   bp_file <- "https://tripod.nih.gov/bioplanet/download/pathway.csv"
   stopifnot(url_exists(bp_file))
   paths <- readr::read_csv(bp_file, show_col_types = FALSE)

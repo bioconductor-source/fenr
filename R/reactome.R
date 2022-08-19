@@ -4,6 +4,9 @@
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 fetch_reactome_pathways <- function(spec) {
+  # Binding variables from non-standard evaluation locally
+  species <- spec <- NULL
+
   u <- "https://reactome.org/download/current/ReactomePathways.txt"
   stopifnot(url_exists(u))
   colms <- c("term_id", "term_name", "species")
@@ -17,6 +20,9 @@ fetch_reactome_pathways <- function(spec) {
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 fetch_reactome_ensembl_genes <- function(spec) {
+  # Binding variables from non-standard evaluation locally
+  species <- spec <- gene_id <- term_id <- NULL
+
   u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   stopifnot(url_exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
@@ -31,6 +37,9 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' @return A character vector with species names used by Reactome.
 #' @export
 fetch_reactome_species <- function() {
+  # Binding variables from non-standard evaluation locally
+  species <- NULL
+
   u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   stopifnot(url_exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
