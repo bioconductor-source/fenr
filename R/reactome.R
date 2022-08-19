@@ -2,7 +2,7 @@
 #'
 #' @param spec Reactome species
 #'
-#' @return A tibble with \code{term_id} and \code{term_name}
+#' @return A tibble with columns \code{term_id} and \code{term_name}
 fetch_reactome_pathways <- function(spec) {
   url <- "https://reactome.org/download/current/ReactomePathways.txt"
   colms <- c("term_id", "term_name", "species")
@@ -14,7 +14,7 @@ fetch_reactome_pathways <- function(spec) {
 #'
 #' @param spec Reactome species
 #'
-#' @return A tibble with \code{gene_id} and \code{term_id}
+#' @return A tibble with columns \code{gene_id} and \code{term_id}
 fetch_reactome_ensembl_genes <- function(spec) {
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
@@ -26,7 +26,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
 
 #' List of available Reactome species
 #'
-#' @return A character vector with species names used by Reactome
+#' @return A character vector with species names used by Reactome.
 #' @export
 fetch_reactome_species <- function() {
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
@@ -41,8 +41,8 @@ fetch_reactome_species <- function() {
 #' Download term information (pathway ID and name) and gene-pathway mapping
 #' (Ensembl gene ID and pathway ID) from Reactome.
 #'
-#' @param species Reactome species designation, for example \code{"Homo
-#'   sapiens"} for human. Full list of available species can be found using
+#' @param species Reactome species designation, for example "Homo
+#'   sapiens" for human. Full list of available species can be found using
 #'   \code{fetch_reactome_species()}.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.

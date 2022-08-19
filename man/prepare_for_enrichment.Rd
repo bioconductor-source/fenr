@@ -18,17 +18,17 @@ prepare_for_enrichment(
 \item{mapping}{Information about term-feature mapping. A tibble with
 \code{term_id} and a feature id, as identified with \code{feature_name}
 argument. For example, if this tibble contains \code{gene_symbol} and
-\code{term_id}, then \code{feature_name = "gene_symbol"}.}
+\code{term_id}, then you need to set \code{feature_name = "gene_symbol"}.}
 
 \item{all_features}{A vector with all feature ids used as background for
-enrichment. If not specified, all features from \code{mapping} will be
-used, resulting in a larger objects size.}
+enrichment. If not specified, all features found in \code{mapping} will be
+used, resulting in a larger object size.}
 
 \item{feature_name}{Which column to use from mapping table, e.g.
-"gene_symbol" or "ensembl_gene_id".}
+\code{gene_symbol} or \code{ensembl_gene_id}.}
 }
 \value{
-An object class \code{fterms} required by
+An object class \code{fenr_terms} required by
   \code{functional_enrichment}.
 }
 \description{

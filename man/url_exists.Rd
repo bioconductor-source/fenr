@@ -19,5 +19,5 @@ arises a warning message will be displayed. Default is `FALSE`.}
 to `httr::HEAD()` and/or `httr::GET()`}
 }
 \description{
-From https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r.
+From \url{https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r}.
 }

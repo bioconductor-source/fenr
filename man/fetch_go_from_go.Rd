@@ -7,9 +7,9 @@
 fetch_go_from_go(species)
 }
 \arguments{
-\item{species}{Root name for species file under
-\code{http://current.geneontology.org/annotations}. Examples are
-\code{"goa_human"} for human, \code{"mgi"} for mouse or \code{"sgd"} for yeast.}
+\item{species}{Species designation. Base file name for species file under
+\url{http://current.geneontology.org/annotations}. Examples are
+\file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.

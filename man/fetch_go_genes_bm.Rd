@@ -11,7 +11,8 @@ fetch_go_genes_bm(mart)
 database, created with, e.g., \code{useEnsembl}.}
 }
 \value{
-A tibble with ensembl_gene_is, gene_symbol and term_id.
+A tibble with columns \code{ensembl_gene_id}, \code{gene_symbol} and
+  \code{term_id}.
 }
 \description{
 Download GO term gene mapping from Ensembl

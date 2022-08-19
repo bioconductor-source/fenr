@@ -10,7 +10,8 @@ fetch_bp()
 A list with \code{terms} and \code{mapping} tibbles.
 }
 \description{
-Get functional term data from BioPlanet
+Download term information (term ID and name) and gene-pathway mapping
+(NCBI gene ID, gene symbol and pathway ID) from BioPlanet.
 }
 \examples{
 \dontrun{

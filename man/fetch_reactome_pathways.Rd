@@ -10,7 +10,7 @@ fetch_reactome_pathways(spec)
 \item{spec}{Reactome species}
 }
 \value{
-A tibble with \code{term_id} and \code{term_name}
+A tibble with columns \code{term_id} and \code{term_name}
 }
 \description{
 Download pathway data from Reactome

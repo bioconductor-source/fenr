@@ -1,5 +1,8 @@
 #' Get functional term data from BioPlanet
 #'
+#' Download term information (term ID and name) and gene-pathway mapping
+#' (NCBI gene ID, gene symbol and pathway ID) from BioPlanet.
+#'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #'

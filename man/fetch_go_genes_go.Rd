@@ -7,12 +7,12 @@
 fetch_go_genes_go(species)
 }
 \arguments{
-\item{species}{Root name for species file under
-\code{http://current.geneontology.org/annotations}. Examples are
-\code{goa_human} for human, \code{mgi} for mouse or \code{sgd} for yeast.}
+\item{species}{Species designation. Base file name for species file under
+\url{http://current.geneontology.org/annotations}. Examples are
+\file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.}
 }
 \value{
-A tibble with gene_name, uniprot_id and term_id.
+A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 }
 \description{
 Download GO term gene mapping from geneontology.org

@@ -1,6 +1,6 @@
 #' Check if URL file exists
 #'
-#' From https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r.
+#' From \url{https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r}.
 #
 #' @param x a single URL
 #' @param non_2xx_return_value what to do if the site exists but the

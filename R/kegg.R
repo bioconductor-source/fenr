@@ -4,9 +4,9 @@
 #' gene ID, gene symbol and pathway ID) from KEGG. Gene symbols are extracted
 #' from gene descriptions. For some species (e.g. yeast), gene symbols are
 #' returned instead of entrez IDs and not in gene description. This function is
-#' based on BioConductor package \code{KEGGREST}.
+#' based on BioConductor package \pkg{KEGGREST}.
 #'
-#' @param species KEGG species code, for example \code{"hsa"} for human. The
+#' @param species KEGG species code, for example "hsa" for human. The
 #'   full list of available KEGG species can be found by using
 #'   \code{KEGGREST::keggList("organism")}. The column \code{organism} contains
 #'   the codes used here.

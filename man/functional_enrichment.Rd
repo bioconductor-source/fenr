@@ -19,8 +19,11 @@ background for enrichment.}
 
 \item{feat_sel}{A character vector with feature identifiers in the selection.}
 
-\item{term_data}{An object class \code{fenr_terms}, as explained in details.
-It can be created using \code{prepare_for_enrichment}.}
+\item{term_data}{An object class \code{fenr_terms}, created by
+\code{prepare_for_enrichment}. It is a list of three elements: \itemize{
+\item{\code{term2info} - a named vector term id => term name}
+\item{\code{term2feature} - a list term id => vector of feature ids}
+\item{\code{feature2term} - a list feature id => vector of term ids}}}
 
 \item{feat2name}{An optional named list to convert feature id into feature
 name.}
@@ -32,14 +35,16 @@ used.}
 }
 \value{
 A tibble with enrichment results. For each term the following
-  quantities are reported: N_with - number of features with this term in the
-  among all features, n_with_sel - number of features with this term in the
-  selection, n_expect - expected number of features with this term in the
-  selection, under the null hypothesis that terms are assigned to features
-  randomly, enrichment - ratio of n_with_sel / n_expect; odds_ratio - odds
-  ratio for enrichment, p_value - p-value from a single hypergeometric test;
-  p_adjust - p-value adjusted for multiple tests using Benjamini-Hochberg
-  approach.
+  quantities are reported: \itemize{ \item{\code{N_with} - number of features
+  with this term in the among all features} \item{\code{n_with_sel} - number of
+  features with this term in the selection} \item{\code{n_expect} - expected
+  number of features with this term in the selection, under the null
+  hypothesis that terms are assigned to features randomly}
+  \item{\code{enrichment} - ratio of n_with_sel / n_expect}
+  \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
+  features with the given term are in the selection} \item{\code{p_value} -
+  p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
+  adjusted for multiple tests using Benjamini-Hochberg approach} }
 }
 \description{
 Fast functional enrichment based on hypergeometric distribution. Can be used
@@ -47,12 +52,9 @@ in interactive applications.
 }
 \details{
 Functional enrichment in a selection (e.g. significantly DE features) of
-features, using hypergeometric probability. A feature can be a gene, protein,
-etc. `term_data` is an object with functional term information and
-feature-term assignment. It is a list of: `term2info` - a named vector term
-id => term name; `term2feature` - a list term_id => vector of feature_ids;
-`feature2term` - a list feature id => vector of term ids. It can be created
-by `prepare_for_enrichment` function.
+features, using hypergeometric probability (that is Fisher's exact test). A
+feature can be a gene, protein, etc. \code{term_data} is an object with
+functional term information and feature-term assignment.
 }
 \examples{
 bp <- fetch_bp()

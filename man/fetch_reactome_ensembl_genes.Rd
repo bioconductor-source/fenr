@@ -10,7 +10,7 @@ fetch_reactome_ensembl_genes(spec)
 \item{spec}{Reactome species}
 }
 \value{
-A tibble with \code{gene_id} and \code{term_id}
+A tibble with columns \code{gene_id} and \code{term_id}
 }
 \description{
 Download term Ensembl gene ID mapping from Reactome

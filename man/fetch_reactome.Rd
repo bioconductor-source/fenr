@@ -7,8 +7,8 @@
 fetch_reactome(species)
 }
 \arguments{
-\item{species}{Reactome species designation, for example \code{"Homo
-sapiens"} for human. Full list of available species can be found using
+\item{species}{Reactome species designation, for example "Homo
+sapiens" for human. Full list of available species can be found using
 \code{fetch_reactome_species()}.}
 }
 \value{
