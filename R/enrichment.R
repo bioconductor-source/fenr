@@ -23,7 +23,7 @@
 #' @param feature_name Which column to use from mapping table, e.g.
 #'   "gene_symbol" or "ensembl_gene_id".
 #'
-#' @return An object class \code{fterms} required by
+#' @return An object class \code{fenr_terms} required by
 #'   \code{functional_enrichment}.
 #' @export
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
@@ -86,7 +86,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
     term2feature = term2feature,
     feature2term = feature2term
   ) |>
-    structure(class = "fterms")
+    structure(class = "fenr_terms")
 }
 
 
@@ -108,7 +108,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #' @param feat_all A character vector with all feature identifiers. This is the
 #'   background for enrichment.
 #' @param feat_sel A character vector with feature identifiers in the selection.
-#' @param term_data An object class \code{fterms}, as explained in details.
+#' @param term_data An object class \code{fenr_terms}, as explained in details.
 #'   It can be created using \code{prepare_for_enrichment}.
 #' @param feat2name An optional named list to convert feature id into feature
 #'   name.
@@ -136,8 +136,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
                                   min_count = 2, fdr_limit = 0.05) {
 
   # Check term_data class
-  if (!(class(term_data) == "fterms"))
-    stop("'term_data' should be an object of class 'fterms'.")
+  if (!(class(term_data) == "fenr_terms"))
+    stop("'term_data' should be an object of class 'fenr_terms'.")
 
   # If no overlap between selection and all, return NULL
   if(!any(feat_sel %in% feat_all))
