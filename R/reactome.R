@@ -4,9 +4,10 @@
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 fetch_reactome_pathways <- function(spec) {
-  url <- "https://reactome.org/download/current/ReactomePathways.txt"
+  u <- "https://reactome.org/download/current/ReactomePathways.txt"
+  stopifnot(url_exists(u))
   colms <- c("term_id", "term_name", "species")
-  readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
+  readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec)
 }
 
@@ -16,9 +17,10 @@ fetch_reactome_pathways <- function(spec) {
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 fetch_reactome_ensembl_genes <- function(spec) {
-  url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
+  u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
+  stopifnot(url_exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
-  readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
+  readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
     dplyr::select(gene_id, term_id) |>
     dplyr::distinct()
@@ -29,9 +31,10 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' @return A character vector with species names used by Reactome.
 #' @export
 fetch_reactome_species <- function() {
-  url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
+  u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
+  stopifnot(url_exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
-  readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
+  readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::pull(species) |>
     unique()
 }
@@ -47,13 +50,18 @@ fetch_reactome_species <- function() {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
+#' @import assertthat
 #'
 #' @examples
 #' \dontrun{
 #' reactome_data <- fetch_reactome("Homo sapiens")
 #' }
 fetch_reactome <- function(species) {
+  assert_that(is.string(species))
+
   terms <- fetch_reactome_pathways(species)
+  assert_that(nrow(terms) > 0, msg = stringr::str_glue("No pathways found from Reactome. Make sure species '{species}' is correct, use fetch_reactome_species()."))
+
   mapping <- fetch_reactome_ensembl_genes(species)
   list(
     terms = terms,
