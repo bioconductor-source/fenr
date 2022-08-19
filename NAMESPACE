@@ -3,6 +3,7 @@
 export(fetch_bp)
 export(fetch_go_from_bm)
 export(fetch_go_from_go)
+export(fetch_go_species)
 export(fetch_kegg)
 export(fetch_reactome)
 export(fetch_reactome_species)

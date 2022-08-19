@@ -32,6 +32,29 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
   )
 }
 
+#' Find all species available from geneontology.org
+#'
+#' This function attempts to scrape HTML web page containing a table of available species and corresponding file names. If the structure of the page changes one day and the function stops working, go to \url{http://current.geneontology.org/products/pages/downloads.html} and check file names. The species designation used in this package is the GAF file name without extension (e.g. for a file \file{goa_chicken.gaf} the designation is \file{goa_chicken}).
+#'
+#' @return A tibble with columns \code{species} and \code{designation}.
+#' @export
+fetch_go_species <- function() {
+  u <- httr::GET("http://current.geneontology.org/products/pages/downloads.html") |>
+    httr::content("text") |>
+    XML::readHTMLTable(as.data.frame = TRUE)
+  u[[1]] |>
+    tibble::as_tibble() |>
+    dplyr::mutate(
+      species = `Species/Database` |>
+        stringr::str_replace_all("\\n", "-") |>
+        stringr::str_replace_all("\\s\\s+", " ") |>
+        stringr::str_replace_all("(\\S)-", "\\1"),
+      designation = File |>
+        stringr::str_remove("\\..*$")
+    ) |>
+    dplyr::select(species, designation)
+}
+
 
 #' Download GO term gene mapping from geneontology.org
 #'
@@ -42,7 +65,8 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' @return A tibble with gene_name, uniprot_id and term_id.
 fetch_go_genes_go <- function(species) {
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
-  stopifnot(url_exists(gaf_file))
+  if (!url_exists(gaf_file))
+    stop(stringr::str_glue("Cannot download {gaf_file}. Check if {species} is correct species name. Or, perhaps, the server is down. Or your internet is not working."))
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
