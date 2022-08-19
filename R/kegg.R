@@ -1,3 +1,14 @@
+#' Find all species available from KEGG
+#'
+#' @return A tibble, in which column \code{organism} contains species
+#'   designations used in function \code{fetch_kegg}.
+#' @export
+fetch_kegg_species <- function() {
+  KEGGREST::keggList("organism") |>
+    tibble::as_tibble()
+}
+
+
 #' Get functional term data from KEGG
 #'
 #' Download information (pathway ID and name) and gene-pathway mapping (entrez
@@ -7,21 +18,29 @@
 #' based on BioConductor package \pkg{KEGGREST}.
 #'
 #' @param species KEGG species code, for example "hsa" for human. The
-#'   full list of available KEGG species can be found by using
-#'   \code{KEGGREST::keggList("organism")}. The column \code{organism} contains
-#'   the codes used here.
-#' @param batch_size Nubmer of pathways sent to KEGG database in one query. The
+#'   full list of available KEGG species can be found by using \code{fetch_kegg_species}.
+#' @param batch_size Number of pathways sent to KEGG database in one query. The
 #'   maximum allowed is 10.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
+#' @import assertthat
 #'
 #' @examples
 #' \dontrun{
 #' kegg_data <- fetch_kegg("hsa")
 #' }
 fetch_kegg <- function(species, batch_size = 10) {
-  lst <- KEGGREST::keggList("pathway", species)
+  assert_that(is.string(species))
+  assert_that(is.count(batch_size))
+  assert_that(batch_size <= 10, msg = "batch_size needs to be between 1 and 10")
+
+  lst <- tryCatch(
+    KEGGREST::keggList("pathway", species),
+    error = function(err)
+      stop(stringr::str_glue("There is a problem retrieving KEGG pathways for species '{species}'."))
+  )
+
   terms <- tibble::tibble(
     term_id = names(lst) |> stringr::str_remove("path:"),
     term_name = lst
@@ -31,7 +50,11 @@ fetch_kegg <- function(species, batch_size = 10) {
 
   pb <- progress::progress_bar$new(total = length(batches))
   mapping <- purrr::map_dfr(batches, function(batch) {
-    pws <- KEGGREST::keggGet(batch)
+    pws <- tryCatch(
+      KEGGREST::keggGet(batch),
+      error = function(err)
+        stop(stringr::str_glue("There is a problem retrieving KEGG batch':\n{err}"))
+    )
     pb$tick()
     purrr::map_dfr(pws, function(pw) {
       if (!is.null(pw$GENE)) {

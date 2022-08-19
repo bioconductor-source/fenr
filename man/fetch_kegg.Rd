@@ -8,11 +8,9 @@ fetch_kegg(species, batch_size = 10)
 }
 \arguments{
 \item{species}{KEGG species code, for example "hsa" for human. The
-full list of available KEGG species can be found by using
-\code{KEGGREST::keggList("organism")}. The column \code{organism} contains
-the codes used here.}
+full list of available KEGG species can be found by using \code{fetch_kegg_species}.}
 
-\item{batch_size}{Nubmer of pathways sent to KEGG database in one query. The
+\item{batch_size}{Number of pathways sent to KEGG database in one query. The
 maximum allowed is 10.}
 }
 \value{
