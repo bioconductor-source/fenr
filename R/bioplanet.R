@@ -12,6 +12,7 @@
 #' }
 fetch_bp <- function() {
   bp_file <- "https://tripod.nih.gov/bioplanet/download/pathway.csv"
+  stopifnot(url_exists(bp_file))
   paths <- readr::read_csv(bp_file, show_col_types = FALSE)
 
   terms <- paths |>
