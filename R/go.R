@@ -58,11 +58,11 @@ fetch_go_species <- function() {
 
 #' Download GO term gene mapping from geneontology.org
 #'
-#' @param species Root name for species file under
-#'   \code{http://current.geneontology.org/annotations}. Examples are
-#'   \code{goa_human} for human, \code{mgi} for mouse or \code{sgd} for yeast.
+#' @param species Species designation. Base file name for species file under
+#'   \url{http://current.geneontology.org/annotations}. Examples are
+#'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
 #'
-#' @return A tibble with gene_name, uniprot_id and term_id.
+#' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 fetch_go_genes_go <- function(species) {
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   if (!url_exists(gaf_file))
@@ -80,10 +80,9 @@ fetch_go_genes_go <- function(species) {
 #' Download term information (GO term ID and name) and gene-term mapping
 #' (gene symbol and GO term ID) from gene ontology.
 #'
-#'
-#' @param species Root name for species file under
-#'   \code{http://current.geneontology.org/annotations}. Examples are
-#'   \code{"goa_human"} for human, \code{"mgi"} for mouse or \code{"sgd"} for yeast.
+#' @param species Species designation. Base file name for species file under
+#'   \url{http://current.geneontology.org/annotations}. Examples are
+#'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
@@ -109,9 +108,10 @@ fetch_go_from_go <- function(species) {
 #' @param mart Object class \code{Mart} representing connection to BioMart
 #'   database, created with, e.g., \code{useEnsembl}.
 #'
-#' @return A tibble with ensembl_gene_is, gene_symbol and term_id.
+#' @return A tibble with columns \code{ensembl_gene_id}, \code{gene_symbol} and
+#'   \code{term_id}.
 fetch_go_genes_bm <- function(mart) {
-  gene2go <- biomaRt::getBM(
+  biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
     mart = mart
   ) |>
