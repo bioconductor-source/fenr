@@ -25,6 +25,7 @@ GAF_COLUMNS <- c(
 #'
 #' @return A tibble with term_id and term_name.
 fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
+  stopifnot(url_exists(obo_file))
   go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
   tibble::tibble(
     term_id = go$id,
@@ -39,7 +40,9 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @export
 fetch_go_species <- function() {
-  u <- httr::GET("http://current.geneontology.org/products/pages/downloads.html") |>
+  u <- "http://current.geneontology.org/products/pages/downloads.html"
+  stopifnot(url_exists(u))
+  u <- httr::GET(u) |>
     httr::content("text") |>
     XML::readHTMLTable(as.data.frame = TRUE)
   u[[1]] |>
@@ -135,6 +138,7 @@ fetch_go_genes_bm <- function(mart) {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
+#' @import assertthat
 #'
 #' @examples
 #' \dontrun{
@@ -142,6 +146,8 @@ fetch_go_genes_bm <- function(mart) {
 #' go_terms <- fetch_go_from_bm(mart)
 #' }
 fetch_go_from_bm <- function(mart) {
+  assert_that(class(mart) == "Mart")
+
   terms <- fetch_go_terms()
   mapping <- fetch_go_genes_bm(mart)
 
