@@ -19,7 +19,7 @@ background for enrichment.}
 
 \item{feat_sel}{A character vector with feature identifiers in the selection.}
 
-\item{term_data}{An object class \code{fterms}, as explained in details.
+\item{term_data}{An object class \code{fenr_terms}, as explained in details.
 It can be created using \code{prepare_for_enrichment}.}
 
 \item{feat2name}{An optional named list to convert feature id into feature
