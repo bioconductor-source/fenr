@@ -40,7 +40,7 @@ term_data <- list(
   feature2term = feature2term,
   term2feature = term2feature
 ) |>
-  structure(class = "fterms")
+  structure(class = "fenr_terms")
 
 term_stats <- function(tid, N_sel, n_with_sel) {
   N_with <- length(term2feature[[tid]])
