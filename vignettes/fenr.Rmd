@@ -1,0 +1,98 @@
+---
+title: "Fast functional enrichment"
+author: "Marek Gierlinski"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Fast functional enrichment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Purpose
+
+Functional enrichment determines whether some functions or pathways are enriched in a selection of features (genes, proteins etc.). A selection often comes from differential expression analysis, while functions and pathways are obtained from databases as GO, Reactome or KEGG. At its simplest the enrichment analysis tells us if a given function $F$ is enriched in the selection based on Fisher's test. The null hypothesis is that the proportion of features annotated with $F$ is the same among selected and non-selected features. 
+
+Performing functional enrichment involves downloading large data sets from the aforementioned databases before the actual analysis is done. Downloading data takes time, while Fisher's test can be performed quickly. The purpose of this package is to separate the two and allow for fast enrichment analysis for a given database on various selections of features. It was designed with interactive applications, as Shiny, in mind.
+
+# Example
+
+Load package `fenr` and the example data.
+
+```{r load_fenr}
+library(fenr)
+data(exmpl_all, exmpl_sel)
+```
+
+### Data preparation
+
+The first step is to download functional term data. `fenr` package support downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). Let's download functional terms and gene mapping from BioPlanet:
+
+```{r fetch_bp}
+bp <- fetch_bp()
+```
+
+This is a list with two tibbles. The first tibble contains term information:
+
+```{r bp_terms}
+bp$terms
+```
+
+The second tibble contains gene-term mapping:
+
+```{r bp_mapping}
+bp$mapping
+```
+
+Next, we convert it into an object suitable for fast functional enrichment. `exmpl_all` is example of gene background - a vector with gene symbols related to all detections in an experiment. As different datasets use different features (gene id, gene symbol, protein id), we need to specify the column name containing features in `bp$mapping`.
+
+```{r prepare_for_enrichment}
+bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
+```
+
+`bp_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections
+
+### Functional enrichment
+
+There are two gene sets attached to the package. `exmpl_all` contains all background gene symbols and `exmpl_sel` contains genes of interest (both attached to the package). Functional enrichment can be found using one fast function call:
+
+```{r enrichment}
+enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
+```
+
+
+### The output
+
+The result of `functional_enrichment` is a tibble:
+
+```{r enrichment_result}
+enr
+```
+
+The columns are as follows
+
+ - `N_with` - number of features (genes) with this term in the background of all genes.
+ - `n_with_sel` - number of features with this term in the selection.
+ - `n_expect` - expected number of features with this term under the null hypothesis (terms are randomly distributed).
+ - `enrichment` - ratio of observed to expected.
+ - `odds_ratio` - effect size, odds ratio from the contingency table.
+ - `ids` - identifiers of features with term in the selection.
+ - `p_value` - raw p-value from hypergeometric distribution.
+ - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
+ 
+ 
+# Session info
+
+```{r session_info}
+sessionInfo()
+```
