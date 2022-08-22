@@ -1,18 +1,26 @@
 Package: fenr
-Type: Package
 Title: Fast functional enrichment
 Version: 0.1.4
-Authors@R: person("Marek", "Gierlinski", email = "M.Gierlinski@dundee.ac.uk",
-    role = c("aut", "cre"))
-Maintainer: Marek Gierlinski <M.Gierlinski@dundee.ac.uk>
+Authors@R: person(
+    given = "Marek",
+    family = "Gierlinski",
+    email = "M.Gierlinski@dundee.ac.uk",
+    role = c("aut", "cre")
+    )
 Description: Functional enrichment from a list of features (genes, proteins, etc)
     using hypergeometric distribution. Optimised for speed for use in interactive
     applications, e.g., Shiny.
+URL: https://github.com/bartongroup/fenr
 Depends: R (>= 4.2.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-biocViews: FunctionalPrediction, GeneSetEnrichment, GO, KEGG, Reactome, Proteomics
+biocViews:
+    FunctionalPrediction,
+    GeneSetEnrichment,
+    GO,
+    KEGG,
+    Reactome,
+    Proteomics
 Imports:
     methods,
     assertthat,
@@ -27,5 +35,9 @@ Imports:
     KEGGREST,
     ontologyIndex,
     biomaRt
-Suggests: testthat
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 7.2.1
+VignetteBuilder: knitr
