@@ -8,7 +8,7 @@
 A character vector with 20 elements.
 }
 \usage{
-exmpl_sel
+data(exmpl_sel)
 }
 \description{
 A set of gene names manually selected to illustrate functional enrichment.

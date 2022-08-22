@@ -43,6 +43,7 @@ created with database access functions in this package, for example
 \code{fetch_reactome} or \code{fetch_go_from_go}.
 }
 \examples{
+data(exmpl_all)
 bp <- fetch_bp()
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 }

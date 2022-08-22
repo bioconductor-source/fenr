@@ -20,9 +20,6 @@ url_exists <- function(x, non_2xx_return_value = FALSE, quiet = FALSE, ...) {
     tryCatch(
       list(result = code, error = NULL),
       error = function(e) {
-        if (!quiet)
-          message("Error: ", e$message)
-
         list(result = otherwise, error = e)
       },
       interrupt = function(e) {

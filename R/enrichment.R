@@ -28,6 +28,7 @@
 #' @export
 #'
 #' @examples
+#' data(exmpl_all)
 #' bp <- fetch_bp()
 #' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
@@ -136,6 +137,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'   adjusted for multiple tests using Benjamini-Hochberg approach} }
 #'
 #' @examples
+#' data(exmpl_all, exmpl_sel)
 #' bp <- fetch_bp()
 #' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 #' enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)

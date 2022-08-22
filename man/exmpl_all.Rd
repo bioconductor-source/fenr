@@ -8,7 +8,7 @@
 A character vector with 7075 elements.
 }
 \usage{
-exmpl_all
+data(exmpl_all)
 }
 \description{
 A set of gene names for proteins that could be detected in a typical

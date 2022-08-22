@@ -57,6 +57,7 @@ feature can be a gene, protein, etc. \code{term_data} is an object with
 functional term information and feature-term assignment.
 }
 \examples{
+data(exmpl_all, exmpl_sel)
 bp <- fetch_bp()
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
