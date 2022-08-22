@@ -14,7 +14,7 @@ remotes::install_github("bartongroup/fenr")
 
 ## Usage
 
-The first step is to download functional term data. `fenr` package supporst downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
+The first step is to download functional term data. `fenr` package support downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
 
 ```
 bp <- fetch_bp()
@@ -23,6 +23,7 @@ bp <- fetch_bp()
 This is a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert it into an object suitable for fast functional enrichment. `exmpl_all` is the attached example of gene background - a vector with gene symbols related to all detections in an experiment.
 
 ```
+data(exmpl_all, exmpl_sel)
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
