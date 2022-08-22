@@ -27,6 +27,7 @@ Imports:
     dplyr,
     httr,
     XML,
+    RCurl,
     progress,
     purrr,
     readr,

@@ -28,7 +28,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
   # Binding variables from non-standard evaluation locally
   term_id <- term_name <- NULL
 
-  stopifnot(url_exists(obo_file))
+  stopifnot(RCurl::url.exists(obo_file))
   go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
   tibble::tibble(
     term_id = go$id,
@@ -48,7 +48,7 @@ fetch_go_species <- function() {
   species <- designation <- `Species/Database` <- File <- NULL
 
   u <- "http://current.geneontology.org/products/pages/downloads.html"
-  stopifnot(url_exists(u))
+  stopifnot(RCurl::url.exists(u))
   u <- httr::GET(u) |>
     httr::content("text") |>
     XML::readHTMLTable(as.data.frame = TRUE)
@@ -80,7 +80,7 @@ fetch_go_genes_go <- function(species) {
 
 
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
-  if (!url_exists(gaf_file))
+  if (!RCurl::url.exists(gaf_file))
     stop(stringr::str_glue("Cannot download {gaf_file}. Check if {species} is correct species name. Or, perhaps, the server is down. Or your internet is not working."))
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>

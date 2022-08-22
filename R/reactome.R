@@ -8,7 +8,7 @@ fetch_reactome_pathways <- function(spec) {
   species <- NULL
 
   u <- "https://reactome.org/download/current/ReactomePathways.txt"
-  stopifnot(url_exists(u))
+  stopifnot(RCurl::url.exists(u))
   colms <- c("term_id", "term_name", "species")
   readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec)
@@ -24,7 +24,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
   species <- gene_id <- term_id <- NULL
 
   u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  stopifnot(url_exists(u))
+  stopifnot(RCurl::url.exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
@@ -43,7 +43,7 @@ fetch_reactome_species <- function() {
   species <- NULL
 
   u <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  stopifnot(url_exists(u))
+  stopifnot(RCurl::url.exists(u))
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(u, col_names = colms, show_col_types = FALSE) |>
     dplyr::pull(species) |>
