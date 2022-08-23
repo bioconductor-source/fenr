@@ -66,7 +66,7 @@ fetch_kegg <- function(species, batch_size = 10) {
         ids <- gns[seq(1, length(gns) - 1, 2)]
         genes <- gns[seq(2, length(gns), 2)] |>
           stringr::str_remove(";.*$")  # attempt to extract gene name
-        tibble::tibble(gene_id = ids, gene_symbol = genes, term_id = path_id)
+        tibble::tibble(gene_id = ids, gene_symbol = genes, term_id = unname(pw$ENTRY))
       }
     })
   })
