@@ -38,11 +38,20 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 
 #' Find all species available from geneontology.org
 #'
-#' This function attempts to scrape HTML web page containing a table of available species and corresponding file names. If the structure of the page changes one day and the function stops working, go to \url{http://current.geneontology.org/products/pages/downloads.html} and check file names. The species designation used in this package is the GAF file name without extension (e.g. for a file \file{goa_chicken.gaf} the designation is \file{goa_chicken}).
+#' This function attempts to scrape HTML web page containing a table of
+#' available species and corresponding file names. If the structure of the page
+#' changes one day and the function stops working, go to
+#' \url{http://current.geneontology.org/products/pages/downloads.html} and check
+#' file names. The species designation used in this package is the GAF file name
+#' without extension (e.g. for a file \file{goa_chicken.gaf} the designation is
+#' \file{goa_chicken}).
 #'
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @import XML
 #' @export
+#'
+#' @examples
+#' go_species <- fetch_go_species()
 fetch_go_species <- function() {
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL

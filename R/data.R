@@ -15,3 +15,13 @@
 #' @usage data(exmpl_sel)
 #' @format A character vector with 20 elements.
 "exmpl_sel"
+
+
+#' Differential expression results for yeast RNA-seq.
+#'
+#' A subset of 6 + 6 replicates was selected from data set reported in https://doi.org/10.1093/bioinformatics/btv425
+#'
+#' @usage data(yeast_de)
+#' @format A tibble with 5 columns
+"yeast_de"
+

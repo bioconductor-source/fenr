@@ -1,6 +1,6 @@
 Package: fenr
 Title: Fast functional enrichment
-Version: 0.1.5
+Version: 0.1.6
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
@@ -16,6 +16,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 biocViews:
     FunctionalPrediction,
+    DifferentialExpression,
     GeneSetEnrichment,
     GO,
     KEGG,
@@ -24,21 +25,26 @@ biocViews:
 Imports:
     methods,
     assertthat,
+    rlang,
     dplyr,
-    httr,
-    XML,
-    RCurl,
-    progress,
+    tidyr,
     purrr,
     readr,
     stringr,
     tibble,
+    httr,
+    XML,
+    RCurl,
+    progress,
     KEGGREST,
     ontologyIndex,
-    biomaRt
+    biomaRt,
+    shiny,
+    ggplot2
 Suggests:
     testthat,
     knitr,
     rmarkdown
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
+LazyData: true

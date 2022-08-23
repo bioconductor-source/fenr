@@ -21,13 +21,17 @@ knitr::opts_chunk$set(
 
 # Purpose
 
-Functional enrichment determines whether some functions or pathways are enriched in a selection of features (genes, proteins etc.). A selection often comes from differential expression analysis, while functions and pathways are obtained from databases as GO, Reactome or KEGG. At its simplest the enrichment analysis tells us if a given function $F$ is enriched in the selection based on Fisher's test. The null hypothesis is that the proportion of features annotated with $F$ is the same among selected and non-selected features. 
+Functional enrichment determines whether some functions or pathways are enriched in a selection of features (genes, proteins etc.). The selection often comes from differential expression analysis, while functions and pathways are obtained from databases as *GO*, *Reactome* or *KEGG*. At its simplest enrichment analysis tells us if a given function $F$ is enriched in the selection based on Fisher's test. The null hypothesis is that the proportion of features annotated with $F$ is the same among selected and non-selected features. 
 
-Performing functional enrichment involves downloading large data sets from the aforementioned databases before the actual analysis is done. Downloading data takes time, while Fisher's test can be performed quickly. The purpose of this package is to separate the two and allow for fast enrichment analysis for a given database on various selections of features. It was designed with interactive applications, as Shiny, in mind.
+Performing functional enrichment involves downloading large data sets from the aforementioned databases before the actual analysis is done. Downloading data takes time, while Fisher's test can be performed quickly. The purpose of this package is to separate the two and allow for fast enrichment analysis for a given database on various selections of features. It is designed with interactive applications, like Shiny, in mind. A small Shiny app is included in the package to demonstrate usage of `fenr`.
+
+## Caveats
+
+Functional enrichment is not the final answer about biology. Quite often is does not give any answer about biology. In particular, when arbitrary groups of genes are selected from a plot, enrichment tells us only about simplified statistical overrepresentation of functional terms in the selection. Statistics does not equal biology. This package is meant to be only a tool to explore data and search for clues. Any further statements about biology need independent validation.
 
 # Example
 
-Load package `fenr` and the example data.
+Package `fenr` and example data are lodaed with
 
 ```{r load_fenr}
 library(fenr)
@@ -36,7 +40,7 @@ data(exmpl_all, exmpl_sel)
 
 ### Data preparation
 
-The first step is to download functional term data. `fenr` package support downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). Let's download functional terms and gene mapping from BioPlanet:
+The first step is to download functional term data. `fenr` supports downloads from *Gene Ontology*, *Reactome*, *KEGG* and *BioPlanet*. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). The following command downloads functional terms and gene mapping from BioPlanet:
 
 ```{r fetch_bp}
 bp <- fetch_bp()
@@ -54,17 +58,17 @@ The second tibble contains gene-term mapping:
 bp$mapping
 ```
 
-Next, we convert it into an object suitable for fast functional enrichment. `exmpl_all` is example of gene background - a vector with gene symbols related to all detections in an experiment. As different datasets use different features (gene id, gene symbol, protein id), we need to specify the column name containing features in `bp$mapping`.
+Next, these user-friendly data need to be converted it machine-friendly object suitable for fast functional enrichment with the following function:
 
 ```{r prepare_for_enrichment}
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-`bp_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections
+`exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. As different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `bp$mapping` needs to be specified with `feature_name = "gene_symbol"`. The result, `bp_terms`, is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections
 
 ### Functional enrichment
 
-There are two gene sets attached to the package. `exmpl_all` contains all background gene symbols and `exmpl_sel` contains genes of interest (both attached to the package). Functional enrichment can be found using one fast function call:
+There are two gene sets attached to the package. `exmpl_all` contains all background gene symbols and `exmpl_sel` contains genes of interest. Functional enrichment in the selection can be found using one fast function call:
 
 ```{r enrichment}
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
@@ -91,6 +95,23 @@ The columns are as follows
  - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
  
  
+# Interactive example
+
+A small Shiny app is included in the package to illustrate usage of `fenr` in intractive environment. All slow data loading and preparation is done before the app is started.
+
+```{r interactive_prepare, eval=FALSE}
+data(yeast_de)
+term_data <- fetch_terms_for_example(yeast_de)
+```
+ 
+`yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923). The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome*, *KEGG* and *BioPlanet*. One can see how this is done by printing the function content, that is, typing `fetch_terms_for_example` (without brackets) in the console. The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+
+Once the slow part is over, the Shiny app can be started with
+
+```{r shiny_app, eval=FALSE}
+enrichment_interactive(yeast_de, term_data)
+```
+
 # Session info
 
 ```{r session_info}

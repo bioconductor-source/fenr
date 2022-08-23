@@ -14,7 +14,7 @@ remotes::install_github("bartongroup/fenr")
 
 ## Usage
 
-The first step is to download functional term data. `fenr` package support downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
+The first step is to download functional term data. `fenr` package supports downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
 
 ```
 bp <- fetch_bp()
@@ -27,7 +27,7 @@ data(exmpl_all, exmpl_sel)
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-`bp_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_term` can be used to do multiple functional enrichments on various gene selections. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest (both attached to the package), functional enrichment can be found using
+`bp_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest (both attached to the package), functional enrichment can be found using
 
 ```
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
@@ -69,9 +69,4 @@ The columns are as follows
  - `p_value` - raw p-value from hypergeometric distribution.
  - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
  
- 
-## Contact
-
-Marek Gierlinski
-M.Gierlinski@dundee.ac.uk
 

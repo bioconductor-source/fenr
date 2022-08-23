@@ -4,14 +4,7 @@
 \alias{functional_enrichment}
 \title{Fast functional enrichment}
 \usage{
-functional_enrichment(
-  feat_all,
-  feat_sel,
-  term_data,
-  feat2name = NULL,
-  min_count = 2,
-  fdr_limit = 0.05
-)
+functional_enrichment(feat_all, feat_sel, term_data, feat2name = NULL)
 }
 \arguments{
 \item{feat_all}{A character vector with all feature identifiers. This is the
@@ -27,11 +20,6 @@ background for enrichment.}
 
 \item{feat2name}{An optional named list to convert feature id into feature
 name.}
-
-\item{min_count}{Minimal count of features with term in the selection to be
-used.}
-
-\item{fdr_limit}{Only terms with p_adjust below this limit are returned.}
 }
 \value{
 A tibble with enrichment results. For each term the following
@@ -44,7 +32,7 @@ A tibble with enrichment results. For each term the following
   \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
   features with the given term are in the selection} \item{\code{p_value} -
   p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
-  adjusted for multiple tests using Benjamini-Hochberg approach} }
+  adjusted for multiple tests using Benjamini-Hochberg approach}}.
 }
 \description{
 Fast functional enrichment based on hypergeometric distribution. Can be used
@@ -61,5 +49,4 @@ data(exmpl_all, exmpl_sel)
 bp <- fetch_bp()
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
-
 }

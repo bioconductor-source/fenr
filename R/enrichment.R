@@ -120,9 +120,6 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'   \item{\code{feature2term} - a list feature id => vector of term ids}}
 #' @param feat2name An optional named list to convert feature id into feature
 #'   name.
-#' @param min_count Minimal count of features with term in the selection to be
-#'   used.
-#' @param fdr_limit Only terms with p_adjust below this limit are returned.
 #'
 #' @return A tibble with enrichment results. For each term the following
 #'   quantities are reported: \itemize{ \item{\code{N_with} - number of features
@@ -134,19 +131,18 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'   \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
 #'   features with the given term are in the selection} \item{\code{p_value} -
 #'   p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
-#'   adjusted for multiple tests using Benjamini-Hochberg approach} }
+#'   adjusted for multiple tests using Benjamini-Hochberg approach}}.
+#'
+#' @import assertthat
+#' @importFrom methods is
+#' @export
 #'
 #' @examples
 #' data(exmpl_all, exmpl_sel)
 #' bp <- fetch_bp()
 #' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 #' enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
-#'
-#' @import assertthat
-#' @importFrom methods is
-#' @export
-functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL,
-                                  min_count = 2, fdr_limit = 0.05) {
+functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL) {
 
   # Binding variables from non-standard evaluation locally
   N_with <- n_with_sel <- n_expect <- enrichment <- odds_ratio <- NULL
@@ -191,7 +187,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
     #  With term    | n_with_sel    | n_with_nsel
     #  Without term | n_without_sel | n_without_nsel
 
-    if (n_with_sel < min_count) return(NULL)
+    if (n_with_sel < 2) return(NULL)
 
     # Expected number of features in selection, if random
     n_expect <- N_with * N_sel / N_tot
@@ -223,8 +219,10 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
     )
   })
   # Drawback - if all selections below minimum, res is tibble 0 x 0, need to catch it
-  if (nrow(res > 0)) {
-    res |>
+  if (nrow(res) == 0) {
+    res <- NULL
+  } else {
+    res <- res |>
       dplyr::mutate(
         dplyr::across(c(N_with, n_with_sel), as.integer),
         dplyr::across(c(n_expect, enrichment, odds_ratio, p_value), as.numeric),
@@ -232,11 +230,9 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
         dplyr::across(c(enrichment, odds_ratio, p_value, p_adjust), ~signif(.x, 3)),
         n_expect = round(n_expect, 2)
       ) |>
-      dplyr::arrange(desc(odds_ratio)) |>
-      dplyr::filter(p_adjust <= fdr_limit)
-  } else {
-    NULL
+      dplyr::arrange(desc(odds_ratio))
   }
+  res
 }
 
 

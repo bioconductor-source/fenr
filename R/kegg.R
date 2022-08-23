@@ -3,6 +3,7 @@
 #' @return A tibble, in which column \code{organism} contains species
 #'   designations used in function \code{fetch_kegg}.
 #' @export
+#'
 #' @examples
 #' spe <- fetch_kegg_species()
 fetch_kegg_species <- function() {

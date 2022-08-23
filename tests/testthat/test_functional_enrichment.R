@@ -77,7 +77,7 @@ test_that("Enrichment of 1", {
   n_with_sel <- 10
 
   res <- term_stats(tid, N_sel, n_with_sel)
-  enr <- functional_enrichment(features_all, res$sel, term_data, fdr_limit = 1) |>
+  enr <- functional_enrichment(features_all, res$sel, term_data) |>
     dplyr::filter(term_id == tid)
 
   expect_equal(
@@ -93,7 +93,7 @@ test_that("All selected features in term", {
   n_with_sel <- term_sizes[2]
 
   res <- term_stats(tid, N_sel, n_with_sel)
-  enr <- functional_enrichment(features_all, res$sel, term_data, fdr_limit = 1) |>
+  enr <- functional_enrichment(features_all, res$sel, term_data) |>
     dplyr::filter(term_id == tid)
 
   expect_equal(
@@ -109,7 +109,7 @@ test_that("No selected features in term", {
   n_with_sel <- 0
 
   res <- term_stats(tid, N_sel, n_with_sel)
-  enr <- functional_enrichment(features_all, res$sel, term_data, fdr_limit = 1) |>
+  enr <- functional_enrichment(features_all, res$sel, term_data) |>
     dplyr::filter(term_id == tid)
 
   expect_equal(nrow(enr), 0)
@@ -117,7 +117,7 @@ test_that("No selected features in term", {
 
 
 test_that("Selection is all features", {
-  enr <- functional_enrichment(features_all, features_all, term_data, fdr_limit = 1)
+  enr <- functional_enrichment(features_all, features_all, term_data)
 
   n <- nrow(enr)
   expect_equal(enr$enrichment, rep(1, n))
