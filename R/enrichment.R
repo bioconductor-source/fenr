@@ -45,7 +45,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 
   # Check for feature name
   if (!(feature_name %in% colnames(mapping)))
-    stop(feature_name, "column not found in mapping table. Check feature_name argument.")
+    stop(feature_name, " column not found in mapping table. Check feature_name argument.")
 
   # Replace empty all_features with everything from mapping
   map_features <- mapping[[feature_name]] |>
