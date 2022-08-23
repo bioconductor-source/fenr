@@ -9,7 +9,7 @@ A simple R package for fast functional enrichment. It is optimised for speed and
 `fenr` can be installed from GitHub (you need to install `remotes` first).
 
 ```
-remotes::install_github("bartongroup/fenr")
+remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 ```
 
 ## Usage
