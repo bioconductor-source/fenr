@@ -164,7 +164,7 @@ fetch_go_genes_bm <- function(mart) {
 #' @importFrom methods is
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
 #' go_terms <- fetch_go_from_bm(mart)
 #' }
