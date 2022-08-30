@@ -14,7 +14,7 @@ remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 
 ## Quick example
 
-A Shiny app demostratin `fenr` can be downloaded from GitHub:
+A Shiny app demonstration `fenr` can be downloaded from GitHub:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
