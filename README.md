@@ -12,6 +12,14 @@ A simple R package for fast functional enrichment. It is optimised for speed and
 remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 ```
 
+## Quick example
+
+A Shiny app demostratin `fenr` can be downloaded from GitHub:
+
+```
+shiny::runGitHub("bartongroup/fenr-shiny-example")
+```
+
 ## Usage
 
 The first step is to download functional term data. `fenr` package supports downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
