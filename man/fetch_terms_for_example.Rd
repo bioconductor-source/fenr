@@ -16,6 +16,6 @@ A list of objects containing functional terms for GO, Reactome, KEGG and BioPlan
 Create term data for interactive example
 }
 \examples{
-data(yeasts_de)
+data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
 }

@@ -104,7 +104,9 @@ data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
 ```
  
-`yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923). The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome*, *KEGG* and *BioPlanet*. One can see how this is done by printing the function content, that is, typing `fetch_terms_for_example` (without brackets) in the console. The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+`yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923).
+
+The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome*, *KEGG* and *BioPlanet*. One can see how this is done, step by step, by reading the function code from [GitHub](https://github.com/bartongroup/fenr/blob/main/R/iteractive_example.R). The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
 
 Once the slow part is over, the Shiny app can be started with
 

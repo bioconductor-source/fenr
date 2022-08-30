@@ -6,11 +6,13 @@
 #' @export
 #'
 #' @examples
-#' data(yeasts_de)
+#' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
 fetch_terms_for_example <- function(de) {
+  # Binding variables from non-standard evaluation locally
   gene_id <- gene_symbol <- NULL
 
+  # All gene background
   all_genes <- de$gene_id
 
   # load GO terms
@@ -27,7 +29,8 @@ fetch_terms_for_example <- function(de) {
 
   # load BioPlanet terms
   bp <- fetch_bp()
-  # translate gene symbol to gene id
+  # as BP does not use SGD identifiers, we need translate gene symbols to SGD
+  # gene ids
   symid <- de |>
     dplyr::select(gene_id, gene_symbol)
   bp$mapping <- bp$mapping |>
@@ -35,6 +38,8 @@ fetch_terms_for_example <- function(de) {
     tidyr::drop_na()
   bp_data <- prepare_for_enrichment(bp$terms, bp$mapping, all_genes, feature_name = "gene_id")
 
+  # Put all functional term data in one structure; Shiny app will access
+  # individual ontologies from this list
   list(
     go = go_data,
     re = re_data,
@@ -51,7 +56,9 @@ fetch_terms_for_example <- function(de) {
 #'
 #' @return A ggplot object
 plot_volcano <- function(d, fdr_limit = 0.05) {
+  # Binding variables from non-standard evaluation locally
   x <- y <- FDR <- NULL
+
   sres <- d |>
     dplyr::filter(FDR <= fdr_limit)
   g <- ggplot(d, aes(x, y)) +
@@ -77,7 +84,9 @@ plot_volcano <- function(d, fdr_limit = 0.05) {
 #'
 #' @return A ggplot object
 plot_ma <- function(d, fdr_limit = 0.05) {
+  # Binding variables from non-standard evaluation locally
   x <- y <- NULL
+
   ggplot(d, aes(x, y)) +
     theme_classic() +
     theme(
@@ -119,6 +128,7 @@ get_xy_data <- function(de, input) {
 #'
 #' @return A tibble with functional enrichment results
 enrichment_table <- function(de, term_data, input, max_points = 10000) {
+  # Binding variables from non-standard evaluation locally
   p_adjust <- n_with_sel <- NULL
 
   xy_data <- get_xy_data(de, input)
