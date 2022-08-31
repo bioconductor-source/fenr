@@ -35,6 +35,7 @@ Imports:
     httr,
     XML,
     RCurl,
+    jsonlite,
     progress,
     KEGGREST,
     ontologyIndex,
