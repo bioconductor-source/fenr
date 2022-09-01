@@ -4,7 +4,12 @@
 \alias{fetch_go_species}
 \title{Find all species available from geneontology.org}
 \usage{
-fetch_go_species()
+fetch_go_species(
+  url = "http://current.geneontology.org/products/pages/downloads.html"
+)
+}
+\arguments{
+\item{url}{URL of the Gene Ontology web page with downloads.}
 }
 \value{
 A tibble with columns \code{species} and \code{designation}.

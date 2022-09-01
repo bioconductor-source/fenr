@@ -7,8 +7,12 @@
 #' @examples
 #' spe <- fetch_kegg_species()
 fetch_kegg_species <- function() {
+  # Binding variables from non-standard evaluation locally
+  organism <- NULL
+
   KEGGREST::keggList("organism") |>
-    tibble::as_tibble()
+    tibble::as_tibble() |>
+    dplyr::rename(designation = organism)
 }
 
 
@@ -35,7 +39,8 @@ fetch_kegg <- function(species, batch_size = 10) {
   # Binding variables from non-standard evaluation locally
   path_id <- NULL
 
-  assert_that(is.string(species))
+  assert_that(!missing(species), msg = "Argument 'species' is missing.")
+  assert_species(species, fetch_kegg_species)
   assert_that(is.count(batch_size))
   assert_that(batch_size <= 10, msg = "batch_size needs to be between 1 and 10")
 

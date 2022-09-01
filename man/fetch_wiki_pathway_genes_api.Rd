@@ -4,15 +4,14 @@
 \alias{fetch_wiki_pathway_genes_api}
 \title{Download WikiPathways gene-pathway mapping using API}
 \usage{
-fetch_wiki_pathway_genes_api(
-  pathways,
-  gene_dbs = c("Ensembl", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL")
-)
+fetch_wiki_pathway_genes_api(pathways, databases = NULL, types = NULL)
 }
 \arguments{
 \item{pathways}{A character vector with pathway names.}
 
-\item{gene_dbs}{Names of databases to use}
+\item{databases}{Names of databases to use}
+
+\item{types}{Names of types to use}
 }
 \value{
 A tibble with \code{term_id} and \code{gene_symbol}

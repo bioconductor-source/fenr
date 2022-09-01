@@ -4,12 +4,23 @@
 \alias{fetch_wiki}
 \title{Get functional term data from WikiPathways}
 \usage{
-fetch_wiki(species)
+fetch_wiki(
+  species,
+  databases = c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number",
+    "Uniprot-TrEMBL"),
+  types = c("GeneProduct", "Protein", "Rna", "RNA")
+)
 }
 \arguments{
-\item{species}{WikiPathways species designation, for example "Homo
-sapiens" for human. Full list of available species can be found using
+\item{species}{WikiPathways species designation, for example "Homo sapiens"
+for human. Full list of available species can be found using
 \code{fetch_wiki_species()}.}
+
+\item{databases}{A character vector with a list of databases to pre-filter mapping
+data. See details. Full result will be returned if NULL.}
+
+\item{types}{A character vector with a list of types to pre-filter mapping data.
+See details. Full result will be returned if NULL.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
@@ -17,6 +28,19 @@ A list with \code{terms} and \code{mapping} tibbles.
 \description{
 Download term information (pathway ID and name) and gene-pathway mapping
 (gene symbol and pathway ID) from WikiPathways.
+}
+\details{
+WikiPathways contain mapping between pathways and a variety of
+  entities from various databases. Typically a gene symbol is returned in
+  column \code{text_label} and some sort of ID in column \code{id}, but this
+  depends on the species and databases used. For gene/protein enrichment,
+  these should be filtered to contain gene symbols only. This can be done by
+  selecting a desired databases and types. The default values for parameters
+  \code{databases} and \code{types} attempt to select inforation from generic
+  databases, but there are organism-specific databases not included in the
+  selection. We suggest to run this function with \code{databases = NULL,
+  types = NULL} to see what types and databases are available before making
+  selection.
 }
 \examples{
 wiki_data <- fetch_wiki("Saccharomyces cerevisiae")

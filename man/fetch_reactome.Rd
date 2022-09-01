@@ -19,5 +19,5 @@ Download term information (pathway ID and name) and gene-pathway mapping
 (Ensembl gene ID and pathway ID) from Reactome.
 }
 \examples{
-reactome_data <- fetch_reactome("Homo sapiens")
+reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
 }

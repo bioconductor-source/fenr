@@ -28,7 +28,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
   # Binding variables from non-standard evaluation locally
   term_id <- term_name <- NULL
 
-  stopifnot(RCurl::url.exists(obo_file))
+  assert_http_file(obo_file)
   go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
   tibble::tibble(
     term_id = go$id,
@@ -46,20 +46,21 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' without extension (e.g. for a file \file{goa_chicken.gaf} the designation is
 #' \file{goa_chicken}).
 #'
+#' @param url URL of the Gene Ontology web page with downloads.
+#'
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @import XML
 #' @export
 #'
 #' @examples
 #' go_species <- fetch_go_species()
-fetch_go_species <- function() {
+fetch_go_species <- function(url = "http://current.geneontology.org/products/pages/downloads.html") {
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
-  u <- "http://current.geneontology.org/products/pages/downloads.html"
-  stopifnot(RCurl::url.exists(u))
-  u <- httr::GET(u) |>
-    httr::content("text") |>
+  assert_http_file(url)
+  u <- httr::GET(url) |>
+    httr::content("text", encoding = "UTF-8") |>
     XML::readHTMLTable(as.data.frame = TRUE)
   u[[1]] |>
     tibble::as_tibble() |>
@@ -81,16 +82,15 @@ fetch_go_species <- function() {
 #'   \url{http://current.geneontology.org/annotations}. Examples are
 #'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
 #'
+#' @import assertthat
 #' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 fetch_go_genes_go <- function(species) {
   # Binding variables from non-standard evaluation locally
   gene_synonym <- db_object_synonym <- gene_symbol <- symbol <- NULL
   uniprot_id <- db_id <- term_id <- go_term <- NULL
 
-
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
-  if (!RCurl::url.exists(gaf_file))
-    stop(stringr::str_glue("Cannot download {gaf_file}. Check if {species} is correct species name. Or, perhaps, the server is down. Or your internet is not working."))
+  assert_http_file(gaf_file)
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
@@ -110,12 +110,16 @@ fetch_go_genes_go <- function(species) {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
+#' @import assertthat
 #'
 #' @examples
 #' go_data <- fetch_go_from_go("sgd")
 fetch_go_from_go <- function(species) {
-  terms <- fetch_go_terms()
+  assert_that(!missing(species), msg = "Argument 'species' is missing.")
+  assert_species(species, fetch_go_species)
+
   mapping <- fetch_go_genes_go(species)
+  terms <- fetch_go_terms()
 
   list(
     terms = terms,
@@ -169,6 +173,7 @@ fetch_go_genes_bm <- function(mart) {
 #' go_terms <- fetch_go_from_bm(mart)
 #' }
 fetch_go_from_bm <- function(mart) {
+  assert_that(!missing(mart), msg = "Argument 'mart' is missing.")
   assert_that(is(mart, "Mart"))
 
   terms <- fetch_go_terms()

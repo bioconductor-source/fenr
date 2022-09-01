@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="Homocysteine and cysteine interconversion" Organism="Saccharomyces cerevisiae">
+  <Comment>Based on http://pathway.yeastgenome.org/biocyc/</Comment>
+  <Comment Source="WikiPathways-category">Metabolic Process</Comment>
+  <BiopaxRef>lqi</BiopaxRef>
+  <Graphics BoardWidth="720.0" BoardHeight="609.5"/>
+  <DataNode TextLabel="STR3" GraphId="f59" Type="GeneProduct">
+    <Graphics CenterX="310.0" CenterY="193.33333333333334" Width="40.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle"/>
+    <Xref Database="SGD" ID="S000003152"/>
+  </DataNode>
+  <DataNode TextLabel="CYS4" GraphId="f19" Type="GeneProduct">
+    <Graphics CenterX="606.6666666666666" CenterY="150.0" Width="40.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle"/>
+    <Xref Database="SGD" ID="S000003387"/>
+  </DataNode>
+  <DataNode TextLabel="STR2" GraphId="eae" Type="GeneProduct">
+    <Graphics CenterX="246.66666666666666" CenterY="460.0" Width="40.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle"/>
+    <Xref Database="SGD" ID="S000003891"/>
+  </DataNode>
+  <Interaction GraphId="id2bacc907">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="490.0" Y="76.66666666666667"/>
+      <Point X="583.3333333333334" Y="103.33333333333333"/>
+    </Graphics>
+    <Xref Database="" ID=""/>
+  </Interaction>
+  <Label TextLabel="H2O" GraphId="d11">
+    <Graphics CenterX="230.0" CenterY="233.33333333333334" Width="38.333333333333336" Height="19.0" ZOrder="28672" FillColor="ffffff" FontWeight="Bold" FontSize="12" Valign="Middle"/>
+  </Label>
+</Pathway>

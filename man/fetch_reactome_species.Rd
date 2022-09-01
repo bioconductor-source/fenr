@@ -7,7 +7,7 @@
 fetch_reactome_species()
 }
 \value{
-A character vector with species names used by Reactome.
+A tibble with species names used by Reactome.
 }
 \description{
 List of available Reactome species
