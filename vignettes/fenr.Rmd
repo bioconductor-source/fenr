@@ -40,7 +40,7 @@ data(exmpl_all, exmpl_sel)
 
 ### Data preparation
 
-The first step is to download functional term data. `fenr` supports downloads from *Gene Ontology*, *Reactome*, *KEGG* and *BioPlanet*. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). The following command downloads functional terms and gene mapping from BioPlanet:
+The first step is to download functional term data. `fenr` supports downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet* and *WikiPathways*. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). The following command downloads functional terms and gene mapping from BioPlanet:
 
 ```{r fetch_bp}
 bp <- fetch_bp()

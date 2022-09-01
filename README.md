@@ -22,7 +22,7 @@ shiny::runGitHub("bartongroup/fenr-shiny-example")
 
 ## Usage
 
-The first step is to download functional term data. `fenr` package supports downloads from Gene Ontology, Reactome, KEGG and BioPlanet. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
+The first step is to download functional term data. `fenr` package supports downloads from Gene Ontology, Reactome, KEGG, BioPlanet and WikiPathways. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from BioPlanet.
 
 ```
 bp <- fetch_bp()
