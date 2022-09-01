@@ -1,3 +1,6 @@
+.DS_Store
+.Rbuildignore
+.Rprofile
 .Rproj.user
 .Rhistory
 .RData
