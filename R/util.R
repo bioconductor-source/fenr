@@ -10,7 +10,7 @@ HTTP_FOUND <- 302
 #'
 #' @return Nothing
 assert_url_path <- function(url_path) {
-  assert_that(is.string(url_parh))
+  assert_that(is.string(url_path))
   hd <- tryCatch(
     httr::HEAD(url_path),
     error = function(e) {

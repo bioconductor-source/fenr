@@ -11,7 +11,6 @@
 fetch_bp <- function() {
   # Binding variables from non-standard evaluation locally
   PATHWAY_ID <- PATHWAY_NAME <- GENE_ID <- GENE_SYMBOL <- NULL
-  term_id <- term_name <- ncbi_id <- gene_symbol <- NULL
 
   bp_file <- "https://tripod.nih.gov/bioplanet/download/pathway.csv"
   assert_url_path(bp_file)

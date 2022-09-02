@@ -47,4 +47,4 @@ Suggests:
     rmarkdown
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
-LazyData: true
+LazyData: false
