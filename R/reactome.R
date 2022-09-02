@@ -10,7 +10,7 @@
 fetch_reactome_data <- function(path) {
   base_url <-  "https://reactome.org/ContentService"
   url <- file.path(base_url, path)
-  assert_http_file(url)
+  assert_url_path(url)
   res <- httr::GET(url)
   jsonlite::fromJSON(rawToChar(res$content)) |>
     tibble::as_tibble()
@@ -42,7 +42,7 @@ fetch_reactome_pathways <- function(spec) {
   species <- NULL
 
   url <- "https://reactome.org/download/current/ReactomePathways.txt"
-  assert_http_file(url)
+  assert_url_path(url)
 
   colms <- c("term_id", "term_name", "species")
   readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
@@ -59,7 +59,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
   species <- gene_id <- term_id <- NULL
 
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  assert_http_file(url)
+  assert_url_path(url)
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>

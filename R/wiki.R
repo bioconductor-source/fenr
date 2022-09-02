@@ -8,7 +8,7 @@ get_wiki_query <- function(query, parameters = NULL) {
   pars <- paste(c(parameters, "format=json"), collapse = "&")
   qry <- stringr::str_glue("https://webservice.wikipathways.org/{query}?{pars}") |>
     stringr::str_replace_all("\\s", "%20")
-  assert_http_file(qry)
+  assert_url_path(qry)
   resp <- httr::GET(url = qry)
   jsonlite::fromJSON(rawToChar(resp$content))
 }

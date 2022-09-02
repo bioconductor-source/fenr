@@ -1,31 +1,25 @@
 HTTP_OK <- 200
 HTTP_FOUND <- 302
 
-
-#' Check if URL exists
+#' Check if URL with a path is responding OK
 #'
-#' Stops with error message if URL is not accessible.
+#' Stops with error message if the path is not accessible or server not
+#' responding.
 #'
-#' @param url URL to test
-#'
-#' @return Nothing
-assert_url <- function(url) {
-  if (!RCurl::url.exists(url))
-    stop(stringr::str_glue("URL {url} cannot be found."))
-}
-
-#' Check if HTTP file exists
-#'
-#' Stops with error message if HTTP file is not accessible.
-#'
-#' @param url_file HTTP address of the file
+#' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
 #'
 #' @return Nothing
-assert_http_file <- function(url_file) {
-  hd <- httr::HEAD(url_file)
+assert_url_path <- function(url_path) {
+  assert_that(is.string(url_parh))
+  hd <- tryCatch(
+    httr::HEAD(url_path),
+    error = function(e) {
+      stop(e)
+    }
+  )
   status <- hd$all_headers[[1]]$status
   if (!(status %in% c(HTTP_OK, HTTP_FOUND)))
-    stop(stringr::str_glue("HTTP file {url_file} cannot be found. Status = {status}."))
+    stop(stringr::str_glue("HTTP path {url_path} cannot be found. Status = {status}."))
 }
 
 

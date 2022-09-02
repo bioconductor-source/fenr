@@ -34,7 +34,6 @@ Imports:
     tibble,
     httr,
     XML,
-    RCurl,
     jsonlite,
     progress,
     KEGGREST,

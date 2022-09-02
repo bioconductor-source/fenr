@@ -28,7 +28,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
   # Binding variables from non-standard evaluation locally
   term_id <- term_name <- NULL
 
-  assert_http_file(obo_file)
+  assert_url_path(obo_file)
   go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
   tibble::tibble(
     term_id = go$id,
@@ -58,7 +58,7 @@ fetch_go_species <- function(url = "http://current.geneontology.org/products/pag
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
-  assert_http_file(url)
+  assert_url_path(url)
   u <- httr::GET(url) |>
     httr::content("text", encoding = "UTF-8") |>
     XML::readHTMLTable(as.data.frame = TRUE)
@@ -90,7 +90,7 @@ fetch_go_genes_go <- function(species) {
   uniprot_id <- db_id <- term_id <- go_term <- NULL
 
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
-  assert_http_file(gaf_file)
+  assert_url_path(gaf_file)
 
   readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
