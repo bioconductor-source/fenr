@@ -30,7 +30,7 @@ assert_url_path <- function(url_path) {
 #' @param fetch_fun A function to retrieve available species, must return a
 #'   tibble with a column \code{designation}.
 #'
-#' @return TRUE is correct
+#' @return A tibble with valid species - a response from \code{fetch_fun}
 assert_species <- function(species, fetch_fun) {
   assert_that(is.string(species))
   valid_species <- fetch_fun()
@@ -38,4 +38,27 @@ assert_species <- function(species, fetch_fun) {
   assert_that(species %in% valid_species$designation,
     msg = stringr::str_glue("Invalid species {species}. Use {fun_name}() to find all available species.")
   )
+  valid_species
+}
+
+
+#' Return a field for a given species
+#'
+#' Used to match species designation with a species ID.
+#'
+#' @param species Species designation
+#' @param fetch_fun  A function to retrieve available species, must return a
+#'   tibble with a column \code{designation}.
+#' @param col_name Column name in the tibble returned by \code{fetch_fun} to
+#'   extract, e.g. \code{tax_id}
+#'
+#' @return A value extracted from column \code{col_name} at row where
+#'   \code{designation} = \code{species}.
+match_species <- function(species, fetch_fun, col_name) {
+  designation <- NULL
+
+  sp <- assert_species(species, fetch_fun)
+  sp |>
+    dplyr::filter(designation == species) |>
+    dplyr::pull(get(col_name))
 }

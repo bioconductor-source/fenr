@@ -2,7 +2,7 @@
 % Please edit documentation in R/reactome.R
 \name{fetch_reactome_ensembl_genes}
 \alias{fetch_reactome_ensembl_genes}
-\title{Download term Ensembl gene ID mapping from Reactome}
+\title{Download term - Ensembl gene ID mapping from Reactome}
 \usage{
 fetch_reactome_ensembl_genes(spec)
 }
@@ -13,5 +13,11 @@ fetch_reactome_ensembl_genes(spec)
 A tibble with columns \code{gene_id} and \code{term_id}
 }
 \description{
-Download term Ensembl gene ID mapping from Reactome
+Download term - Ensembl gene ID mapping from Reactome
+}
+\details{
+This function downloads one large file containing a mapping between
+  Enxembl gene IDs and Reactome terms. This is significantly faster than
+  \code{fetch_reactome_genes}, but if gene symbols are required, needs
+  additional ID conversion.
 }

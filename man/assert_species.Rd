@@ -13,7 +13,7 @@ assert_species(species, fetch_fun)
 tibble with a column \code{designation}.}
 }
 \value{
-TRUE is correct
+A tibble with valid species - a response from \code{fetch_fun}
 }
 \description{
 Check if species are valid

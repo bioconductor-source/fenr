@@ -34,22 +34,25 @@ fetch_reactome_species <- function() {
 
 #' Download pathway data from Reactome
 #'
-#' @param spec Reactome species
+#' @param tax_id Taxonomy ID of the species, a string
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
-fetch_reactome_pathways <- function(spec) {
+fetch_reactome_pathways <- function(tax_id) {
   # Binding variables from non-standard evaluation locally
-  species <- NULL
+  stId <- displayName <- NULL
 
-  url <- "https://reactome.org/download/current/ReactomePathways.txt"
-  assert_url_path(url)
-
-  colms <- c("term_id", "term_name", "species")
-  readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
-    dplyr::filter(species == spec)
+  qry <- stringr::str_glue("data/schema/Pathway/min?species={tax_id}&page=1&offset=20000")
+  fetch_reactome_data(qry) |>
+    dplyr::select(term_id = stId, term_name = displayName)
 }
 
-#' Download term Ensembl gene ID mapping from Reactome
+
+#' Download term - Ensembl gene ID mapping from Reactome
+#'
+#' @details This function downloads one large file containing a mapping between
+#'   Enxembl gene IDs and Reactome terms. This is significantly faster than
+#'   \code{fetch_reactome_genes}, but if gene symbols are required, needs
+#'   additional ID conversion.
 #'
 #' @param spec Reactome species
 #'
@@ -68,26 +71,67 @@ fetch_reactome_ensembl_genes <- function(spec) {
 }
 
 
+#' Download term - gene symbol mapping from Reactome
+#'
+#' @details This function interrogates Reactome API to get term-gene mapping for
+#'   all pathways. This is considerable slower than
+#'   \code{fetch_reactome_ensembl_genes}.
+#'
+#' @param pathways A character vector with Reactome patway IDs to get corresponding genes from.
+#'
+#' @return A tibble with columns \code{gene_id} and \code{term_id}
+fetch_reactome_genes <- function(pathways) {
+  identifier <- geneName <- gene_symbol <- NULL
+
+  pb <- progress::progress_bar$new(total = length(pathways))
+  purrr::map_dfr(pathways, function(pathway) {
+    pb$tick()
+    qry <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
+    fetch_reactome_data(qry) |>
+      dplyr::select(identifier, gene_symbol = geneName) |>
+      tidyr::unnest(gene_symbol) |>
+      tibble::add_column(term_id = pathway, .before = 1)
+  })
+}
+
+
 #' Get functional term data from Reactome
 #'
 #' Download term information (pathway ID and name) and gene-pathway mapping
-#' (Ensembl gene ID and pathway ID) from Reactome.
+#' (Ensembl gene ID or gene symbol and pathway ID) from Reactome.
 #'
-#' @param species Reactome species designation, for example "Homo
-#'   sapiens" for human. Full list of available species can be found using
+#' @details Reactome makes mapping between Ensembl ID and pathway ID available
+#'   in form of one downloadable file. If `method = "file"` is set, this file
+#'   will be downloaded and parsed. If `method = "api"` is set, then Reactome
+#'   APIs will be interrogated for each pathway available. The first method is
+#'   considerable faster and it returns Ensembl IDs. If gene symbols are needed,
+#'   this will requi additional conversion by the user. The second method is
+#'   slower and it returns gene symbols.
+#'
+#' @param species Reactome species designation, for example "Homo sapiens" for
+#'   human. Full list of available species can be found using
 #'   \code{fetch_reactome_species()}.
+#' @param method How to download the mapping. If 'file', then one mapping file
+#'   provided by Reactome will be downloaded, if 'api', then Reactome API will
+#'   be used. See details.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #'
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
-fetch_reactome <- function(species) {
+fetch_reactome <- function(species, method = c("file", "api")) {
+  method <- match.arg(method)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, fetch_reactome_species)
 
-  terms <- fetch_reactome_pathways(species)
-  mapping <- fetch_reactome_ensembl_genes(species)
+  tax_id <- match_species(species, fetch_reactome_species, "tax_id")
+  terms <- fetch_reactome_pathways(tax_id)
+  if(method == "file") {
+    mapping <- fetch_reactome_ensembl_genes(species)
+  } else {
+    mapping <- fetch_reactome_genes(terms$term_id)
+  }
+
   list(
     terms = terms,
     mapping = mapping

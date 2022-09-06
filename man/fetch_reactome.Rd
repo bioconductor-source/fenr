@@ -4,19 +4,32 @@
 \alias{fetch_reactome}
 \title{Get functional term data from Reactome}
 \usage{
-fetch_reactome(species)
+fetch_reactome(species, method = c("file", "api"))
 }
 \arguments{
-\item{species}{Reactome species designation, for example "Homo
-sapiens" for human. Full list of available species can be found using
+\item{species}{Reactome species designation, for example "Homo sapiens" for
+human. Full list of available species can be found using
 \code{fetch_reactome_species()}.}
+
+\item{method}{How to download the mapping. If 'file', then one mapping file
+provided by Reactome will be downloaded, if 'api', then Reactome API will
+be used. See details.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
 }
 \description{
 Download term information (pathway ID and name) and gene-pathway mapping
-(Ensembl gene ID and pathway ID) from Reactome.
+(Ensembl gene ID or gene symbol and pathway ID) from Reactome.
+}
+\details{
+Reactome makes mapping between Ensembl ID and pathway ID available
+  in form of one downloadable file. If `method = "file"` is set, this file
+  will be downloaded and parsed. If `method = "api"` is set, then Reactome
+  APIs will be interrogated for each pathway available. The first method is
+  considerable faster and it returns Ensembl IDs. If gene symbols are needed,
+  this will requi additional conversion by the user. The second method is
+  slower and it returns gene symbols.
 }
 \examples{
 reactome_data <- fetch_reactome("Saccharomyces cerevisiae")

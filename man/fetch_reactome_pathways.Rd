@@ -4,10 +4,10 @@
 \alias{fetch_reactome_pathways}
 \title{Download pathway data from Reactome}
 \usage{
-fetch_reactome_pathways(spec)
+fetch_reactome_pathways(tax_id)
 }
 \arguments{
-\item{spec}{Reactome species}
+\item{tax_id}{Taxonomy ID of the species, a string}
 }
 \value{
 A tibble with columns \code{term_id} and \code{term_name}
