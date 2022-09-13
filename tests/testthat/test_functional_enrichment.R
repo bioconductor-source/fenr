@@ -49,7 +49,16 @@ term_stats <- function(tid, N_sel, n_with_sel) {
   n_expect <- N_with * N_sel / N
   enrichment <- n_with_sel / n_expect
 
-  p <- 1 - stats::phyper(n_with_sel - 1, N_with, N_without, N_sel)
+  # in the test we use fisher.test function as opposed to phyper in the code
+  n_with_nsel <- N_with - n_with_sel
+  n_without_nsel <- N - (n_with_sel + n_without_sel + n_with_nsel)
+  cont_tab <- rbind(
+    c(n_with_sel, n_with_nsel),
+    c(n_without_sel, n_without_nsel)
+  )
+
+  p <- fisher.test(cont_tab, alternative = "greater")$p.value
+  # p <- 1 - stats::phyper(n_with_sel - 1, N_with, N_without, N_sel)
 
   sel_with <- term2feature[[tid]][1:n_with_sel]
   if (n_without_sel > 0) {
