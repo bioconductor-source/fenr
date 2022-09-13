@@ -7,7 +7,7 @@
 fetch_kegg_species()
 }
 \value{
-A tibble, in which column \code{organism} contains species
+A tibble, in which column \code{designation} contains species
   designations used in function \code{fetch_kegg}.
 }
 \description{
