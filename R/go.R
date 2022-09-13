@@ -19,22 +19,38 @@ GAF_COLUMNS <- c(
 )
 
 
+#' Parse fields in obo data
+#'
+#' @param obo A character vector containing obo data
+#' @param key A key to extract, e.g. "id" or "name"
+#'
+#' @return All values for the given key
+extract_obo_values <- function(obo, key) {
+  obo |>
+    stringr::str_subset(stringr::str_glue("^{key}:")) |>
+    stringr::str_remove(stringr::str_glue("{key}:\\s"))
+}
+
+
 #' Download GO term descriptions
 #'
 #' @param obo_file A URL or a local file name containing GO ontology, in OBO format.
 #'
 #' @return A tibble with term_id and term_name.
 fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
-  # Binding variables from non-standard evaluation locally
-  term_id <- term_name <- NULL
-
   assert_url_path(obo_file)
-  go <- ontologyIndex::get_ontology(obo_file, extract_tags = "minimal")
+  obo <- readr::read_lines(obo_file)
+  ids <- extract_obo_values(obo, "id")
+  names <- extract_obo_values(obo, "name")
+  assertthat::assert_that(length(ids) == length(names))
+
   tibble::tibble(
-    term_id = go$id,
-    term_name = go$name
+    term_id = ids,
+    term_name = names
   )
 }
+
+
 
 #' Find all species available from geneontology.org
 #'
