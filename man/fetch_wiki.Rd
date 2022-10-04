@@ -16,11 +16,11 @@ fetch_wiki(
 for human. Full list of available species can be found using
 \code{fetch_wiki_species()}.}
 
-\item{databases}{A character vector with a list of databases to pre-filter mapping
+\item{databases}{A character vector with database names to pre-filter mapping
 data. See details. Full result will be returned if NULL.}
 
-\item{types}{A character vector with a list of types to pre-filter mapping data.
-See details. Full result will be returned if NULL.}
+\item{types}{A character vector with types of entities to pre-filter mapping
+data. See details. Full result will be returned if NULL.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.

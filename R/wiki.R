@@ -123,10 +123,10 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #' @param species WikiPathways species designation, for example "Homo sapiens"
 #'   for human. Full list of available species can be found using
 #'   \code{fetch_wiki_species()}.
-#' @param databases A character vector with a list of databases to pre-filter mapping
+#' @param databases A character vector with database names to pre-filter mapping
 #'   data. See details. Full result will be returned if NULL.
-#' @param types A character vector with a list of types to pre-filter mapping data.
-#'   See details. Full result will be returned if NULL.
+#' @param types A character vector with types of entities to pre-filter mapping
+#'   data. See details. Full result will be returned if NULL.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
