@@ -52,7 +52,7 @@ parse_kegg_genes <- function(s) {
   data <- NULL
 
   entries <- str_split(s, "///") |> unlist()
-  entries <- entries[1:(length(entries) - 1)] # there is /// at the end
+  entries <- entries[-length(entries)] # there is /// at the end
   purrr::map_dfr(entries, function(entry) {
     d <- str_split(entry, "\n") |>
       unlist()

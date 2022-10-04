@@ -2,7 +2,7 @@ library(testthat)
 
 # Set 100 features
 N <- 100
-features_all <- sprintf("gene_%03d", 1:N)
+features_all <- sprintf("gene_%03d", seq_len(N))
 
 # Three terms with 50, 10 and 3 features
 term_ids <- c("term_1", "term_2", "term_3")

@@ -72,7 +72,8 @@ plot_volcano <- function(d, fdr_limit = 0.05) {
     labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.03)))
   if (nrow(sres) > 0) {
-    g <- g + geom_hline(yintercept = -log10(max(sres$PValue)), colour = "red", linetype = "dashed", alpha = 0.2)
+    g <- g + geom_hline(yintercept = -log10(max(sres$PValue)), colour = "red",
+                        linetype = "dashed", alpha = 0.2)
   }
   g
 }
@@ -198,12 +199,28 @@ enrichment_interactive <- function(de, term_data) {
 
       fluidRow(
         column(5,
-               radioButtons("plot_type", "Plot type:", choices = c("Volcano" = "volcano", "MA" = "ma"), inline = TRUE),
-               plotOutput("main_plot", height = "480px", width = "100%", brush = "plot_brush", hover = "plot_hover")
+          radioButtons(
+            inputId = "plot_type",
+            label = "Plot type:",
+            choices = c("Volcano" = "volcano", "MA" = "ma"),
+            inline = TRUE
+          ),
+          plotOutput(
+            inputId = "main_plot",
+            height = "480px",
+            width = "100%",
+            brush = "plot_brush",
+            hover = "plot_hover"
+          )
         ),
         column(7,
-               radioButtons("ontology", "Ontology:", choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg", "BioPlanet" = "bp"), inline = TRUE),
-               div(style = 'height: 480px; overflow-y: scroll', tableOutput("enrichment")),
+          radioButtons(
+            inputId = "ontology",
+            label = "Ontology:",
+            choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg", "BioPlanet" = "bp"),
+            inline = TRUE
+          ),
+           div(style = 'height: 480px; overflow-y: scroll', tableOutput("enrichment")),
         )
       )
     ))

@@ -2,7 +2,7 @@ library(testthat)
 
 # Set 100 features
 N <- 100
-features_all <- sprintf("gene_%03d", 1:N)
+features_all <- sprintf("gene_%03d", seq_len(N))
 
 # Three terms with 50, 10 and 3 features
 term_ids <- c("term_1", "term_2", "term_3")
@@ -60,9 +60,9 @@ term_stats <- function(tid, N_sel, n_with_sel) {
   p <- fisher.test(cont_tab, alternative = "greater")$p.value
   # p <- 1 - stats::phyper(n_with_sel - 1, N_with, N_without, N_sel)
 
-  sel_with <- term2feature[[tid]][1:n_with_sel]
+  sel_with <- term2feature[[tid]][seq_len(n_with_sel)]
   if (n_without_sel > 0) {
-    sel_without <- setdiff(features_all, term2feature[[tid]])[1:n_without_sel]
+    sel_without <- setdiff(features_all, term2feature[[tid]])[seq_len(n_without_sel)]
   } else {
     sel_without = character(0)
   }
@@ -146,6 +146,6 @@ test_that("Incorrect term_data class", {
   class(td) <- "wobble"
 
   expect_error(
-    functional_enrichment(features_all, features_all[1:10], td)
+    functional_enrichment(features_all, features_all[seq_len(10)], td)
   )
 })
