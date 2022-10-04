@@ -79,7 +79,7 @@ parse_kegg_genes <- function(s) {
     genes |>
       str_remove(";.+$") |>
       tibble::as_tibble_col(column_name = "data") |>
-      tidyr::separate(data, c("gene_id", "gene_symbol"), sep = "\\s+") |>
+      tidyr::separate(data, c("gene_id", "gene_symbol"), sep = "\\s+", extra = "merge") |>
       tibble::add_column(term_id = pathway)
   })
 }
