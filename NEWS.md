@@ -33,3 +33,8 @@
   - improving test_functional_enrichment
   
   
+## Version 0.1.10
+
+ - Style changes for BiocCheck
+ - Adding more tests
+ - Fixing a bug in `parse_kegg_genes`
