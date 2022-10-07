@@ -15,8 +15,17 @@ fetch_go_from_go(species)
 A list with \code{terms} and \code{mapping} tibbles.
 }
 \description{
-Download term information (GO term ID and name) and gene-term mapping
-(gene symbol and GO term ID) from gene ontology.
+Download term information (GO term ID and name) and gene-term mapping (gene
+symbol and GO term ID) from gene ontology.
+}
+\details{
+This function relies on Gene Ontology's GAF files containing more
+  generic information than gene symbols. Here, the third column of the GAF
+  file (DB Object Symbol) is returned as \code{gene_symbol}, but, depending
+  on the \code{species} argument it can contain other entities, e.g. RNA or
+  protein complex names. Similarly, the eleventh column of the GAF file (DB
+  Object Synonym) is returned as \code{gene_synonym}. It is up to the user to
+  select the correct database.
 }
 \examples{
 go_data <- fetch_go_from_go("sgd")

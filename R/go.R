@@ -18,6 +18,9 @@ GAF_COLUMNS <- c(
   "form_id"
 )
 
+GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
+  stringr::str_c(collapse = "")
+
 
 #' Parse fields in obo data
 #'
@@ -108,21 +111,30 @@ fetch_go_genes_go <- function(species) {
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   assert_url_path(gaf_file)
 
-  readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, show_col_types = FALSE) |>
+  readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
-    dplyr::select(gene_symbol = symbol, gene_synonym, uniprot_id = db_id, term_id = go_term) |>
+    dplyr::select(gene_symbol = symbol, gene_synonym, db_id, term_id = go_term) |>
     dplyr::distinct()
 }
 
 
 #' Get functional term data from gene ontology
 #'
-#' Download term information (GO term ID and name) and gene-term mapping
-#' (gene symbol and GO term ID) from gene ontology.
+#' Download term information (GO term ID and name) and gene-term mapping (gene
+#' symbol and GO term ID) from gene ontology.
 #'
-#' @param species Species designation. Base file name for species file under
-#'   \url{http://current.geneontology.org/annotations}. Examples are
-#'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
+#' @details This function relies on Gene Ontology's GAF files containing more
+#'   generic information than gene symbols. Here, the third column of the GAF
+#'   file (DB Object Symbol) is returned as \code{gene_symbol}, but, depending
+#'   on the \code{species} argument it can contain other entities, e.g. RNA or
+#'   protein complex names. Similarly, the eleventh column of the GAF file (DB
+#'   Object Synonym) is returned as \code{gene_synonym}. It is up to the user to
+#'   select the appropriate database.
+#'
+#' @param species Species designation. Examples are \file{goa_human} for human,
+#'   \file{mgi} for mouse or \file{sgd} for yeast. Full list of available
+#'   species can be obtained using \code{fetch_go_species} - column
+#'   \code{designation}.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export

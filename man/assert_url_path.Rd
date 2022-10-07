@@ -10,7 +10,7 @@ assert_url_path(url_path)
 \item{url_path}{Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.}
 }
 \value{
-Nothing
+TRUE if assertion passed
 }
 \description{
 Stops with error message if the path is not accessible or server not
