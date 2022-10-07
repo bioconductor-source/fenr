@@ -20,9 +20,10 @@ assert_columns <- function(tb, cols) {
 #' responding.
 #'
 #' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
+#' @param stop_if_error Logical, if TRUE stops with error message, otherwise returns FALSE
 #'
 #' @return TRUE if assertion passed
-assert_url_path <- function(url_path) {
+assert_url_path <- function(url_path, stop_if_error = TRUE) {
   assert_that(is.string(url_path))
   hd <- tryCatch(
     httr::HEAD(url_path),
@@ -31,8 +32,13 @@ assert_url_path <- function(url_path) {
     }
   )
   status <- hd$all_headers[[1]]$status
-  if (!(status %in% c(HTTP_OK, HTTP_FOUND)))
-    stop(stringr::str_glue("HTTP path {url_path} cannot be found. Status = {status}."))
+  if (!(status %in% c(HTTP_OK, HTTP_FOUND))) {
+    if(stop_if_error) {
+      stop(stringr::str_glue("HTTP path {url_path} cannot be found. Status = {status}."))
+    } else {
+      return(FALSE)
+    }
+  }
   return(TRUE)
 }
 

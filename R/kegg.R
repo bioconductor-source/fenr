@@ -1,11 +1,12 @@
+KEGG_BASE_URL = "https://rest.kegg.jp"
+
 #' A helper function to retrieve API data from KEGG
 #'
 #' @param path Path in the query
 #'
 #' @return A string with result
 fetch_kegg_data <- function(path) {
-  base_url <-  "https://rest.kegg.jp"
-  url <- file.path(base_url, path)
+  url <- file.path(KEGG_BASE_URL, path)
   assert_url_path(url)
   res <- httr::GET(url)
   rawToChar(res$content)
@@ -35,7 +36,12 @@ fetch_kegg_pathways <- function(species) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
 
-  s <- fetch_kegg_data(stringr::str_glue("list/pathway/{species}"))
+  query <- stringr::str_glue("list/pathway/{species}")
+  url <- file.path(KEGG_BASE_URL, query)
+  if(!assert_url_path(url, stop_if_error = FALSE))
+    stop(stringr::str_glue("Cannot get pathways for species {species}. Check that your species designation is correct using fetch_kegg_species()."))
+
+  s <- fetch_kegg_data(query)
   readr::read_tsv(I(s), col_names = c("term_id", "term_name"), show_col_types = FALSE) |>
     dplyr::mutate(term_id = stringr::str_remove(term_id, "path:"))
 }
@@ -69,6 +75,13 @@ parse_kegg_genes <- function(s) {
     i <- 1
     while(i <= n & !(str_detect(d[i], "^GENE")))
       i <- i + 1
+    # no GENE key found
+    if(i > n)
+      return(tibble::tibble(
+        gene_id = character(0),
+        gene_symbol = character(0)
+      ))
+
     # extract genes
     genes <- str_remove(d[i], "GENE\\s+")
     i <- i + 1
@@ -76,10 +89,16 @@ parse_kegg_genes <- function(s) {
       genes <- c(genes, str_remove(d[i], "^\\s+"))
       i <- i + 1
     }
+
+    # create final tibble, attempt to extract gene symbols when semicolon is found
     genes |>
-      str_remove(";.+$") |>
       tibble::as_tibble_col(column_name = "data") |>
       tidyr::separate(data, c("gene_id", "gene_symbol"), sep = "\\s+", extra = "merge") |>
+      dplyr::mutate(gene_symbol = if_else(
+        stringr::str_detect(gene_symbol, ";"),
+        stringr::str_remove(gene_symbol, ";.+$"),
+        gene_id
+      )) |>
       tibble::add_column(term_id = pathway)
   })
 }
@@ -129,7 +148,6 @@ fetch_kegg_mapping <- function(pathways, batch_size) {
 #' kegg_data <- fetch_kegg("sce")
 fetch_kegg <- function(species, batch_size = 10) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, fetch_kegg_species)
   assert_that(is.count(batch_size))
   assert_that(batch_size <= 10, msg = "batch_size needs to be between 1 and 10")
 
