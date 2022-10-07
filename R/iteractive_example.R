@@ -191,6 +191,10 @@ main_plot <- function(de, input) {
 #' enrichment_interactive(yeast_de, term_data)
 #' }
 enrichment_interactive <- function(de, term_data) {
+  assert_that(is.data.frame(de))
+  assert_columns(de, c("gene_id", "gene_symbol", "logFC", "logCPM", "PValue", "FDR"))
+  assert_that(is(term_data, "list"))
+
   ui <- function() {
     shinyUI(fluidPage(
       tags$style("table{font-size: 11px; background-color: #EAF5FF}"),
@@ -206,7 +210,7 @@ enrichment_interactive <- function(de, term_data) {
             inline = TRUE
           ),
           plotOutput(
-            inputId = "main_plot",
+            outputId = "main_plot",
             height = "480px",
             width = "100%",
             brush = "plot_brush",

@@ -1,6 +1,19 @@
 HTTP_OK <- 200
 HTTP_FOUND <- 302
 
+
+#' Check if a tibble contains all required columns
+#'
+#' @param tb Tibble or data frame to examine
+#' @param cols A string vector with required column names
+#'
+#' @return TRUE if assertion passed
+assert_columns <- function(tb, cols) {
+  if(!all(cols %in% colnames(tb)))
+    stop(paste0("The data frame needs to contain the following columns\n", paste(cols, collapse = ", ")))
+  return(TRUE)
+}
+
 #' Check if URL with a path is responding OK
 #'
 #' Stops with error message if the path is not accessible or server not
@@ -8,7 +21,7 @@ HTTP_FOUND <- 302
 #'
 #' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
 #'
-#' @return Nothing
+#' @return TRUE if assertion passed
 assert_url_path <- function(url_path) {
   assert_that(is.string(url_path))
   hd <- tryCatch(
@@ -20,6 +33,7 @@ assert_url_path <- function(url_path) {
   status <- hd$all_headers[[1]]$status
   if (!(status %in% c(HTTP_OK, HTTP_FOUND)))
     stop(stringr::str_glue("HTTP path {url_path} cannot be found. Status = {status}."))
+  return(TRUE)
 }
 
 
