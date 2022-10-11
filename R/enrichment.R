@@ -68,26 +68,35 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
     terms <- dplyr::bind_rows(terms, dummy)
   }
 
-  # List to select term name
-  term2name <- terms$term_name |>
-    purrr::set_names(terms$term_id)
+  # Hash to select term name
+  term2name <- Rfast::Hash(
+    keys = terms$term_id,
+    values = terms$term_name
+  )
 
   # feature-term tibble
   feature_term <- mapping |>
     dplyr::rename(feature_id = !!feature_name) |>
-    dplyr::filter(feature_id %in% all_features)
+    dplyr::filter(feature_id %in% all_features) |>
+    dplyr::select(feature_id, term_id)
 
-  # Feature to terms conversion list
-  feature2term <- feature_term |>
+  # Feature to terms hash
+  f2t <- feature_term |>
     dplyr::group_by(feature_id) |>
-    dplyr::summarise(terms = list(term_id)) |>
-    tibble::deframe()
+    dplyr::summarise(terms = list(term_id))
+  feature2term <- Rfast::Hash(
+    keys = f2t$feature_id,
+    values = f2t$terms
+  )
 
-  # Term to feature conversion list
-  term2feature <- feature_term |>
+  # Term to feature hash
+  t2f <- feature_term |>
     dplyr::group_by(term_id) |>
-    dplyr::summarise(features = list(feature_id)) |>
-    tibble::deframe()
+    dplyr::summarise(features = list(feature_id))
+  term2feature <- Rfast::Hash(
+    keys = t2f$term_id,
+    values = t2f$features
+  )
 
   list(
     term2name = term2name,
@@ -157,7 +166,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   # all terms present in the selection
   our_terms <- feat_sel |>
-    purrr::map(\(x) term_data$feature2term[[x]]) |>
+    purrr::map(\(x) term_data$feature2term[x]) |>
     unlist() |>
     unique()
   # number of features in selection
@@ -167,7 +176,9 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   res <- purrr::map_dfr(our_terms, function(term_id) {
     # all features with the term
-    tfeats <- term_data$term2feature[[term_id]]
+    # [[1]] is needed because hash values are one-element lists
+    # term_data$term2feature is a Hash object
+    tfeats <- term_data$term2feature[term_id][[1]]
 
     # features from selection with the term
     # this is faster than intersect(tfeats, feat_sel)
@@ -201,7 +212,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
     if (!is.null(feat2name)) tfeats_sel <- feat2name[tfeats_sel] |> unname()
 
-    term_name <- term_data$term2name[[term_id]]
+    term_name <- term_data$term2name[term_id]
     # returns NAs if no term found
     if (is.null(term_name)) term_name <- NA_character_
 

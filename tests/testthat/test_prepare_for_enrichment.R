@@ -15,10 +15,6 @@ terms <- tibble::tibble(
   term_name = term_names
 )
 
-# Prepare data for enrichment
-term2name <- term_names |>
-  purrr::set_names(term_ids)
-
 # random selection of features for terms
 set.seed(666)
 mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
@@ -28,42 +24,44 @@ mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
   )
 })
 
-# Feature to terms conversion list
-feature2term <- mapping |>
-  dplyr::group_by(feature_id) |>
-  dplyr::summarise(terms = list(term_id)) |>
-  tibble::deframe()
-
-# Term to feature conversion list
-term2feature <- mapping |>
-  dplyr::group_by(term_id) |>
-  dplyr::summarise(features = list(feature_id)) |>
-  tibble::deframe()
-
-# final structure required by functional_enrichment
-term_data <- list(
-  term2name = term2name,
-  feature2term = feature2term,
-  term2feature = term2feature
-) |>
-  structure(class = "fenr_terms")
 
 
 
-
-test_that("Expected normal output", {
+test_that("Expected correct output", {
   td <- prepare_for_enrichment(terms, mapping, feature_name = "feature_id")
 
-  # Order is not mandatory, so need to sort before comparison
-  expect_equal(sort(term_data$term2name), sort(td$term2name))
+  # Check term names
+  for(i in seq_along(terms$term_id)) {
+    r <- terms[i, ]
+    expect_equal(r$term_name, td$term2name[r$term_id])
+  }
 
-  p1 <- purrr::map2(td$term2feature, term_data$term2feature, function(f1, f2) {
-    expect_equal(sort(f1), sort(f2))
-  })
 
-  p2 <- purrr::map2(td$feature2term, term_data$feature2term, function(f1, f2) {
-    expect_equal(sort(f1), sort(f2))
-  })
+  # Check term-feature hash
+  term_ids <- mapping$term_id |> unique()
+  chk1 <- term_ids |>
+    purrr::map(function(trm) {
+      expected <- mapping |>
+        dplyr::filter(term_id == trm) |>
+        dplyr::pull(feature_id) |>
+        sort()
+      returned <- td$term2feature[trm][[1]] |>
+        sort()
+      expect_equal(expected, returned)
+    })
+
+  # Check feature-term hash
+  feature_ids <- mapping$feature_id |> unique()
+  chk2 <- feature_ids |>
+    purrr::map(function(feat) {
+      expected <- mapping |>
+        dplyr::filter(feature_id == feat) |>
+        dplyr::pull(term_id) |>
+        sort()
+      returned <- td$feature2term[feat][[1]] |>
+        sort()
+      expect_equal(expected, returned)
+    })
 })
 
 
