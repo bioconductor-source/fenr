@@ -85,7 +85,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' @return A tibble with columns\code{term_id}, \code{accession_number} and
 #'   \code{gene_symbol}.
 fetch_reactome_genes <- function(pathways) {
-  identifier <- geneName <- gene_symbol <- NULL
+  identifier <- geneName <- gene_symbol <- databaseName <- NULL
 
   pb <- progress::progress_bar$new(total = length(pathways))
   purrr::map_dfr(pathways, function(pathway) {
@@ -93,7 +93,7 @@ fetch_reactome_genes <- function(pathways) {
     qry <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
     fetch_reactome_data(qry) |>
       dplyr::filter(databaseName == "UniProt") |>
-      dplyr::select(identifier, gene_symbol = geneName, accession_number = identifier) |>
+      dplyr::select(gene_symbol = geneName, accession_number = identifier) |>
       tidyr::unnest(gene_symbol) |>
       tibble::add_column(term_id = pathway, .before = 1)
   })
