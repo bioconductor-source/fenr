@@ -75,7 +75,9 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #'
 #' @details This function interrogates Reactome API to get term-gene mapping for
 #'   all pathways. This is considerable slower than
-#'   \code{fetch_reactome_ensembl_genes}.
+#'   \code{fetch_reactome_ensembl_genes}. Warning, occasionally, for some
+#'   pathways, Reactome does not return gene symbol - only UniProt accession
+#'   number is available.
 #'
 #' @param pathways A character vector with Reactome patway IDs to get
 #'   corresponding genes from.
@@ -90,7 +92,7 @@ fetch_reactome_genes <- function(pathways) {
     pb$tick()
     qry <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
     fetch_reactome_data(qry) |>
-      filter(databaseName == "UniProt") |>
+      dplyr::filter(databaseName == "UniProt") |>
       dplyr::select(identifier, gene_symbol = geneName, accession_number = identifier) |>
       tidyr::unnest(gene_symbol) |>
       tibble::add_column(term_id = pathway, .before = 1)

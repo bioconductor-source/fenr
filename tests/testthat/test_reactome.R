@@ -15,7 +15,7 @@ test_that("Expected return from fetch_reactome_species", {
 })
 
 
-test_that("Reactome yeast mapping makes sense", {
+test_that("Reactome Ensembl yeast mapping makes sense", {
   species <- "Saccharomyces cerevisiae"
   tax_id <- "4932"
 
@@ -31,6 +31,24 @@ test_that("Reactome yeast mapping makes sense", {
   expect_is(mapping, "tbl")
   merged <- expected |>
     dplyr::left_join(mapping, by = c("term_id", "gene_id")) |>
+    tidyr::drop_na()
+  expect_equal(nrow(expected), nrow(merged))
+})
+
+
+test_that("Reactome API mapping makes sense", {
+  expected <- tibble::tribble(
+    ~term_id, ~accession_number, ~gene_symbol,
+    "R-SCE-68952", "P38121", "POL12",
+    "R-SCE-983168", "P09798", "CDC16",
+    "R-HSA-114608", "P20160", "AZU1",
+    "R-MMU-352230", "Q9Z127", "Slc7a5"
+  )
+
+  mapping <- fetch_reactome_genes(expected$term_id)
+  expect_is(mapping, "tbl")
+  merged <- expected |>
+    dplyr::left_join(mapping, by = c("term_id", "accession_number", "gene_symbol")) |>
     tidyr::drop_na()
   expect_equal(nrow(expected), nrow(merged))
 })
