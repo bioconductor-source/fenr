@@ -16,35 +16,26 @@ fetch_terms_for_example <- function(de) {
   all_genes <- de$gene_id
 
   # load GO terms
+  cat("Fetching GO data\n")
   go <- fetch_go_from_go("sgd")
   go_data <- prepare_for_enrichment(go$terms, go$mapping, all_genes, feature_name = "gene_synonym")
 
   # load Reactome pathways
+  cat("Fetching Reactome data\n")
   re <- fetch_reactome("Saccharomyces cerevisiae")
   re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "gene_id")
 
   # load KEGG pathways
+  cat("Fetching KEGG data\n")
   kg <- fetch_kegg("sce")
   kg_data <- prepare_for_enrichment(kg$terms, kg$mapping, all_genes, feature_name = "gene_id")
-
-  # load BioPlanet terms
-  bp <- fetch_bp()
-  # as BP does not use SGD identifiers, we need translate gene symbols to SGD
-  # gene ids
-  symid <- de |>
-    dplyr::select(gene_id, gene_symbol)
-  bp$mapping <- bp$mapping |>
-    dplyr::left_join(symid, by = "gene_symbol") |>
-    tidyr::drop_na()
-  bp_data <- prepare_for_enrichment(bp$terms, bp$mapping, all_genes, feature_name = "gene_id")
 
   # Put all functional term data in one structure; Shiny app will access
   # individual ontologies from this list
   list(
     go = go_data,
     re = re_data,
-    kg = kg_data,
-    bp = bp_data
+    kg = kg_data
   )
 }
 
@@ -221,7 +212,7 @@ enrichment_interactive <- function(de, term_data) {
           radioButtons(
             inputId = "ontology",
             label = "Ontology:",
-            choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg", "BioPlanet" = "bp"),
+            choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg"),
             inline = TRUE
           ),
            div(style = 'height: 480px; overflow-y: scroll', tableOutput("enrichment")),
