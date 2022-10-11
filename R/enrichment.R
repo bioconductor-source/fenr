@@ -170,7 +170,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
     tfeats <- term_data$term2feature[[term_id]]
 
     # features from selection with the term
-    tfeats_sel <- intersect(tfeats, feat_sel)
+    # this is faster than intersect(tfeats, feat_sel)
+    tfeats_sel <- tfeats[tfeats %in% feat_sel]
 
     N_with <- length(tfeats)
     N_without <- N_tot - N_with

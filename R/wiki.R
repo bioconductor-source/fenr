@@ -114,7 +114,7 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #'   depends on the species and databases used. For gene/protein enrichment,
 #'   these should be filtered to contain gene symbols only. This can be done by
 #'   selecting a desired databases and types. The default values for parameters
-#'   \code{databases} and \code{types} attempt to select inforation from generic
+#'   \code{databases} and \code{types} attempt to select information from generic
 #'   databases, but there are organism-specific databases not included in the
 #'   selection. We suggest to run this function with \code{databases = NULL,
 #'   types = NULL} to see what types and databases are available before making
