@@ -77,9 +77,11 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #'   all pathways. This is considerable slower than
 #'   \code{fetch_reactome_ensembl_genes}.
 #'
-#' @param pathways A character vector with Reactome patway IDs to get corresponding genes from.
+#' @param pathways A character vector with Reactome patway IDs to get
+#'   corresponding genes from.
 #'
-#' @return A tibble with columns \code{gene_id} and \code{term_id}
+#' @return A tibble with columns\code{term_id}, \code{accession_number} and
+#'   \code{gene_symbol}.
 fetch_reactome_genes <- function(pathways) {
   identifier <- geneName <- gene_symbol <- NULL
 
@@ -88,7 +90,8 @@ fetch_reactome_genes <- function(pathways) {
     pb$tick()
     qry <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
     fetch_reactome_data(qry) |>
-      dplyr::select(identifier, gene_symbol = geneName) |>
+      filter(databaseName == "UniProt") |>
+      dplyr::select(identifier, gene_symbol = geneName, accession_number = identifier) |>
       tidyr::unnest(gene_symbol) |>
       tibble::add_column(term_id = pathway, .before = 1)
   })
@@ -104,9 +107,9 @@ fetch_reactome_genes <- function(pathways) {
 #'   in form of one downloadable file. If `method = "file"` is set, this file
 #'   will be downloaded and parsed. If `method = "api"` is set, then Reactome
 #'   APIs will be interrogated for each pathway available. The first method is
-#'   considerable faster and it returns Ensembl IDs. If gene symbols are needed,
-#'   this will requi additional conversion by the user. The second method is
-#'   slower and it returns gene symbols.
+#'   considerable faster and it returns Ensembl IDs. If gene symbols or UniProt
+#'   accession numbers are needed, this will require additional conversion by
+#'   the user. The second method is slower and it returns gene symbols.
 #'
 #' @param species Reactome species designation, for example "Homo sapiens" for
 #'   human. Full list of available species can be found using
