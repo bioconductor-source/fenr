@@ -7,10 +7,12 @@
 fetch_reactome_genes(pathways)
 }
 \arguments{
-\item{pathways}{A character vector with Reactome patway IDs to get corresponding genes from.}
+\item{pathways}{A character vector with Reactome patway IDs to get
+corresponding genes from.}
 }
 \value{
-A tibble with columns \code{gene_id} and \code{term_id}
+A tibble with columns\code{term_id}, \code{accession_number} and
+  \code{gene_symbol}.
 }
 \description{
 Download term - gene symbol mapping from Reactome
@@ -18,5 +20,7 @@ Download term - gene symbol mapping from Reactome
 \details{
 This function interrogates Reactome API to get term-gene mapping for
   all pathways. This is considerable slower than
-  \code{fetch_reactome_ensembl_genes}.
+  \code{fetch_reactome_ensembl_genes}. Warning, occasionally, for some
+  pathways, Reactome does not return gene symbol - only UniProt accession
+  number is available.
 }

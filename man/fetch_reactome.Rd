@@ -27,9 +27,9 @@ Reactome makes mapping between Ensembl ID and pathway ID available
   in form of one downloadable file. If `method = "file"` is set, this file
   will be downloaded and parsed. If `method = "api"` is set, then Reactome
   APIs will be interrogated for each pathway available. The first method is
-  considerable faster and it returns Ensembl IDs. If gene symbols are needed,
-  this will requi additional conversion by the user. The second method is
-  slower and it returns gene symbols.
+  considerable faster and it returns Ensembl IDs. If gene symbols or UniProt
+  accession numbers are needed, this will require additional conversion by
+  the user. The second method is slower and it returns gene symbols.
 }
 \examples{
 reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
