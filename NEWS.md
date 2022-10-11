@@ -32,9 +32,17 @@
   - Applying BiocStyle to the vignette
   - improving test_functional_enrichment
   
-  
 ## Version 0.1.10
 
  - Style changes for BiocCheck
  - Adding more tests
  - Fixing a bug in `parse_kegg_genes`
+ 
+ ## Version 0.1.11
+ 
+ - Significant speed-up of enrichment by using Rfast::Hash in place of R lists
+ - KEGG improvements, recognizing flat file genes with no gene synonym
+ - Additional tests for Reactome
+ - Minor improvements and fixes
+
+ - 
