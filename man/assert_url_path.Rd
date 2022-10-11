@@ -4,10 +4,12 @@
 \alias{assert_url_path}
 \title{Check if URL with a path is responding OK}
 \usage{
-assert_url_path(url_path)
+assert_url_path(url_path, stop_if_error = TRUE)
 }
 \arguments{
 \item{url_path}{Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.}
+
+\item{stop_if_error}{Logical, if TRUE stops with error message, otherwise returns FALSE}
 }
 \value{
 TRUE if assertion passed

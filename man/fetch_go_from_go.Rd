@@ -7,9 +7,10 @@
 fetch_go_from_go(species)
 }
 \arguments{
-\item{species}{Species designation. Base file name for species file under
-\url{http://current.geneontology.org/annotations}. Examples are
-\file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.}
+\item{species}{Species designation. Examples are \file{goa_human} for human,
+\file{mgi} for mouse or \file{sgd} for yeast. Full list of available
+species can be obtained using \code{fetch_go_species} - column
+\code{designation}.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
@@ -25,7 +26,7 @@ This function relies on Gene Ontology's GAF files containing more
   on the \code{species} argument it can contain other entities, e.g. RNA or
   protein complex names. Similarly, the eleventh column of the GAF file (DB
   Object Synonym) is returned as \code{gene_synonym}. It is up to the user to
-  select the correct database.
+  select the appropriate database.
 }
 \examples{
 go_data <- fetch_go_from_go("sgd")

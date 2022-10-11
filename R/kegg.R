@@ -55,7 +55,7 @@ fetch_kegg_pathways <- function(species) {
 #' @return A tibble with \code{gene_is}, \code{gene_symbol} and \code{term_id}.
 parse_kegg_genes <- function(s) {
   # Binding variables from non-standard evaluation locally
-  data <- NULL
+  data <- gene_symbol <- gene_id <- NULL
 
   entries <- str_split(s, "///") |> unlist()
   entries <- entries[-length(entries)] # there is /// at the end
@@ -94,7 +94,7 @@ parse_kegg_genes <- function(s) {
     genes |>
       tibble::as_tibble_col(column_name = "data") |>
       tidyr::separate(data, c("gene_id", "gene_symbol"), sep = "\\s+", extra = "merge") |>
-      dplyr::mutate(gene_symbol = if_else(
+      dplyr::mutate(gene_symbol = dplyr::if_else(
         stringr::str_detect(gene_symbol, ";"),
         stringr::str_remove(gene_symbol, ";.+$"),
         gene_id
