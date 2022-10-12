@@ -1,4 +1,4 @@
-KEGG_BASE_URL = "https://rest.kegg.jp"
+KEGG_BASE_URL <- "https://rest.kegg.jp"
 
 #' A helper function to retrieve API data from KEGG
 #'
