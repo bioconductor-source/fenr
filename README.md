@@ -4,20 +4,20 @@ Maintainer: Marek Gierlinski (<M.Gierlinski@dundee.ac.uk>)
 
 A simple R package for fast functional enrichment. It is optimised for speed and designed to be used in interactive applications, e.g. Shiny apps.
 
-## Installation
-
-`fenr` can be installed from GitHub (you need to install `remotes` first).
-
-```
-remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
-```
-
 ## Quick example
 
 A Shiny app demonstration `fenr` can be downloaded from GitHub:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
+```
+
+## Installation
+
+`fenr` can be installed from GitHub (you need to install `remotes` first).
+
+```
+remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 ```
 
 ## Usage

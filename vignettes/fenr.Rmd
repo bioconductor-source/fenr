@@ -7,7 +7,7 @@ output:
     toc_float: true
     css: style.css
 abstract: |
-  With `fenr` functional data (e.g. GO-terms of KEGG pathways) can be downloaded and stored, so the functional enrichment analysis can be performed fast. The package is designed to be used with interactive applications, e.g. Shiny apps.
+  `fenr` performs functional enrichment analysis quickly, typically in a fraction of a second, making it ideal for interactive applications, e.g. Shiny apps. To achieve this, `fenr` downloads functional data (e.g. GO terms of KEGG pathways) in advance, storing them in a format designed for fast analysis of any arbitrary selection of features (genes or proteins).
 vignette: >
   %\VignetteIndexEntry{Fast functional enrichment}
   %\VignetteEngine{knitr::rmarkdown}
@@ -24,18 +24,18 @@ knitr::opts_chunk$set(
 
 # Purpose
 
-Functional enrichment determines whether some functions or pathways are enriched in a selection of features (genes, proteins etc.). The selection often comes from differential expression analysis, while functions and pathways are obtained from databases as *GO*, *Reactome* or *KEGG*. At its simplest enrichment analysis tells us if a given function $F$ is enriched in the selection based on Fisher's test. The null hypothesis is that the proportion of features annotated with $F$ is the same among selected and non-selected features. 
+Functional enrichment determines whether some biological functions or pathways are enriched in a selection of features (genes, proteins etc.). The selection often comes from differential expression analysis, while functions and pathways are obtained from databases as *GO*, *Reactome* or *KEGG*. At its simplest, enrichment analysis tells us if a given function is enriched in the selection based on Fisher's test. The null hypothesis is that the proportion of features annotated with that function is the same among selected and non-selected features. 
 
 Performing functional enrichment involves downloading large data sets from the aforementioned databases before the actual analysis is done. Downloading data takes time, while Fisher's test can be performed quickly. The purpose of this package is to separate the two and allow for fast enrichment analysis for a given database on various selections of features. It is designed with interactive applications, like Shiny, in mind. A small Shiny app is included in the package to demonstrate usage of `fenr`.
 
 ## Caveats
 
-Functional enrichment is not the final answer about biology. Quite often is does not give any answer about biology. In particular, when arbitrary groups of genes are selected from a plot, enrichment tells us only about simplified statistical overrepresentation of functional terms in the selection. Statistics does not equal biology. This package is meant to be only a tool to explore data and search for clues. Any further statements about biology need independent validation.
+Functional enrichment is not the final answer about biology. Quite often is does not give any answer about biology. In particular, when arbitrary groups of genes are selected, enrichment tells us only about simplified statistical overrepresentation of a functional term in the selection. Statistics does not equal biology. This package is meant to be only a tool to explore data and search for clues. Any further statements about biology need independent validation.
 
 
 # Installation
 
-`fenr` can be installed from GitHub (you need to install `remotes` first).
+`fenr` can be installed from GitHub (you need to install `remotes` package first).
 
 ```
 remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
@@ -70,13 +70,13 @@ The second tibble contains gene-term mapping:
 bp$mapping
 ```
 
-Next, these user-friendly data need to be converted it machine-friendly object suitable for fast functional enrichment with the following function:
+Next, these user-friendly data need to be converted into machine-friendly object suitable for fast functional enrichment with the following function:
 
 ```{r prepare_for_enrichment}
 bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-`exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. As different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `bp$mapping` needs to be specified with `feature_name = "gene_symbol"`. The result, `bp_terms`, is a data structure containing all the mappings in quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections
+`exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. As different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `bp$mapping` needs to be specified with `feature_name = "gene_symbol"`. The result, `bp_terms`, is a data structure containing all the mappings in a quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections.
 
 ## Functional enrichment
 
@@ -89,21 +89,22 @@ enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
 
 ## The output
 
-The result of `functional_enrichment` is a tibble:
+The result of `functional_enrichment` is a tibble with enrichment results. Here we show all the terms with adjusted p-value less than 0.05.
 
 ```{r enrichment_result}
-enr
+enr |>
+  dplyr::filter(p_adjust < 0.05)
 ```
 
 The columns are as follows
 
- - `N_with` - number of features (genes) with this term in the background of all genes.
- - `n_with_sel` - number of features with this term in the selection.
- - `n_expect` - expected number of features with this term under the null hypothesis (terms are randomly distributed).
- - `enrichment` - ratio of observed to expected.
- - `odds_ratio` - effect size, odds ratio from the contingency table.
- - `ids` - identifiers of features with term in the selection.
- - `p_value` - raw p-value from hypergeometric distribution.
+ - `N_with` - number of features (genes) with this term in the background of all genes,
+ - `n_with_sel` - number of features with this term in the selection,
+ - `n_expect` - expected number of features with this term under the null hypothesis (terms are randomly distributed),
+ - `enrichment` - ratio of observed to expected,
+ - `odds_ratio` - effect size, odds ratio from the contingency table,
+ - `ids` - identifiers of features with term in the selection,
+ - `p_value` - raw p-value from hypergeometric distribution,
  - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
  
  
@@ -118,7 +119,7 @@ term_data <- fetch_terms_for_example(yeast_de)
  
 `yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923).
 
-The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome*, *KEGG* and *BioPlanet*. One can see how this is done, step by step, by reading the function code from [GitHub](https://github.com/bartongroup/fenr/blob/main/R/iteractive_example.R). The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome* and *KEGG*. One can see how this is done, step by step, by reading the function code from [GitHub](https://github.com/bartongroup/fenr/blob/main/R/iteractive_example.R). The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
 
 Once the slow part is over, the Shiny app can be started with
 
@@ -126,7 +127,7 @@ Once the slow part is over, the Shiny app can be started with
 enrichment_interactive(yeast_de, term_data)
 ```
 
-To quickly see how `fenr` works you can run the above example directly from GitHub:
+To quickly see how `fenr` works an example can be loaded directly from GitHub:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
