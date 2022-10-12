@@ -5,23 +5,31 @@
 #'
 #' @details
 #'
-#' Takes two data frames with functional term information (\code{terms}) and
-#' gene mapping (\code{mapping}) and converts them into an object required by
+#' Takes two tibbles with functional term information (\code{terms}) and
+#' feature mapping (\code{mapping}) and converts them into an object required by
 #' \code{functional_enrichment} for fast analysis. Terms and mapping can be
 #' created with database access functions in this package, for example
 #' \code{fetch_reactome} or \code{fetch_go_from_go}.
 #'
-#' @param terms Information about term names/descriptions. A tibble with columns
-#'   \code{term_id} and \code{term_name}.
-#' @param mapping Information about term-feature mapping. A tibble with
-#'   \code{term_id} and a feature id, as identified with \code{feature_name}
-#'   argument. For example, if this tibble contains \code{gene_symbol} and
-#'   \code{term_id}, then you need to set \code{feature_name = "gene_symbol"}.
+#' @param terms A tibble with at least two columns: \code{term_id} and
+#'   \code{term_name}. Contains information about functional term
+#'   names/descriptions.
+#' @param mapping A tibble with at least two columns, containing mapping between
+#'   functional terms and features. One column needs to be called \code{term_id}
+#'   and the other column has a name specified by \code{feature_name} argument.
+#'   For example, if \code{mapping} contains columns \code{term_id},
+#'   \code{accession_number} and  \code{gene_symbol} then setting
+#'   \code{feature_name = "gene_symbol"} indicates that gene symbols will be
+#'   used for enrichment.
 #' @param all_features A vector with all feature ids used as background for
 #'   enrichment. If not specified, all features found in \code{mapping} will be
 #'   used, resulting in a larger object size.
-#' @param feature_name Which column to use from mapping table, e.g.
-#'   \code{gene_symbol} or \code{ensembl_gene_id}.
+#' @param feature_name The name of the column in \code{mapping} tibble to be
+#'   used as feature.For example, if \code{mapping} contains columns \code{term_id},
+#'   \code{accession_number} and  \code{gene_symbol} then setting
+#'   \code{feature_name = "gene_symbol"} indicates that gene symbols will be
+#'   used for enrichment.
+#'
 #'
 #' @return An object class \code{fenr_terms} required by
 #'   \code{functional_enrichment}.
@@ -114,28 +122,25 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'
 #' @details
 #'
-#' Functional enrichment in a selection (e.g. significantly DE features) of
-#' features, using hypergeometric probability (that is Fisher's exact test). A
+#' Functional enrichment in a selection (e.g. differentially expressed genes) of
+#' features, using hypergeometric probability (that is, Fisher's exact test). A
 #' feature can be a gene, protein, etc. \code{term_data} is an object with
-#' functional term information and feature-term assignment.
+#' functional term information and feature-term mapping
 #'
 #' @param feat_all A character vector with all feature identifiers. This is the
 #'   background for enrichment.
 #' @param feat_sel A character vector with feature identifiers in the selection.
 #' @param term_data An object class \code{fenr_terms}, created by
-#'   \code{prepare_for_enrichment}. It is a list of three elements: \itemize{
-#'   \item{\code{term2info} - a named vector term id => term name}
-#'   \item{\code{term2feature} - a list term id => vector of feature ids}
-#'   \item{\code{feature2term} - a list feature id => vector of term ids}}
-#' @param feat2name An optional named list to convert feature id into feature
-#'   name.
+#'   \code{prepare_for_enrichment}.
+#' @param feat2name An optional named list to convert feature ids into feature
+#'   names.
 #'
 #' @return A tibble with enrichment results. For each term the following
 #'   quantities are reported: \itemize{ \item{\code{N_with} - number of features
-#'   with this term in the among all features} \item{\code{n_with_sel} - number of
-#'   features with this term in the selection} \item{\code{n_expect} - expected
-#'   number of features with this term in the selection, under the null
-#'   hypothesis that terms are assigned to features randomly}
+#'   with this term among all features} \item{\code{n_with_sel} - number
+#'   of features with this term in the selection} \item{\code{n_expect} -
+#'   expected number of features with this term in the selection, under the null
+#'   hypothesis that terms are mapped to features randomly}
 #'   \item{\code{enrichment} - ratio of n_with_sel / n_expect}
 #'   \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
 #'   features with the given term are in the selection} \item{\code{p_value} -

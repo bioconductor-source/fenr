@@ -12,20 +12,27 @@ prepare_for_enrichment(
 )
 }
 \arguments{
-\item{terms}{Information about term names/descriptions. A tibble with columns
-\code{term_id} and \code{term_name}.}
+\item{terms}{A tibble with at least two columns: \code{term_id} and
+\code{term_name}. Contains information about functional term
+names/descriptions.}
 
-\item{mapping}{Information about term-feature mapping. A tibble with
-\code{term_id} and a feature id, as identified with \code{feature_name}
-argument. For example, if this tibble contains \code{gene_symbol} and
-\code{term_id}, then you need to set \code{feature_name = "gene_symbol"}.}
+\item{mapping}{A tibble with at least two columns, containing mapping between
+functional terms and features. One column needs to be called \code{term_id}
+and the other column has a name specified by \code{feature_name} argument.
+For example, if \code{mapping} contains columns \code{term_id},
+\code{accession_number} and  \code{gene_symbol} then setting
+\code{feature_name = "gene_symbol"} indicates that gene symbols will be
+used for enrichment.}
 
 \item{all_features}{A vector with all feature ids used as background for
 enrichment. If not specified, all features found in \code{mapping} will be
 used, resulting in a larger object size.}
 
-\item{feature_name}{Which column to use from mapping table, e.g.
-\code{gene_symbol} or \code{ensembl_gene_id}.}
+\item{feature_name}{The name of the column in \code{mapping} tibble to be
+used as feature.For example, if \code{mapping} contains columns \code{term_id},
+\code{accession_number} and  \code{gene_symbol} then setting
+\code{feature_name = "gene_symbol"} indicates that gene symbols will be
+used for enrichment.}
 }
 \value{
 An object class \code{fenr_terms} required by
@@ -36,8 +43,8 @@ Prepare term data downloaded with \code{fetch_*} functions for fast
 enrichment analysis.
 }
 \details{
-Takes two data frames with functional term information (\code{terms}) and
-gene mapping (\code{mapping}) and converts them into an object required by
+Takes two tibbles with functional term information (\code{terms}) and
+feature mapping (\code{mapping}) and converts them into an object required by
 \code{functional_enrichment} for fast analysis. Terms and mapping can be
 created with database access functions in this package, for example
 \code{fetch_reactome} or \code{fetch_go_from_go}.

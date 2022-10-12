@@ -13,21 +13,18 @@ background for enrichment.}
 \item{feat_sel}{A character vector with feature identifiers in the selection.}
 
 \item{term_data}{An object class \code{fenr_terms}, created by
-\code{prepare_for_enrichment}. It is a list of three elements: \itemize{
-\item{\code{term2info} - a named vector term id => term name}
-\item{\code{term2feature} - a list term id => vector of feature ids}
-\item{\code{feature2term} - a list feature id => vector of term ids}}}
+\code{prepare_for_enrichment}.}
 
-\item{feat2name}{An optional named list to convert feature id into feature
-name.}
+\item{feat2name}{An optional named list to convert feature ids into feature
+names.}
 }
 \value{
 A tibble with enrichment results. For each term the following
   quantities are reported: \itemize{ \item{\code{N_with} - number of features
-  with this term in the among all features} \item{\code{n_with_sel} - number of
-  features with this term in the selection} \item{\code{n_expect} - expected
-  number of features with this term in the selection, under the null
-  hypothesis that terms are assigned to features randomly}
+  with this term among all features} \item{\code{n_with_sel} - number
+  of features with this term in the selection} \item{\code{n_expect} -
+  expected number of features with this term in the selection, under the null
+  hypothesis that terms are mapped to features randomly}
   \item{\code{enrichment} - ratio of n_with_sel / n_expect}
   \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
   features with the given term are in the selection} \item{\code{p_value} -
@@ -39,10 +36,10 @@ Fast functional enrichment based on hypergeometric distribution. Can be used
 in interactive applications.
 }
 \details{
-Functional enrichment in a selection (e.g. significantly DE features) of
-features, using hypergeometric probability (that is Fisher's exact test). A
+Functional enrichment in a selection (e.g. differentially expressed genes) of
+features, using hypergeometric probability (that is, Fisher's exact test). A
 feature can be a gene, protein, etc. \code{term_data} is an object with
-functional term information and feature-term assignment.
+functional term information and feature-term mapping
 }
 \examples{
 data(exmpl_all, exmpl_sel)
