@@ -6,7 +6,7 @@ A simple R package for fast functional enrichment. It is optimised for speed and
 
 ## Quick example
 
-A Shiny app demonstration `fenr` can be downloaded from GitHub:
+A Shiny app demonstration `fenr` can be ran directly from GitHub, with the following command in R console:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
