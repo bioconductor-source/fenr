@@ -33,7 +33,7 @@ test_that("Expected correct output", {
   # Check term names
   for(i in seq_along(terms$term_id)) {
     r <- terms[i, ]
-    expect_equal(r$term_name, td$term2name[r$term_id])
+    expect_equal(sort(r$term_name), sort(td$term2name[r$term_id]))
   }
 
 
@@ -45,7 +45,7 @@ test_that("Expected correct output", {
         dplyr::filter(term_id == trm) |>
         dplyr::pull(feature_id) |>
         sort()
-      returned <- td$term2feature[trm][[1]] |>
+      returned <- td$term2feature[trm] |>
         sort()
       expect_equal(expected, returned)
     })
@@ -58,7 +58,7 @@ test_that("Expected correct output", {
         dplyr::filter(feature_id == feat) |>
         dplyr::pull(term_id) |>
         sort()
-      returned <- td$feature2term[feat][[1]] |>
+      returned <- td$feature2term[feat] |>
         sort()
       expect_equal(expected, returned)
     })

@@ -22,17 +22,26 @@ mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
   )
 })
 
-# Feature to terms conversion list
-feature2term <- mapping |>
-  dplyr::group_by(feature_id) |>
-  dplyr::summarise(terms = list(term_id)) |>
-  tibble::deframe()
 
-# Term to feature conversion list
-term2feature <- mapping |>
-  dplyr::group_by(term_id) |>
-  dplyr::summarise(features = list(feature_id)) |>
-  tibble::deframe()
+# Feature to terms hash
+feature2term <- Rfast::Hash()
+features <- unique(mapping$feature_id)
+for(feat in features) {
+  terms <- mapping |>
+    dplyr::filter(feature_id == feat) |>
+    dplyr::pull(term_id)
+  feature2term[feat] <- terms
+}
+
+# Term to feature hash
+term2feature <- Rfast::Hash()
+terms <- unique(mapping$term_id)
+for(term in terms) {
+  features <- mapping |>
+    dplyr::filter(term_id == term) |>
+    dplyr::pull(feature_id)
+  term2feature[term] <- features
+}
 
 # final structure required by functional_enrichment
 term_data <- list(

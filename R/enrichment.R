@@ -83,20 +83,20 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
   # Feature to terms hash
   f2t <- feature_term |>
     dplyr::group_by(feature_id) |>
-    dplyr::summarise(terms = list(term_id))
-  feature2term <- Rfast::Hash(
-    keys = f2t$feature_id,
-    values = f2t$terms
-  )
+    dplyr::summarise(terms = list(term_id)) |>
+    tibble::deframe()
+  feature2term <- Rfast::Hash()
+  for(feat in names(f2t))
+    feature2term[feat] <- f2t[[feat]]
 
   # Term to feature hash
   t2f <- feature_term |>
     dplyr::group_by(term_id) |>
-    dplyr::summarise(features = list(feature_id))
-  term2feature <- Rfast::Hash(
-    keys = t2f$term_id,
-    values = t2f$features
-  )
+    dplyr::summarise(features = list(feature_id)) |>
+    tibble::deframe()
+  term2feature <- Rfast::Hash()
+  for(term in names(t2f))
+    term2feature[term] <- t2f[[term]]
 
   list(
     term2name = term2name,
@@ -166,9 +166,10 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   # all terms present in the selection
   our_terms <- feat_sel |>
-    purrr::map(\(x) term_data$feature2term[x]) |>
+    purrr::map(~term_data$feature2term[.x]) |>
     unlist() |>
     unique()
+
   # number of features in selection
   N_sel <- length(feat_sel)
   # total number of features
@@ -176,9 +177,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   res <- purrr::map_dfr(our_terms, function(term_id) {
     # all features with the term
-    # [[1]] is needed because hash values are one-element lists
     # term_data$term2feature is a Hash object
-    tfeats <- term_data$term2feature[term_id][[1]]
+    tfeats <- term_data$term2feature[term_id]
 
     # features from selection with the term
     # this is faster than intersect(tfeats, feat_sel)
