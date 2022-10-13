@@ -139,7 +139,7 @@ fetch_wiki <- function(species,
     types = c("GeneProduct", "Protein", "Rna", "RNA")
                        ) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, fetch_wiki_species)
+  assert_species(species, "fetch_wiki_species")
 
   terms <- fetch_wiki_pathways(species)
   mapping <- fetch_wiki_pathway_genes_api(terms$term_id, databases, types)

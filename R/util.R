@@ -1,6 +1,29 @@
 HTTP_OK <- 200
 HTTP_FOUND <- 302
 
+GAF_COLUMNS <- c(
+  "db",
+  "db_id",
+  "symbol",
+  "qualifier",
+  "go_term",
+  "db_ref",
+  "evidence",
+  "from",
+  "aspect",
+  "db_object_name",
+  "db_object_synonym",
+  "db_object_type",
+  "taxon",
+  "date",
+  "assigned_by",
+  "annotation_extension",
+  "form_id"
+)
+
+GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
+  stringr::str_c(collapse = "")
+
 
 #' Check if a tibble contains all required columns
 #'
@@ -47,16 +70,17 @@ assert_url_path <- function(url_path, stop_if_error = TRUE) {
 #' Check if species are valid
 #'
 #' @param species A string, species designation for a given database
-#' @param fetch_fun A function to retrieve available species, must return a
-#'   tibble with a column \code{designation}.
+#' @param fetch_fun A string, name of the function to retrieve available
+#'   species, must return a tibble with a column \code{designation}.
 #'
 #' @return A tibble with valid species - a response from \code{fetch_fun}
 assert_species <- function(species, fetch_fun) {
   assert_that(is.string(species))
-  valid_species <- fetch_fun()
-  fun_name <- deparse(substitute(fetch_fun))
+  assert_that(is.string(fetch_fun))
+  f <- match.fun(fetch_fun)
+  valid_species <- f()
   assert_that(species %in% valid_species$designation,
-    msg = stringr::str_glue("Invalid species {species}. Use {fun_name}() to find all available species.")
+    msg = stringr::str_glue("Invalid species {species}. Use {fetch_fun}() to find all available species.")
   )
   valid_species
 }
@@ -67,8 +91,8 @@ assert_species <- function(species, fetch_fun) {
 #' Used to match species designation with a species ID.
 #'
 #' @param species Species designation
-#' @param fetch_fun  A function to retrieve available species, must return a
-#'   tibble with a column \code{designation}.
+#' @param fetch_fun  A string with name of a function to retrieve available
+#'   species, must return a tibble with a column \code{designation}.
 #' @param col_name Column name in the tibble returned by \code{fetch_fun} to
 #'   extract, e.g. \code{tax_id}
 #'

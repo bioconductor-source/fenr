@@ -45,7 +45,7 @@ test_that("Reactome API mapping makes sense", {
     "R-MMU-352230", "Q9Z127", "Slc7a5"
   )
 
-  mapping <- fetch_reactome_genes(expected$term_id)
+  mapping <- fetch_reactome_api_genes(expected$term_id)
   expect_is(mapping, "tbl")
   merged <- expected |>
     dplyr::left_join(mapping, by = c("term_id", "accession_number", "gene_symbol")) |>

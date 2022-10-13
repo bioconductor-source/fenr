@@ -1,27 +1,3 @@
-GAF_COLUMNS <- c(
-  "db",
-  "db_id",
-  "symbol",
-  "qualifier",
-  "go_term",
-  "db_ref",
-  "evidence",
-  "from",
-  "aspect",
-  "db_object_name",
-  "db_object_synonym",
-  "db_object_type",
-  "taxon",
-  "date",
-  "assigned_by",
-  "annotation_extension",
-  "form_id"
-)
-
-GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
-  stringr::str_c(collapse = "")
-
-
 #' Parse fields in obo data
 #'
 #' @param obo A character vector containing obo data
@@ -144,7 +120,7 @@ fetch_go_genes_go <- function(species) {
 #' go_data <- fetch_go_from_go("sgd")
 fetch_go_from_go <- function(species) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, fetch_go_species)
+  assert_species(species, "fetch_go_species")
 
   mapping <- fetch_go_genes_go(species)
   terms <- fetch_go_terms()

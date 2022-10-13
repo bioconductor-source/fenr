@@ -70,6 +70,28 @@ fetch_reactome_ensembl_genes <- function(spec) {
     dplyr::distinct()
 }
 
+#' Download term - gene association from Reactome
+#'
+#' @param tax_id Taxon ID
+#'
+#' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
+fetch_reactome_gene_association <- function(tax_id) {
+  # Binding variables from non-standard evaluation locally
+  symbol <- taxon <- db_ref <- db_id <- NULL
+
+  gaf_file <- "https://reactome.org/download/current/gene_association.reactome.gz"
+  assert_url_path(url)
+  readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES, skip = 4) |>
+    dplyr::mutate(
+      symbol = stringr::str_remove(symbol, "_.+$"),
+      taxon = stringr::str_remove(taxon, "taxon:"),
+      db_ref = stringr::str_remove(db_ref, "REACTOME:")
+    ) |>
+    dplyr::filter(stringr::str_detect(db_ref, "^R-") & taxon == tax_id) |>
+    dplyr::select(accession_number = db_id, gene_symbol = symbol, term_id = db_ref) |>
+    dplyr::distinct()
+}
+
 
 #' Download term - gene symbol mapping from Reactome
 #'
@@ -84,7 +106,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #'
 #' @return A tibble with columns\code{term_id}, \code{accession_number} and
 #'   \code{gene_symbol}.
-fetch_reactome_genes <- function(pathways) {
+fetch_reactome_api_genes <- function(pathways) {
   identifier <- geneName <- gene_symbol <- databaseName <- NULL
 
   pb <- progress::progress_bar$new(total = length(pathways))
@@ -106,35 +128,38 @@ fetch_reactome_genes <- function(pathways) {
 #' (Ensembl gene ID or gene symbol and pathway ID) from Reactome.
 #'
 #' @details Reactome makes mapping between Ensembl ID and pathway ID available
-#'   in form of one downloadable file. If `method = "file"` is set, this file
-#'   will be downloaded and parsed. If `method = "api"` is set, then Reactome
-#'   APIs will be interrogated for each pathway available. The first method is
-#'   considerable faster and it returns Ensembl IDs. If gene symbols or UniProt
-#'   accession numbers are needed, this will require additional conversion by
-#'   the user. The second method is slower and it returns gene symbols.
+#'   in form of one downloadable file. Also, a gene association file with
+#'   mapping between UniProt accession number, gene symbol and Reactome term is
+#'   available.  If `source = "ensembl"` or `source = "gene_association"` is
+#'   set, oen large file will be downloaded and parsed. If `source = "api"` is
+#'   set, then Reactome APIs will be interrogated for each pathway available.
+#'   This method is considerably slower. However, gene association file contains
+#'   far fewer mappings than can be extracted using API.
 #'
 #' @param species Reactome species designation, for example "Homo sapiens" for
 #'   human. Full list of available species can be found using
 #'   \code{fetch_reactome_species()}.
-#' @param method How to download the mapping. If 'file', then one mapping file
-#'   provided by Reactome will be downloaded, if 'api', then Reactome API will
-#'   be used. See details.
+#' @param source How to download the mapping. If 'ensembl' or
+#'   'gene_association', one mapping file provided by Reactome will be
+#'   downloaded, if 'api', then Reactome API will be used. See details.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #'
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
-fetch_reactome <- function(species, method = c("file", "api")) {
-  method <- match.arg(method)
+fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association")) {
+  source <- match.arg(source)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
 
-  tax_id <- match_species(species, fetch_reactome_species, "tax_id")
+  tax_id <- match_species(species, "fetch_reactome_species", "tax_id")
   terms <- fetch_reactome_pathways(tax_id)
-  if(method == "file") {
+  if (source == "ensembl") {
     mapping <- fetch_reactome_ensembl_genes(species)
+  } else if (source == "gene_association") {
+    mapping <- fetch_reactome_gene_association(tax_id)
   } else {
-    mapping <- fetch_reactome_genes(terms$term_id)
+    mapping <- fetch_reactome_api_genes(terms$term_id)
   }
 
   list(

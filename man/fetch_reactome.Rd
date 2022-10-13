@@ -4,16 +4,16 @@
 \alias{fetch_reactome}
 \title{Get functional term data from Reactome}
 \usage{
-fetch_reactome(species, method = c("file", "api"))
+fetch_reactome(species, source = c("ensembl", "api", "gene_association"))
 }
 \arguments{
 \item{species}{Reactome species designation, for example "Homo sapiens" for
 human. Full list of available species can be found using
 \code{fetch_reactome_species()}.}
 
-\item{method}{How to download the mapping. If 'file', then one mapping file
-provided by Reactome will be downloaded, if 'api', then Reactome API will
-be used. See details.}
+\item{source}{How to download the mapping. If 'ensembl' or
+'gene_association', one mapping file provided by Reactome will be
+downloaded, if 'api', then Reactome API will be used. See details.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
@@ -24,12 +24,13 @@ Download term information (pathway ID and name) and gene-pathway mapping
 }
 \details{
 Reactome makes mapping between Ensembl ID and pathway ID available
-  in form of one downloadable file. If `method = "file"` is set, this file
-  will be downloaded and parsed. If `method = "api"` is set, then Reactome
-  APIs will be interrogated for each pathway available. The first method is
-  considerable faster and it returns Ensembl IDs. If gene symbols or UniProt
-  accession numbers are needed, this will require additional conversion by
-  the user. The second method is slower and it returns gene symbols.
+  in form of one downloadable file. Also, a gene association file with
+  mapping between UniProt accession number, gene symbol and Reactome term is
+  available.  If `source = "ensembl"` or `source = "gene_association"` is
+  set, oen large file will be downloaded and parsed. If `source = "api"` is
+  set, then Reactome APIs will be interrogated for each pathway available.
+  This method is considerably slower. However, gene association file contains
+  far fewer mappings than can be extracted using API.
 }
 \examples{
 reactome_data <- fetch_reactome("Saccharomyces cerevisiae")

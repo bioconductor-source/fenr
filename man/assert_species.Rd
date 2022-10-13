@@ -9,8 +9,8 @@ assert_species(species, fetch_fun)
 \arguments{
 \item{species}{A string, species designation for a given database}
 
-\item{fetch_fun}{A function to retrieve available species, must return a
-tibble with a column \code{designation}.}
+\item{fetch_fun}{A string, name of the function to retrieve available
+species, must return a tibble with a column \code{designation}.}
 }
 \value{
 A tibble with valid species - a response from \code{fetch_fun}

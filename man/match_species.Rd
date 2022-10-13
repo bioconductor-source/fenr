@@ -9,8 +9,8 @@ match_species(species, fetch_fun, col_name)
 \arguments{
 \item{species}{Species designation}
 
-\item{fetch_fun}{A function to retrieve available species, must return a
-tibble with a column \code{designation}.}
+\item{fetch_fun}{A string with name of a function to retrieve available
+species, must return a tibble with a column \code{designation}.}
 
 \item{col_name}{Column name in the tibble returned by \code{fetch_fun} to
 extract, e.g. \code{tax_id}}
