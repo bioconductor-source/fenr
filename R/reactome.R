@@ -130,11 +130,12 @@ fetch_reactome_api_genes <- function(pathways) {
 #' @details Reactome makes mapping between Ensembl ID and pathway ID available
 #'   in form of one downloadable file. Also, a gene association file with
 #'   mapping between UniProt accession number, gene symbol and Reactome term is
-#'   available.  If `source = "ensembl"` or `source = "gene_association"` is
-#'   set, oen large file will be downloaded and parsed. If `source = "api"` is
-#'   set, then Reactome APIs will be interrogated for each pathway available.
-#'   This method is considerably slower. However, gene association file contains
-#'   far fewer mappings than can be extracted using API.
+#'   available.  If \code{source = "ensembl"} or \code{source =
+#'   "gene_association"} is set, one large file will be downloaded and parsed.
+#'   If \code{source = "api"} is set, then Reactome APIs will be interrogated
+#'   for each pathway available. This method is considerably slower, especially
+#'   for large genomes. However, gene association file contains far fewer
+#'   mappings than can be extracted using API.
 #'
 #' @param species Reactome species designation, for example "Homo sapiens" for
 #'   human. Full list of available species can be found using
