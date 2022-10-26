@@ -24,9 +24,14 @@ test_that("Processing OBO file", {
   expected_names <- c("mitochondrion inheritance", "mitotic spindle elongation",
                       "obsolete nuclear interphase chromosome")
   obo <- readr::read_lines("../test_data/go_obo_test.txt")
-  ids <- extract_obo_values(obo, "id")
+  parsed <- parse_obo_file(obo)
+  ids <- parsed |>
+    dplyr::filter(key == "id") |>
+    dplyr::pull(value)
+  names <- parsed |>
+    dplyr::filter(key == "name") |>
+    dplyr::pull(value)
   expect_vector(ids)
-  names <- extract_obo_values(obo, "name")
   expect_vector(names)
   expect_equal(ids, expected_ids)
   expect_equal(names, expected_names)

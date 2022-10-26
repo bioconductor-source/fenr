@@ -1,13 +1,27 @@
-#' Parse fields in obo data
+#' Parse OBO file and return a tibble with key and value
 #'
-#' @param obo A character vector containing obo data
-#' @param key A key to extract, e.g. "id" or "name"
+#' @param obo Obo file content as a character vector
 #'
-#' @return All values for the given key
-extract_obo_values <- function(obo, key) {
-  obo |>
-    stringr::str_subset(stringr::str_glue("^{key}:")) |>
-    stringr::str_remove(stringr::str_glue("{key}:\\s"))
+#' @return A tibble with term_id, key and value
+parse_obo_file <- function(obo) {
+  # Index of start and end line of each term
+  idx_start_term <- stringr::str_which(obo, "\\[Term\\]")
+  idx_empty <- stringr::str_which(obo, "^$")
+  idx_empty <- idx_empty[idx_empty > idx_start_term[1]]
+  idx_end_term <- idx_empty[1:length(idx_start_term)]
+
+  # Parse each term
+  purrr::map2_dfr(idx_start_term, idx_end_term, function(i1, i2) {
+    obo_term <- obo[(i1 + 1):(i2 - 1)]
+    trm <- obo_term |>
+      stringr::str_split(":\\s", 2, simplify = TRUE)
+    colnames(trm) <- c("key", "value")
+    # assuming term_id is in the first line, if not, we are screwed
+    tid <- trm[1, 2]
+    cbind(trm, term_id = tid) |>
+      as.data.frame()
+  }) |>
+    tibble::as_tibble()
 }
 
 
@@ -17,15 +31,25 @@ extract_obo_values <- function(obo, key) {
 #'
 #' @return A tibble with term_id and term_name.
 fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
-  assert_url_path(obo_file)
-  obo <- readr::read_lines(obo_file)
-  ids <- extract_obo_values(obo, "id")
-  names <- extract_obo_values(obo, "name")
-  assertthat::assert_that(length(ids) == length(names))
+  # Binding variables from non-standard evaluation locally
+  key <- term_id <- value <- term_name <- NULL
 
-  tibble::tibble(
-    term_id = ids,
-    term_name = names
+  assert_url_path(obo_file)
+  parsed <- readr::read_lines(obo_file) |>
+    parse_obo_file()
+
+  terms <- parsed |>
+    dplyr::filter(key == "name") |>
+    dplyr::select(term_id, term_name = value)
+
+  alt_terms <- parsed |>
+    dplyr::filter(key == "alt_id") |>
+    dplyr::left_join(terms, by = "term_id") |>
+    dplyr::select(term_id = value, term_name)
+
+  dplyr::bind_rows(
+    terms,
+    alt_terms
   )
 }
 
