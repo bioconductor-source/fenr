@@ -7,7 +7,7 @@
 fetch_go_terms(obo_file = "http://purl.obolibrary.org/obo/go.obo")
 }
 \arguments{
-\item{obo_file}{A URL or a local file name containing GO ontology, in OBO format.}
+\item{obo_file}{A URL or local file containing GO ontology, in OBO format.}
 }
 \value{
 A tibble with term_id and term_name.

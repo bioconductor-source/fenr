@@ -62,4 +62,3 @@ comment: This term was made obsolete because it is based on a temporal division 
 synonym: "nuclear interphase chromosome" EXACT []
 is_obsolete: true
 consider: GO:0000228
-

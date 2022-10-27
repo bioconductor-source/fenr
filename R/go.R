@@ -4,14 +4,24 @@
 #'
 #' @return A tibble with term_id, key and value
 parse_obo_file <- function(obo) {
-  # Index of start and end line of each term
-  idx_start_term <- stringr::str_which(obo, "\\[Term\\]")
-  idx_empty <- stringr::str_which(obo, "^$")
-  idx_empty <- idx_empty[idx_empty > idx_start_term[1]]
-  idx_end_term <- idx_empty[1:length(idx_start_term)]
+  # Find index of start and end line of each term
+
+  # Start lines
+  starts <- stringr::str_which(obo, "\\[Term\\]")
+
+  # Empty lines at end of each term
+  blanks <- stringr::str_which(obo, "^$")
+  blanks <- blanks[blanks > starts[1]]
+
+  # No space at the end
+  if(length(blanks) < length(starts))
+    blanks <- c(blanks, length(obo) + 1)
+
+  # End lines: ignore empty lines beyond terms
+  ends <- blanks[1:length(starts)]
 
   # Parse each term
-  purrr::map2_dfr(idx_start_term, idx_end_term, function(i1, i2) {
+  purrr::map2_dfr(starts, ends, function(i1, i2) {
     obo_term <- obo[(i1 + 1):(i2 - 1)]
     trm <- obo_term |>
       stringr::str_split(":\\s", 2, simplify = TRUE)
@@ -27,14 +37,13 @@ parse_obo_file <- function(obo) {
 
 #' Download GO term descriptions
 #'
-#' @param obo_file A URL or a local file name containing GO ontology, in OBO format.
+#' @param obo_file A URL or local file containing GO ontology, in OBO format.
 #'
 #' @return A tibble with term_id and term_name.
 fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
   # Binding variables from non-standard evaluation locally
   key <- term_id <- value <- term_name <- NULL
 
-  assert_url_path(obo_file)
   parsed <- readr::read_lines(obo_file) |>
     parse_obo_file()
 
