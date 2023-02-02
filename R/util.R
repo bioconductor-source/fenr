@@ -106,3 +106,41 @@ match_species <- function(species, fetch_fun, col_name) {
     dplyr::filter(designation == species) |>
     dplyr::pull(get(col_name))
 }
+
+
+#' Get features annotated with a given term.
+#'
+#' @param term_data An object class \code{fenr_terms}, created by
+#'   \code{prepare_for_enrichment}.
+#' @param term_id A string with a functional term ID.
+#'
+#' @return A character vector containing feature IDs annotated with the term ID.
+#' @import assertthat
+#' @importFrom methods is
+#' @export
+get_term_features <- function(term_data, term_id) {
+  # Check term_data class
+  assert_that(is(term_data, "fenr_terms"))
+  assert_that(is.string(term_id))
+
+  term_data$term2feature[term_id]
+}
+
+
+#' Get terms annotating a given feature.
+#'
+#' @param term_data An object class \code{fenr_terms}, created by
+#'   \code{prepare_for_enrichment}.
+#' @param feature_id A string with a feature ID
+#'
+#' @return A character vector containing functional term IDs annotating given feature.
+#' @import assertthat
+#' @importFrom methods is
+#' @export
+get_feature_term <- function(term_data, feature_id) {
+  # Check term_data class
+  assert_that(is(term_data, "fenr_terms"))
+  assert_that(is.string(feature_id))
+
+  term_data$feature2term[feature_id]
+}

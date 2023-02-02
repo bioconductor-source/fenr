@@ -45,4 +45,8 @@
  - Additional tests for Reactome
  - Minor improvements and fixes
 
+ ## Version 0.1.13
  
+- Added functions `get_term_features` and `get_feature_terms` to access data safely
+- HACK: BioPlanet server's SSL certificate expired, so need insecure download.
+

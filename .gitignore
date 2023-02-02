@@ -7,3 +7,5 @@
 .Ruserdata
 /doc/
 /Meta/
+/renv/
+/renv.lock
