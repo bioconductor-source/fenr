@@ -11,7 +11,7 @@ Description: Functional enrichment from a list of features (genes, proteins, etc
     using hypergeometric distribution. Optimised for speed for use in interactive
     applications, e.g., Shiny.
 URL: https://github.com/bartongroup/fenr
-Depends: R (>= 4.2.0)
+Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 biocViews:
