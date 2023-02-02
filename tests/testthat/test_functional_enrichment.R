@@ -24,23 +24,23 @@ mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
 
 
 # Feature to terms hash
-feature2term <- Rfast::Hash()
+feature2term <- new.env(hash = TRUE)
 features <- unique(mapping$feature_id)
 for(feat in features) {
   terms <- mapping |>
     dplyr::filter(feature_id == feat) |>
     dplyr::pull(term_id)
-  feature2term[feat] <- terms
+  feature2term[[feat]] <- terms
 }
 
 # Term to feature hash
-term2feature <- Rfast::Hash()
+term2feature <- new.env(hash = TRUE)
 terms <- unique(mapping$term_id)
 for(term in terms) {
   features <- mapping |>
     dplyr::filter(term_id == term) |>
     dplyr::pull(feature_id)
-  term2feature[term] <- features
+  term2feature[[term]] <- features
 }
 
 # final structure required by functional_enrichment
