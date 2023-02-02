@@ -144,7 +144,8 @@ fetch_reactome_api_genes <- function(pathways) {
 #'   'gene_association', one mapping file provided by Reactome will be
 #'   downloaded, if 'api', then Reactome API will be used. See details.
 #'
-#' @return A list with \code{terms} and \code{mapping} tibbles.
+#' @return A list with \code{terms} and \code{mapping} tibbles
+#' @importFrom assertthat assert_that
 #' @export
 #'
 #' @examples

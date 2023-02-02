@@ -110,7 +110,6 @@ fetch_go_species <- function(url = "http://current.geneontology.org/products/pag
 #'   \url{http://current.geneontology.org/annotations}. Examples are
 #'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
 #'
-#' @import assertthat
 #' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 fetch_go_genes_go <- function(species) {
   # Binding variables from non-standard evaluation locally
@@ -147,7 +146,7 @@ fetch_go_genes_go <- function(species) {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #'
 #' @examples
 #' go_data <- fetch_go_from_go("sgd")
@@ -201,7 +200,7 @@ fetch_go_genes_bm <- function(mart) {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #' @importFrom methods is
 #'
 #' @examples

@@ -130,7 +130,7 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #'
 #' @examples
 #' wiki_data <- fetch_wiki("Saccharomyces cerevisiae")

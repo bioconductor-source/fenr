@@ -172,7 +172,7 @@ main_plot <- function(de, input) {
 #'
 #' @return An interactive Shiny app
 #' @export
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #' @import shiny
 #' @import ggplot2
 #' @examples

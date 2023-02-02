@@ -16,7 +16,7 @@ human. Full list of available species can be found using
 downloaded, if 'api', then Reactome API will be used. See details.}
 }
 \value{
-A list with \code{terms} and \code{mapping} tibbles.
+A list with \code{terms} and \code{mapping} tibbles
 }
 \description{
 Download term information (pathway ID and name) and gene-pathway mapping

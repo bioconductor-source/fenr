@@ -45,6 +45,7 @@ assert_columns <- function(tb, cols) {
 #' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
 #' @param stop_if_error Logical, if TRUE stops with error message, otherwise returns FALSE
 #'
+#' @importFrom assertthat assert_that is.string
 #' @return TRUE if assertion passed
 assert_url_path <- function(url_path, stop_if_error = TRUE) {
   assert_that(is.string(url_path))
@@ -73,6 +74,7 @@ assert_url_path <- function(url_path, stop_if_error = TRUE) {
 #' @param fetch_fun A string, name of the function to retrieve available
 #'   species, must return a tibble with a column \code{designation}.
 #'
+#' @importFrom assertthat assert_that is.string
 #' @return A tibble with valid species - a response from \code{fetch_fun}
 assert_species <- function(species, fetch_fun) {
   assert_that(is.string(species))
@@ -115,8 +117,9 @@ match_species <- function(species, fetch_fun, col_name) {
 #' @param term_id A string with a functional term ID.
 #'
 #' @return A character vector containing feature IDs annotated with the term ID.
-#' @import assertthat
+#'
 #' @importFrom methods is
+#' @importFrom assertthat assert_that is.string
 #' @export
 get_term_features <- function(term_data, term_id) {
   # Check term_data class
@@ -134,7 +137,7 @@ get_term_features <- function(term_data, term_id) {
 #' @param feature_id A string with a feature ID
 #'
 #' @return A character vector containing functional term IDs annotating given feature.
-#' @import assertthat
+#' @importFrom assertthat assert_that is.string
 #' @importFrom methods is
 #' @export
 get_feature_terms <- function(term_data, feature_id) {

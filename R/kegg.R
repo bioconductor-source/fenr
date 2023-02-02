@@ -109,10 +109,10 @@ parse_kegg_genes <- function(s) {
 #' @param pathways A character vector with KEGG pathways
 #' @param batch_size Number of pathways sent to KEGG database in one query. The
 #'   maximum allowed is 10.
-#'
+#' @importFrom assertthat assert_that
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 fetch_kegg_mapping <- function(pathways, batch_size) {
-  assertthat::is.string(pathways)
+  assert_that(is.character(pathways))
   batches <- split(pathways, ceiling(seq_along(pathways) / batch_size))
 
   pb <- progress::progress_bar$new(total = length(batches))
@@ -142,7 +142,7 @@ fetch_kegg_mapping <- function(pathways, batch_size) {
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
-#' @import assertthat
+#' @importFrom assertthat assert_that is.count
 #'
 #' @examples
 #' kegg_data <- fetch_kegg("sce")

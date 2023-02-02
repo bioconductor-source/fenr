@@ -148,7 +148,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'   p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
 #'   adjusted for multiple tests using Benjamini-Hochberg approach}}.
 #'
-#' @import assertthat
+#' @importFrom assertthat assert_that
 #' @importFrom methods is
 #' @export
 #'
