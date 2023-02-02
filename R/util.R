@@ -137,7 +137,7 @@ get_term_features <- function(term_data, term_id) {
 #' @import assertthat
 #' @importFrom methods is
 #' @export
-get_feature_term <- function(term_data, feature_id) {
+get_feature_terms <- function(term_data, feature_id) {
   # Check term_data class
   assert_that(is(term_data, "fenr_terms"))
   assert_that(is.string(feature_id))

@@ -48,7 +48,10 @@ test_that("Expected correct output", {
         sort()
       returned <- td$term2feature[[trm]] |>
         sort()
+      returned_fun <- get_term_features(td, trm) |>
+        sort()
       expect_equal(expected, returned)
+      expect_equal(expected, returned_fun)
     })
 
   # Check feature-term hash
@@ -61,7 +64,10 @@ test_that("Expected correct output", {
         sort()
       returned <- td$feature2term[[feat]] |>
         sort()
+      returned_fun <- get_feature_terms(td, feat) |>
+        sort()
       expect_equal(expected, returned)
+      expect_equal(expected, returned_fun)
     })
 })
 
