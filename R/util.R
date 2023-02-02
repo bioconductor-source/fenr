@@ -123,7 +123,7 @@ get_term_features <- function(term_data, term_id) {
   assert_that(is(term_data, "fenr_terms"))
   assert_that(is.string(term_id))
 
-  term_data$term2feature[term_id]
+  term_data$term2feature[[term_id]]
 }
 
 
@@ -142,5 +142,5 @@ get_feature_term <- function(term_data, feature_id) {
   assert_that(is(term_data, "fenr_terms"))
   assert_that(is.string(feature_id))
 
-  term_data$feature2term[feature_id]
+  term_data$feature2term[[feature_id]]
 }

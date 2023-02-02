@@ -50,3 +50,6 @@
 - Added functions `get_term_features` and `get_feature_terms` to access data safely
 - HACK: BioPlanet server's SSL certificate expired, so need insecure download.
 
+## Version 0.1.14
+
+- Ditched large and clunky `Rfast` and using native R environments as fast hashes (see https://riptutorial.com/r/example/18339/environments-as-hash-maps)

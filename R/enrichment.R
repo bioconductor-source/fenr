@@ -77,10 +77,11 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
   }
 
   # Hash to select term name
-  term2name <- Rfast::Hash(
-    keys = terms$term_id,
-    values = terms$term_name
-  )
+  term2name <- new.env(hash = TRUE)
+  for (i in 1:nrow(terms)) {
+    r <- terms[i, ]
+    term2name[[r$term_id]] <- r$term_name
+  }
 
   # feature-term tibble
   feature_term <- mapping |>
@@ -93,18 +94,18 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
     dplyr::group_by(feature_id) |>
     dplyr::summarise(terms = list(term_id)) |>
     tibble::deframe()
-  feature2term <- Rfast::Hash()
+  feature2term <- new.env(hash = TRUE)
   for(feat in names(f2t))
-    feature2term[feat] <- f2t[[feat]]
+    feature2term[[feat]] <- f2t[[feat]]
 
   # Term to feature hash
   t2f <- feature_term |>
     dplyr::group_by(term_id) |>
     dplyr::summarise(features = list(feature_id)) |>
     tibble::deframe()
-  term2feature <- Rfast::Hash()
+  term2feature <- new.env(hash = TRUE)
   for(term in names(t2f))
-    term2feature[term] <- t2f[[term]]
+    term2feature[[term]] <- t2f[[term]]
 
   list(
     term2name = term2name,
@@ -171,7 +172,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   # all terms present in the selection
   our_terms <- feat_sel |>
-    purrr::map(~term_data$feature2term[.x]) |>
+    purrr::map(~term_data$feature2term[[.x]]) |>
     unlist() |>
     unique()
 
@@ -182,8 +183,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
   res <- purrr::map_dfr(our_terms, function(term_id) {
     # all features with the term
-    # term_data$term2feature is a Hash object
-    tfeats <- term_data$term2feature[term_id]
+    # term_data$term2feature is a hash environment
+    tfeats <- term_data$term2feature[[term_id]]
 
     # features from selection with the term
     # this is faster than intersect(tfeats, feat_sel)
@@ -217,7 +218,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
 
     if (!is.null(feat2name)) tfeats_sel <- feat2name[tfeats_sel] |> unname()
 
-    term_name <- term_data$term2name[term_id]
+    term_name <- term_data$term2name[[term_id]]
     # returns NAs if no term found
     if (is.null(term_name)) term_name <- NA_character_
 

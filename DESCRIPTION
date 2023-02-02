@@ -1,6 +1,6 @@
 Package: fenr
 Title: Fast functional enrichment
-Version: 0.1.13
+Version: 0.1.14
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
@@ -32,7 +32,6 @@ Imports:
     readr,
     stringr,
     tibble,
-    Rfast,
     httr,
     XML,
     jsonlite,
