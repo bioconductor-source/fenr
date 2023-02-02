@@ -121,6 +121,10 @@ match_species <- function(species, fetch_fun, col_name) {
 #' @importFrom methods is
 #' @importFrom assertthat assert_that is.string
 #' @export
+#' @examples
+#' bp_data <- fetch_bp()
+#' bp_terms <- prepare_for_enrichment(bp_data$terms, bp_data$mapping, feature = "gene_symbol")
+#' feats <- get_term_features(bp_terms, "bioplanet_1")
 get_term_features <- function(term_data, term_id) {
   # Check term_data class
   assert_that(is(term_data, "fenr_terms"))
@@ -140,6 +144,10 @@ get_term_features <- function(term_data, term_id) {
 #' @importFrom assertthat assert_that is.string
 #' @importFrom methods is
 #' @export
+#' @examples
+#' bp_data <- fetch_bp()
+#' bp_terms <- prepare_for_enrichment(bp_data$terms, bp_data$mapping, feature = "gene_symbol")
+#' trms <- get_feature_terms(bp_terms, "RECK")
 get_feature_terms <- function(term_data, feature_id) {
   # Check term_data class
   assert_that(is(term_data, "fenr_terms"))

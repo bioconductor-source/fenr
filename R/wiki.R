@@ -18,7 +18,6 @@ get_wiki_query <- function(query, parameters = NULL) {
 #'
 #' @return A character vector with species names used by WikiPathways.
 #' @export
-#'
 #' @examples
 #' spec <- fetch_wiki_species()
 fetch_wiki_species <- function() {
@@ -131,7 +130,6 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @importFrom assertthat assert_that
-#'
 #' @examples
 #' wiki_data <- fetch_wiki("Saccharomyces cerevisiae")
 fetch_wiki <- function(species,

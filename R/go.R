@@ -79,7 +79,6 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @import XML
 #' @export
-#'
 #' @examples
 #' go_species <- fetch_go_species()
 fetch_go_species <- function(url = "http://current.geneontology.org/products/pages/downloads.html") {
@@ -147,7 +146,6 @@ fetch_go_genes_go <- function(species) {
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @importFrom assertthat assert_that
-#'
 #' @examples
 #' go_data <- fetch_go_from_go("sgd")
 fetch_go_from_go <- function(species) {
@@ -202,7 +200,6 @@ fetch_go_genes_bm <- function(mart) {
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom methods is
-#'
 #' @examples
 #' \dontrun{
 #' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")

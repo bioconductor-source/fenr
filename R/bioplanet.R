@@ -5,7 +5,6 @@
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
-#'
 #' @examples
 #' bioplanet_data <- fetch_bp()
 fetch_bp <- function() {

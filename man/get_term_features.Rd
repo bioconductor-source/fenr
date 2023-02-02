@@ -18,3 +18,8 @@ A character vector containing feature IDs annotated with the term ID.
 \description{
 Get features annotated with a given term.
 }
+\examples{
+bp_data <- fetch_bp()
+bp_terms <- prepare_for_enrichment(bp_data$terms, bp_data$mapping, feature = "gene_symbol")
+feats <- get_term_features(bp_terms, "bioplanet_1")
+}

@@ -18,7 +18,6 @@ fetch_kegg_data <- function(path) {
 #' @return A tibble, in which column \code{designation} contains species
 #'   designations used in function \code{fetch_kegg}.
 #' @export
-#'
 #' @examples
 #' spe <- fetch_kegg_species()
 fetch_kegg_species <- function() {
@@ -141,9 +140,8 @@ fetch_kegg_mapping <- function(pathways, batch_size) {
 #'   maximum allowed is 10.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
-#' @export
 #' @importFrom assertthat assert_that is.count
-#'
+#' @export
 #' @examples
 #' kegg_data <- fetch_kegg("sce")
 fetch_kegg <- function(species, batch_size = 10) {

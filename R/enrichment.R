@@ -34,7 +34,6 @@
 #' @return An object class \code{fenr_terms} required by
 #'   \code{functional_enrichment}.
 #' @export
-#'
 #' @examples
 #' data(exmpl_all)
 #' bp <- fetch_bp()
@@ -151,7 +150,6 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #' @importFrom assertthat assert_that
 #' @importFrom methods is
 #' @export
-#'
 #' @examples
 #' data(exmpl_all, exmpl_sel)
 #' bp <- fetch_bp()

@@ -4,7 +4,6 @@
 #'
 #' @return A list of objects containing functional terms for GO, Reactome, KEGG and BioPlanet.
 #' @export
-#'
 #' @examples
 #' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
@@ -16,17 +15,17 @@ fetch_terms_for_example <- function(de) {
   all_genes <- de$gene_id
 
   # load GO terms
-  cat("Fetching GO data\n")
+  message("Fetching GO data\n")
   go <- fetch_go_from_go("sgd")
   go_data <- prepare_for_enrichment(go$terms, go$mapping, all_genes, feature_name = "gene_synonym")
 
   # load Reactome pathways
-  cat("Fetching Reactome data\n")
+  message("Fetching Reactome data\n")
   re <- fetch_reactome("Saccharomyces cerevisiae")
   re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "gene_id")
 
   # load KEGG pathways
-  cat("Fetching KEGG data\n")
+  message("Fetching KEGG data\n")
   kg <- fetch_kegg("sce")
   kg_data <- prepare_for_enrichment(kg$terms, kg$mapping, all_genes, feature_name = "gene_id")
 
@@ -171,10 +170,10 @@ main_plot <- function(de, input) {
 #'   create this object.
 #'
 #' @return An interactive Shiny app
-#' @export
 #' @importFrom assertthat assert_that
 #' @import shiny
 #' @import ggplot2
+#' @export
 #' @examples
 #' \dontrun{
 #' data(yeast_de)

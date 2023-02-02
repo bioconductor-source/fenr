@@ -147,7 +147,6 @@ fetch_reactome_api_genes <- function(pathways) {
 #' @return A list with \code{terms} and \code{mapping} tibbles
 #' @importFrom assertthat assert_that
 #' @export
-#'
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
 fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association")) {

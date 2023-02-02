@@ -18,3 +18,8 @@ A character vector containing functional term IDs annotating given feature.
 \description{
 Get terms annotating a given feature.
 }
+\examples{
+bp_data <- fetch_bp()
+bp_terms <- prepare_for_enrichment(bp_data$terms, bp_data$mapping, feature = "gene_symbol")
+trms <- get_feature_terms(bp_terms, "RECK")
+}
