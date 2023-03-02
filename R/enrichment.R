@@ -183,6 +183,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
     # all features with the term
     # term_data$term2feature is a hash environment
     tfeats <- term_data$term2feature[[term_id]]
+    # necessary if term data contain features not present in feat_all
+    tfeats <- tfeats[tfeats %in% feat_all]
 
     # features from selection with the term
     # this is faster than intersect(tfeats, feat_sel)
