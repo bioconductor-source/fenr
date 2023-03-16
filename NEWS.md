@@ -59,6 +59,10 @@
 
 - Fixed a bug where there are some features at a term that are not present in the universe (all features). This could happen when the universe was particularly small. Potentially a serious bug.
 
+## Version 0.1.16
+
+- Added a fix to work correctly with integer feature IDs.
+
 
 
 

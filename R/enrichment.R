@@ -216,7 +216,10 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
     # Hypergeometric function much faster than fisher.test
     p <- 1 - stats::phyper(n_with_sel - 1, N_with, N_without, N_sel)
 
-    if (!is.null(feat2name)) tfeats_sel <- feat2name[tfeats_sel] |> unname()
+    # Convert feature IDs to feature names; as.character is here in case feature
+    # IDs are integer.
+    if (!is.null(feat2name))
+      tfeats_sel <- feat2name[as.character(tfeats_sel)] |> unname()
 
     term_name <- term_data$term2name[[term_id]]
     # returns NAs if no term found
