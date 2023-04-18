@@ -64,5 +64,9 @@
 - Added a fix to work correctly with integer feature IDs.
 
 
+## Version 0.1.17
 
+ - New units tests added
+ 
+ 
 

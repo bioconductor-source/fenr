@@ -47,7 +47,9 @@ test_that("GO yeast gene mapping makes sense", {
     "GO:0005199", "CWP2",
     "GO:0004365", "TDH3"
   )
-  mapping <- fetch_go_genes_go("sgd")
+  mapping <- fetch_go_genes_go("sgd") |>
+    dplyr::select(term_id, gene_symbol) |>
+    dplyr::distinct()
   expect_is(mapping, "tbl")
   merged <- expected |>
     dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>

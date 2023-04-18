@@ -25,18 +25,25 @@ mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
   )
 })
 
-
+all_terms <- terms$term_id
+all_features <- mapping$feature_id |> unique()
 
 
 test_that("Expected correct output", {
   td <- prepare_for_enrichment(terms, mapping, feature_name = "feature_id")
 
+  # Correct output
+  expect_equal(length(td), 3)
+
+  # Check class
+  expect_s3_class(td, "fenr_terms")
+
   # Check term names
+  expect_equal(length(td$term2name), nrow(terms))
   for(i in seq_along(terms$term_id)) {
     r <- terms[i, ]
     expect_equal(sort(r$term_name), sort(td$term2name[[r$term_id]]))
   }
-
 
   # Check term-feature hash
   term_ids <- mapping$term_id |> unique()
@@ -55,8 +62,8 @@ test_that("Expected correct output", {
     })
 
   # Check feature-term hash
-  feature_ids <- mapping$feature_id |> unique()
-  chk2 <- feature_ids |>
+  expect_equal(length(td$feature2term), length(all_features))
+  chk2 <- all_features |>
     purrr::map(function(feat) {
       expected <- mapping |>
         dplyr::filter(feature_id == feat) |>

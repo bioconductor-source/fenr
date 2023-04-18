@@ -58,7 +58,6 @@ term_stats <- function(tid, N_sel, n_with_sel) {
   n_expect <- N_with * N_sel / N
   enrichment <- n_with_sel / n_expect
 
-  # in the test we use fisher.test function as opposed to phyper in the code
   n_with_nsel <- N_with - n_with_sel
   n_without_nsel <- N - (n_with_sel + n_without_sel + n_with_nsel)
   cont_tab <- rbind(
@@ -66,8 +65,9 @@ term_stats <- function(tid, N_sel, n_with_sel) {
     c(n_without_sel, n_without_nsel)
   )
 
-  p <- fisher.test(cont_tab, alternative = "greater")$p.value
+  # in the test we use fisher.test function as opposed to phyper in the code
   # p <- 1 - stats::phyper(n_with_sel - 1, N_with, N_without, N_sel)
+  p <- fisher.test(cont_tab, alternative = "greater")$p.value
 
   sel_with <- term2feature[[tid]][seq_len(n_with_sel)]
   if (n_without_sel > 0) {
@@ -87,6 +87,18 @@ term_stats <- function(tid, N_sel, n_with_sel) {
   )
 }
 
+test_that("Correct output", {
+  set.seed(42)
+  sel <- mapping |>
+    dplyr::group_by(term_id) |>
+    dplyr::sample_n(3) |>
+    dplyr::pull(feature_id)
+  enr <- functional_enrichment(features_all, sel, term_data)
+
+  expect_true(is.data.frame(enr))
+  expect_equal(nrow(enr), length(term_ids))
+  expect_equal(ncol(enr), 10)
+})
 
 
 test_that("Enrichment of 1", {

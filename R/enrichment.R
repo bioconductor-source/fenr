@@ -42,9 +42,28 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
   # Binding variables from non-standard evaluation locally
   feature_id <- term_id <- NULL
 
+  # Argument checks
+  if (!is.data.frame(terms) && !tibble::is_tibble(terms)) {
+    stop("'terms' must be a data frame or tibble.")
+  }
+
+  if (!is.data.frame(mapping) && !tibble::is_tibble(mapping)) {
+    stop("'mapping' must be a data frame or tibble.")
+  }
+
+  if (!is.null(all_features) && !is.vector(all_features)) {
+    stop("'all_features' must be a vector or NULL.")
+  }
+
+  if (!is.character(feature_name) || length(feature_name) != 1) {
+    stop("'feature_name' must be a single string.")
+  }
+
   # Check terms
   if (!all(c("term_id", "term_name") %in% colnames(terms)))
     stop("Column names in 'terms' should be 'term_id' and 'term_name'.")
+  if(anyDuplicated(terms$term_id) > 0)
+    stop("Duplicated term_id detected in 'terms'.")
 
   # Check mapping
   if (!("term_id" %in% colnames(mapping)))
