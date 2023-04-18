@@ -18,7 +18,7 @@ parse_obo_file <- function(obo) {
     blanks <- c(blanks, length(obo) + 1)
 
   # End lines: ignore empty lines beyond terms
-  ends <- blanks[1:length(starts)]
+  ends <- blanks[seq_len(length(starts))]
 
   # Parse each term
   purrr::map2_dfr(starts, ends, function(i1, i2) {

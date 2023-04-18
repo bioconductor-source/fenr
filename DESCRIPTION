@@ -14,7 +14,8 @@ Description: Functional enrichment from a list of features (genes, proteins, etc
     BioPlanet, Reactome and WikiPathways. Once downloaded, data are converted into
     a format allowing for fast enrichment analysis.
 URL: https://github.com/bartongroup/fenr
-Depends: R (>= 4.1.0)
+BugReports: https://github.com/bartongroup/fenr/issues
+Depends: R (>= 4.2.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 biocViews:

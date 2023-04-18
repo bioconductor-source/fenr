@@ -96,7 +96,7 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 
   # Hash to select term name
   term2name <- new.env(hash = TRUE)
-  for (i in 1:nrow(terms)) {
+  for (i in seq_len(nrow(terms))) {
     r <- terms[i, ]
     term2name[[r$term_id]] <- r$term_name
   }
