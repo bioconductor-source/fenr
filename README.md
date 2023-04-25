@@ -23,7 +23,7 @@ remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 
 ## Usage
 
-The initial step involves downloading functional term data. `fenr` supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
+The initial step involves downloading functional term data. `fenr` supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO) for yeast:
 
 ```
 go <- fetch_go(species = "sgd")
