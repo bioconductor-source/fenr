@@ -2,11 +2,12 @@
 
 Maintainer: Marek Gierlinski (<M.Gierlinski@dundee.ac.uk>)
 
-A simple R package for fast functional enrichment. It is optimised for speed and designed to be used in interactive applications, e.g. Shiny apps.
+This R package provides a fast and efficient method for functional enrichment analysis, optimized for speed and designed for use in interactive applications, such as *Shiny* apps.
+
 
 ## Quick example
 
-A Shiny app demonstration `fenr` can be ran directly from GitHub, with the following command in R console:
+To run a *Shiny* app demonstration of `fenr` directly from GitHub, enter the following command in your R console:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
@@ -14,7 +15,7 @@ shiny::runGitHub("bartongroup/fenr-shiny-example")
 
 ## Installation
 
-`fenr` can be installed from GitHub (you need to install `remotes` first).
+`fenr` can be installed from GitHub (you need to install `remotes` first):
 
 ```
 remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
@@ -22,20 +23,20 @@ remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 
 ## Usage
 
-The first step is to download functional term data. `fenr` package supports downloads from Gene Ontology, Reactome, KEGG, BioPlanet and WikiPathways. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). We will download functional terms and gene mapping from GO.
+The initial step involves downloading functional term data. `fenr` supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
 
 ```
 go <- fetch_go(species = "sgd")
 ```
 
-This is a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert it into an object suitable for fast functional enrichment. `exmpl_all` is the attached example of gene background - a vector with gene symbols related to all detections in an experiment.
+This command returns a list with two tibbles containing term information (`term_id` and `term_name`) and gene-term mapping (`term_id` and `gene_symbol`). We convert this data into an object suitable for fast functional enrichment. `exmpl_all` is an example of gene background provided by the package, which contains a vector with gene symbols related to all detections in an experiment.
 
 ```
 data(exmpl_all, exmpl_sel)
 go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-`go_terms` is a data structure containing all the mappings in quickly accessible form. From this point on, `go_terms` can be used to do multiple functional enrichments on various gene selections. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest (both attached to the package), functional enrichment can be found using
+The `go_terms` object is a data structure containing all mappings in a quickly accessible form. From this point on, you can use go_terms to perform multiple functional enrichments on various gene selections. For example, if `exmpl_all` is a vector with all background gene symbols and `exmpl_sel` is a vector with genes of interest (both provided by the package), you can perform functional enrichment analysis using:
 
 ```
 enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
@@ -62,13 +63,36 @@ The result is a tibble:
 
 The columns are as follows
 
- - `N_with` - number of features (genes) with this term in the background of all genes.
- - `n_with_sel` - number of features with this term in the selection.
- - `n_expect` - expected number of features with this term under the null hypothesis (terms are randomly distributed).
- - `enrichment` - ratio of observed to expected.
- - `odds_ratio` - effect size, odds ratio from the contingency table.
- - `ids` - identifiers of features with term in the selection.
- - `p_value` - raw p-value from hypergeometric distribution.
- - `p_adjust` - p-value adjusted for multiple tests using Benjamini-Hochberg approach.
- 
+ - `N_with`: The number of features (genes) associated with this term in the background of all genes.
+ - `n_with_sel`: The number of features associated with this term in the selection.
+ - `n_expect`: The expected number of features associated with this term under the null hypothesis (terms are randomly distributed).
+ - `enrichment`: The ratio of observed to expected.
+ - `odds_ratio`: The effect size, represented by the odds ratio from the contingency table.
+ - `ids`: The identifiers of features with the term in the selection.
+ - `p_value`: The raw p-value from the hypergeometric distribution.
+ - `p_adjust`: The p-value adjusted for multiple tests using the Benjamini-Hochberg approach.
 
+# Interactive Example
+
+A small Shiny app is included in the package to demonstrate the usage of `fenr` in an interactive environment. All time-consuming data loading and preparation tasks are performed before the app is launched.
+
+```
+data(yeast_de)
+term_data <- fetch_terms_for_example(yeast_de)
+```
+ 
+`yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923).
+
+The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome* and *KEGG*.  You can view the step-by-step process by examining the function code on [GitHub](https://github.com/bartongroup/fenr/blob/main/R/iteractive_example.R). The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+
+After completing the slow tasks, you can start the Shiny app by running:
+
+```
+enrichment_interactive(yeast_de, term_data)
+```
+
+To quickly see how `fenr` works an example can be loaded directly from GitHub:
+
+```
+shiny::runGitHub("bartongroup/fenr-shiny-example")
+```
