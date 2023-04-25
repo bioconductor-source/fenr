@@ -2,7 +2,7 @@
 % Please edit documentation in R/enrichment.R
 \name{prepare_for_enrichment}
 \alias{prepare_for_enrichment}
-\title{Prepare term data for enrichment analysis}
+\title{Prepare Term Data for Enrichment Analysis}
 \usage{
 prepare_for_enrichment(
   terms,
@@ -13,41 +13,42 @@ prepare_for_enrichment(
 }
 \arguments{
 \item{terms}{A tibble with at least two columns: \code{term_id} and
-\code{term_name}. Contains information about functional term
-names/descriptions.}
+\code{term_name}. This tibble contains information about functional term
+names and descriptions.}
 
-\item{mapping}{A tibble with at least two columns, containing mapping between
-functional terms and features. One column needs to be called \code{term_id}
-and the other column has a name specified by \code{feature_name} argument.
-For example, if \code{mapping} contains columns \code{term_id},
-\code{accession_number} and  \code{gene_symbol} then setting
-\code{feature_name = "gene_symbol"} indicates that gene symbols will be
-used for enrichment.}
+\item{mapping}{A tibble with at least two columns, containing the mapping
+between functional terms and features. One column must be named
+\code{term_id}, while the other column should have a name specified by the
+\code{feature_name} argument. For example, if \code{mapping} contains
+columns \code{term_id}, \code{accession_number}, and \code{gene_symbol},
+setting \code{feature_name = "gene_symbol"} indicates that gene symbols
+will be used for enrichment analysis.}
 
-\item{all_features}{A vector with all feature ids used as background for
+\item{all_features}{A vector with all feature IDs used as the background for
 enrichment. If not specified, all features found in \code{mapping} will be
 used, resulting in a larger object size.}
 
-\item{feature_name}{The name of the column in \code{mapping} tibble to be
-used as feature.For example, if \code{mapping} contains columns \code{term_id},
-\code{accession_number} and  \code{gene_symbol} then setting
-\code{feature_name = "gene_symbol"} indicates that gene symbols will be
-used for enrichment.}
+\item{feature_name}{The name of the column in the \code{mapping} tibble to be
+used as the feature identifier. For example, if \code{mapping} contains
+columns \code{term_id}, \code{accession_number}, and \code{gene_symbol},
+setting \code{feature_name = "gene_symbol"} indicates that gene symbols
+will be used for enrichment analysis.}
 }
 \value{
-An object class \code{fenr_terms} required by
+An object of class \code{fenr_terms} required by
   \code{functional_enrichment}.
 }
 \description{
-Prepare term data downloaded with \code{fetch_*} functions for fast
-enrichment analysis.
+Process term data downloaded with the \code{fetch_*} functions, preparing it
+for fast enrichment analysis using \code{functional_enrichment}.
 }
 \details{
-Takes two tibbles with functional term information (\code{terms}) and
-feature mapping (\code{mapping}) and converts them into an object required by
-\code{functional_enrichment} for fast analysis. Terms and mapping can be
-created with database access functions in this package, for example
-\code{fetch_reactome} or \code{fetch_go_from_go}.
+This function takes two tibbles containing functional term information
+(\code{terms}) and feature mapping (\code{mapping}), and converts them into
+an object required by \code{functional_enrichment} for efficient analysis.
+Terms and mapping can be generated with the database access functions
+included in this package, such as \code{fetch_reactome} or
+\code{fetch_go_from_go}.
 }
 \examples{
 data(exmpl_all)

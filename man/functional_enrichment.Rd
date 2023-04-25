@@ -2,44 +2,47 @@
 % Please edit documentation in R/enrichment.R
 \name{functional_enrichment}
 \alias{functional_enrichment}
-\title{Fast functional enrichment}
+\title{Fast Functional Enrichment}
 \usage{
 functional_enrichment(feat_all, feat_sel, term_data, feat2name = NULL)
 }
 \arguments{
-\item{feat_all}{A character vector with all feature identifiers. This is the
-background for enrichment.}
+\item{feat_all}{A character vector with all feature identifiers, serving as
+the background for enrichment.}
 
 \item{feat_sel}{A character vector with feature identifiers in the selection.}
 
-\item{term_data}{An object class \code{fenr_terms}, created by
+\item{term_data}{An object of class \code{fenr_terms}, created by
 \code{prepare_for_enrichment}.}
 
-\item{feat2name}{An optional named list to convert feature ids into feature
+\item{feat2name}{An optional named list to convert feature IDs into feature
 names.}
 }
 \value{
-A tibble with enrichment results. For each term the following
-  quantities are reported: \itemize{ \item{\code{N_with} - number of features
-  with this term among all features} \item{\code{n_with_sel} - number
-  of features with this term in the selection} \item{\code{n_expect} -
-  expected number of features with this term in the selection, under the null
-  hypothesis that terms are mapped to features randomly}
-  \item{\code{enrichment} - ratio of n_with_sel / n_expect}
-  \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
-  features with the given term are in the selection} \item{\code{p_value} -
-  p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
-  adjusted for multiple tests using Benjamini-Hochberg approach}}.
+A tibble with enrichment results, providing the following information
+  for each term:
+  \itemize{
+    \item{\code{N_with} - number of features with this term among all features}
+    \item{\code{n_with_sel} - number of features with this term in the selection}
+    \item{\code{n_expect} - expected number of features with this term in the selection,
+      under the null hypothesis that terms are mapped to features randomly}
+    \item{\code{enrichment} - ratio of n_with_sel / n_expect}
+    \item{\code{odds_ratio} - odds ratio for enrichment; is infinite when all
+      features with the given term are in the selection}
+    \item{\code{p_value} - p-value from a single hypergeometric test}
+    \item{\code{p_adjust} - p-value adjusted for multiple tests using the Benjamini-Hochberg approach}
+  }.
 }
 \description{
-Fast functional enrichment based on hypergeometric distribution. Can be used
-in interactive applications.
+Perform fast functional enrichment analysis based on the hypergeometric
+distribution. Designed for use in interactive applications.
 }
 \details{
-Functional enrichment in a selection (e.g. differentially expressed genes) of
-features, using hypergeometric probability (that is, Fisher's exact test). A
-feature can be a gene, protein, etc. \code{term_data} is an object with
-functional term information and feature-term mapping
+This function carries out functional enrichment analysis on a
+  selection of features (e.g., differentially expressed genes) using the
+  hypergeometric probability distribution (Fisher's exact test). Features can
+  be genes, proteins, etc. The \code{term_data} object contains functional
+  term information and feature-term mapping.
 }
 \examples{
 data(exmpl_all, exmpl_sel)

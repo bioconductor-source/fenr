@@ -1,38 +1,39 @@
-#' Prepare term data for enrichment analysis
+#' Prepare Term Data for Enrichment Analysis
 #'
-#' Prepare term data downloaded with \code{fetch_*} functions for fast
-#' enrichment analysis.
+#' Process term data downloaded with the \code{fetch_*} functions, preparing it
+#' for fast enrichment analysis using \code{functional_enrichment}.
 #'
 #' @details
 #'
-#' Takes two tibbles with functional term information (\code{terms}) and
-#' feature mapping (\code{mapping}) and converts them into an object required by
-#' \code{functional_enrichment} for fast analysis. Terms and mapping can be
-#' created with database access functions in this package, for example
-#' \code{fetch_reactome} or \code{fetch_go_from_go}.
+#' This function takes two tibbles containing functional term information
+#' (\code{terms}) and feature mapping (\code{mapping}), and converts them into
+#' an object required by \code{functional_enrichment} for efficient analysis.
+#' Terms and mapping can be generated with the database access functions
+#' included in this package, such as \code{fetch_reactome} or
+#' \code{fetch_go_from_go}.
 #'
 #' @param terms A tibble with at least two columns: \code{term_id} and
-#'   \code{term_name}. Contains information about functional term
-#'   names/descriptions.
-#' @param mapping A tibble with at least two columns, containing mapping between
-#'   functional terms and features. One column needs to be called \code{term_id}
-#'   and the other column has a name specified by \code{feature_name} argument.
-#'   For example, if \code{mapping} contains columns \code{term_id},
-#'   \code{accession_number} and  \code{gene_symbol} then setting
-#'   \code{feature_name = "gene_symbol"} indicates that gene symbols will be
-#'   used for enrichment.
-#' @param all_features A vector with all feature ids used as background for
+#'   \code{term_name}. This tibble contains information about functional term
+#'   names and descriptions.
+#' @param mapping A tibble with at least two columns, containing the mapping
+#'   between functional terms and features. One column must be named
+#'   \code{term_id}, while the other column should have a name specified by the
+#'   \code{feature_name} argument. For example, if \code{mapping} contains
+#'   columns \code{term_id}, \code{accession_number}, and \code{gene_symbol},
+#'   setting \code{feature_name = "gene_symbol"} indicates that gene symbols
+#'   will be used for enrichment analysis.
+#' @param all_features A vector with all feature IDs used as the background for
 #'   enrichment. If not specified, all features found in \code{mapping} will be
 #'   used, resulting in a larger object size.
-#' @param feature_name The name of the column in \code{mapping} tibble to be
-#'   used as feature.For example, if \code{mapping} contains columns \code{term_id},
-#'   \code{accession_number} and  \code{gene_symbol} then setting
-#'   \code{feature_name = "gene_symbol"} indicates that gene symbols will be
-#'   used for enrichment.
+#' @param feature_name The name of the column in the \code{mapping} tibble to be
+#'   used as the feature identifier. For example, if \code{mapping} contains
+#'   columns \code{term_id}, \code{accession_number}, and \code{gene_symbol},
+#'   setting \code{feature_name = "gene_symbol"} indicates that gene symbols
+#'   will be used for enrichment analysis.
 #'
-#'
-#' @return An object class \code{fenr_terms} required by
+#' @return An object of class \code{fenr_terms} required by
 #'   \code{functional_enrichment}.
+#' @importFrom assertthat assert_that
 #' @export
 #' @examples
 #' data(exmpl_all)
@@ -43,35 +44,32 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
   feature_id <- term_id <- NULL
 
   # Argument checks
-  if (!is.data.frame(terms) && !tibble::is_tibble(terms)) {
-    stop("'terms' must be a data frame or tibble.")
-  }
+  assert_that(is.data.frame(terms) || tibble::is_tibble(terms),
+              msg = "'terms' must be a data frame or tibble.")
 
-  if (!is.data.frame(mapping) && !tibble::is_tibble(mapping)) {
-    stop("'mapping' must be a data frame or tibble.")
-  }
+  assert_that(is.data.frame(mapping) || tibble::is_tibble(mapping),
+              msg = "'mapping' must be a data frame or tibble.")
 
-  if (!is.null(all_features) && !is.vector(all_features)) {
-    stop("'all_features' must be a vector or NULL.")
-  }
+  assert_that(is.null(all_features) || is.vector(all_features),
+              msg = "'all_features' must be a vector or NULL.")
 
-  if (!is.character(feature_name) || length(feature_name) != 1) {
-    stop("'feature_name' must be a single string.")
-  }
+  assert_that(is.character(feature_name) && length(feature_name) == 1,
+              msg = "'feature_name' must be a single string.")
 
   # Check terms
-  if (!all(c("term_id", "term_name") %in% colnames(terms)))
-    stop("Column names in 'terms' should be 'term_id' and 'term_name'.")
-  if(anyDuplicated(terms$term_id) > 0)
-    stop("Duplicated term_id detected in 'terms'.")
+  assert_that(all(c("term_id", "term_name") %in% colnames(terms)),
+              msg = "Column names in 'terms' should be 'term_id' and 'term_name'.")
+
+  assert_that(anyDuplicated(terms$term_id) == 0,
+              msg = "Duplicated term_id detected in 'terms'.")
 
   # Check mapping
-  if (!("term_id" %in% colnames(mapping)))
-    stop("'mapping' should contain a column named 'term_id'.")
+  assert_that("term_id" %in% colnames(mapping),
+              msg = "'mapping' should contain a column named 'term_id'.")
 
   # Check for feature name
-  if (!(feature_name %in% colnames(mapping)))
-    stop(feature_name, " column not found in mapping table. Check feature_name argument.")
+  assert_that(feature_name %in% colnames(mapping),
+              msg = paste0(feature_name, " column not found in mapping table. Check 'feature_name' argument."))
 
   # Replace empty all_features with everything from mapping
   map_features <- mapping[[feature_name]] |>
@@ -134,37 +132,39 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 }
 
 
-#' Fast functional enrichment
+
+#' Fast Functional Enrichment
 #'
-#' Fast functional enrichment based on hypergeometric distribution. Can be used
-#' in interactive applications.
+#' Perform fast functional enrichment analysis based on the hypergeometric
+#' distribution. Designed for use in interactive applications.
 #'
-#' @details
+#' @details This function carries out functional enrichment analysis on a
+#'   selection of features (e.g., differentially expressed genes) using the
+#'   hypergeometric probability distribution (Fisher's exact test). Features can
+#'   be genes, proteins, etc. The \code{term_data} object contains functional
+#'   term information and feature-term mapping.
 #'
-#' Functional enrichment in a selection (e.g. differentially expressed genes) of
-#' features, using hypergeometric probability (that is, Fisher's exact test). A
-#' feature can be a gene, protein, etc. \code{term_data} is an object with
-#' functional term information and feature-term mapping
-#'
-#' @param feat_all A character vector with all feature identifiers. This is the
-#'   background for enrichment.
+#' @param feat_all A character vector with all feature identifiers, serving as
+#'   the background for enrichment.
 #' @param feat_sel A character vector with feature identifiers in the selection.
-#' @param term_data An object class \code{fenr_terms}, created by
+#' @param term_data An object of class \code{fenr_terms}, created by
 #'   \code{prepare_for_enrichment}.
-#' @param feat2name An optional named list to convert feature ids into feature
+#' @param feat2name An optional named list to convert feature IDs into feature
 #'   names.
 #'
-#' @return A tibble with enrichment results. For each term the following
-#'   quantities are reported: \itemize{ \item{\code{N_with} - number of features
-#'   with this term among all features} \item{\code{n_with_sel} - number
-#'   of features with this term in the selection} \item{\code{n_expect} -
-#'   expected number of features with this term in the selection, under the null
-#'   hypothesis that terms are mapped to features randomly}
-#'   \item{\code{enrichment} - ratio of n_with_sel / n_expect}
-#'   \item{\code{odds_ratio} - odds ratio for enrichment; is infinite, when all
-#'   features with the given term are in the selection} \item{\code{p_value} -
-#'   p-value from a single hypergeometric test} \item{\code{p_adjust} - p-value
-#'   adjusted for multiple tests using Benjamini-Hochberg approach}}.
+#' @return A tibble with enrichment results, providing the following information
+#'   for each term:
+#'   \itemize{
+#'     \item{\code{N_with} - number of features with this term among all features}
+#'     \item{\code{n_with_sel} - number of features with this term in the selection}
+#'     \item{\code{n_expect} - expected number of features with this term in the selection,
+#'       under the null hypothesis that terms are mapped to features randomly}
+#'     \item{\code{enrichment} - ratio of n_with_sel / n_expect}
+#'     \item{\code{odds_ratio} - odds ratio for enrichment; is infinite when all
+#'       features with the given term are in the selection}
+#'     \item{\code{p_value} - p-value from a single hypergeometric test}
+#'     \item{\code{p_adjust} - p-value adjusted for multiple tests using the Benjamini-Hochberg approach}
+#'   }.
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom methods is

@@ -72,10 +72,12 @@
 
  - Pre-release Bioconductor version.
 
-## Version 0.99.1 (2023-04-24)
+## Version 0.99.1 (2023-04-25)
 
- - BioPlanet database vanished from internet and there is no sign of it coming back. Removing all BioPlanet-relaed code and replacing BioPlanet with GO in the vignette and examples (this, alas, makes it longer to check).
- - OK, it is back, but I keep GO examples and vinettes.
+ - BioPlanet database vanished from internet and there is no sign of it coming back. Removing all BioPlanet-related code and replacing BioPlanet with GO in the vignette and examples (this, alas, makes it longer to check).
+ - OK, it is back, but I keep GO examples and vignettes.
+ - Minor improvements to documentation.
+ 
  
  
  
