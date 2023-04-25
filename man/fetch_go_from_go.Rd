@@ -28,6 +28,3 @@ This function relies on Gene Ontology's GAF files containing more
   Object Synonym) is returned as \code{gene_synonym}. It is up to the user to
   select the appropriate database.
 }
-\examples{
-go_data <- fetch_go_from_go("sgd")
-}

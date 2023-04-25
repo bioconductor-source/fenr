@@ -51,6 +51,6 @@ created with database access functions in this package, for example
 }
 \examples{
 data(exmpl_all)
-bp <- fetch_bp()
-bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
+go <- fetch_go(species = "sgd")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 }

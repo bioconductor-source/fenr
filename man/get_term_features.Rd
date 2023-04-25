@@ -19,7 +19,7 @@ A character vector containing feature IDs annotated with the term ID.
 Get features annotated with a given term.
 }
 \examples{
-bp_data <- fetch_bp()
-bp_terms <- prepare_for_enrichment(bp_data$terms, bp_data$mapping, feature = "gene_symbol")
-feats <- get_term_features(bp_terms, "bioplanet_1")
+go_data <- fetch_go(species = "sgd")
+go_terms <- prepare_for_enrichment(go_data$terms, go_data$mapping, feature = "gene_symbol")
+feats <- get_term_features(go_terms, "GO:0000001")
 }

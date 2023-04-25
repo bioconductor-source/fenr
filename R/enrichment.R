@@ -36,8 +36,8 @@
 #' @export
 #' @examples
 #' data(exmpl_all)
-#' bp <- fetch_bp()
-#' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
+#' go <- fetch_go(species = "sgd")
+#' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
   # Binding variables from non-standard evaluation locally
   feature_id <- term_id <- NULL
@@ -171,9 +171,9 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #' @export
 #' @examples
 #' data(exmpl_all, exmpl_sel)
-#' bp <- fetch_bp()
-#' bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
-#' enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
+#' go <- fetch_go(species = "sgd")
+#' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
+#' enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL) {
 
   # Binding variables from non-standard evaluation locally

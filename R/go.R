@@ -144,10 +144,7 @@ fetch_go_genes_go <- function(species) {
 #'   \code{designation}.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
-#' @export
 #' @importFrom assertthat assert_that
-#' @examples
-#' go_data <- fetch_go_from_go("sgd")
 fetch_go_from_go <- function(species) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_species(species, "fetch_go_species")
@@ -197,14 +194,6 @@ fetch_go_genes_bm <- function(mart) {
 #'   database, created with, e.g., \code{useEnsembl}.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
-#' @export
-#' @importFrom assertthat assert_that
-#' @importFrom methods is
-#' @examples
-#' \dontrun{
-#' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
-#' go_terms <- fetch_go_from_bm(mart)
-#' }
 fetch_go_from_bm <- function(mart) {
   assert_that(!missing(mart), msg = "Argument 'mart' is missing.")
   assert_that(is(mart, "Mart"))
@@ -218,3 +207,56 @@ fetch_go_from_bm <- function(mart) {
   )
 }
 
+
+#' Get Gene Ontology (GO) data
+#'
+#'
+#' This function downloads term information (GO term ID and name) and gene-term
+#' mapping (gene ID, symbol, and GO term ID) from either the Ensembl database
+#' (using BioMart) or the Gene Ontology database (using GAF files), depending on
+#' the provided argument.
+#'
+#' @details If \code{species} is provided, mapping from a Gene Ontology GAF
+#'   file will be downloaded. GAF files contain more generic information than
+#'   gene symbols. In this function, the third column of the GAF file (DB Object
+#'   Symbol) is returned as \code{gene_symbol}, but, depending on the
+#'   \code{species} argument it can contain other entities, e.g. RNA or protein
+#'   complex names. Similarly, the eleventh column of the GAF file (DB Object
+#'   Synonym) is returned as \code{gene_synonym}. It is up to the user to select
+#'   the appropriate database.
+#'
+#'   Alternatively, if \code{mart} is provided, mapping will be downloaded from
+#'   Ensembl database. It will gene symbol and Ensembl gene ID.
+#'
+#' @param species (Optional) Species designation. Examples are \code{goa_human}
+#'   for human, \code{mgi} for mouse, or \code{sgd} for yeast. Full list of
+#'   available species can be obtained using \code{fetch_go_species} - column
+#'   \code{designation}. This argument is used when fetching data from the Gene
+#'   Ontology database.
+#' @param mart (Optional) Object class \code{Mart} representing connection to
+#'   BioMart database, created with, e.g., \code{useEnsembl}. This argument is
+#'   used when fetching data from the Ensembl database.
+#'
+#' @return A list with \code{terms} and \code{mapping} tibbles.
+#' @export
+#' @importFrom assertthat assert_that
+#' @examples
+#' \dontrun{
+#' # Fetch GO data from Ensembl
+#' mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
+#' go_data_ensembl <- fetch_go(mart = mart)
+#' }
+#' # Fetch GO data from Gene Ontology
+#' go_data_go <- fetch_go(species = "sgd")
+fetch_go <- function(species = NULL, mart = NULL) {
+  assert_that(!(is.null(species) & is.null(mart)),
+              msg = "One of the arguments 'species' or 'mart' must be supplied.")
+  assert_that(is.null(species) | is.null(mart),
+              msg = "Only one of the arguments 'species' or 'mart' must be supplied.")
+
+  if (!is.null(species)) {
+    fetch_go_from_go(species)
+  } else  {
+    fetch_go_from_bm(mart)
+  }
+}

@@ -43,7 +43,7 @@ remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
 
 # Example
 
-Package `fenr` and example data are lodaed with
+Package `fenr` and example data are loaded with
 
 ```{r load_fenr}
 library(fenr)
@@ -52,48 +52,48 @@ data(exmpl_all, exmpl_sel)
 
 ## Data preparation
 
-The first step is to download functional term data. `fenr` supports downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet* and *WikiPathways*. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). The following command downloads functional terms and gene mapping from BioPlanet:
+The first step is to download functional term data. `fenr` supports downloads from *Gene Ontology*, *Reactome*, *KEGG* and *WikiPathways*. Other ontologies can be used as long as they are converted into a suitable format (see function `prepare_for_enrichment` for details). The following command downloads functional terms and gene mapping from Gene Ontology (GO):
 
-```{r fetch_bp}
-bp <- fetch_bp()
+```{r fetch_go}
+go <- fetch_go(species = "sgd")
 ```
 
 This is a list with two tibbles. The first tibble contains term information:
 
-```{r bp_terms}
-bp$terms
+```{r go_terms}
+go$terms
 ```
 
 The second tibble contains gene-term mapping:
 
-```{r bp_mapping}
-bp$mapping
+```{r go_mapping}
+go$mapping
 ```
 
 Next, these user-friendly data need to be converted into machine-friendly object suitable for fast functional enrichment with the following function:
 
 ```{r prepare_for_enrichment}
-bp_terms <- prepare_for_enrichment(bp$terms, bp$mapping, exmpl_all, feature_name = "gene_symbol")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 ```
 
-`exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. As different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `bp$mapping` needs to be specified with `feature_name = "gene_symbol"`. The result, `bp_terms`, is a data structure containing all the mappings in a quickly accessible form. From this point on, `bm_terms` can be used to do multiple functional enrichments on various gene selections.
+`exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. As different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `go$mapping` needs to be specified with `feature_name = "gene_symbol"`. The result, `go_terms`, is a data structure containing all the mappings in a quickly accessible form. From this point on, `go_terms` can be used to do multiple functional enrichments on various gene selections.
 
 ## Functional enrichment
 
 There are two gene sets attached to the package. `exmpl_all` contains all background gene symbols and `exmpl_sel` contains genes of interest. Functional enrichment in the selection can be found using one fast function call:
 
 ```{r enrichment}
-enr <- functional_enrichment(exmpl_all, exmpl_sel, bp_terms)
+enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
 ```
 
 
 ## The output
 
-The result of `functional_enrichment` is a tibble with enrichment results. Here we show all the terms with adjusted p-value less than 0.05.
+The result of `functional_enrichment` is a tibble with enrichment results.
 
 ```{r enrichment_result}
 enr |>
-  dplyr::filter(p_adjust < 0.05)
+  head(10)
 ```
 
 The columns are as follows

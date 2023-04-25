@@ -10,7 +10,7 @@ fetch_terms_for_example(de)
 \item{de}{Differential expression results, use \code{yeast_de} data attached to this package.}
 }
 \value{
-A list of objects containing functional terms for GO, Reactome, KEGG and BioPlanet.
+A list of objects containing functional terms for GO, Reactome and KEGG.
 }
 \description{
 Create term data for interactive example

@@ -67,6 +67,16 @@
 ## Version 0.1.17 (2023-04-18)
 
  - New units tests added
+
+## Version 0.99.0 (2023-04-20)
+
+ - Pre-release Bioconductor version.
+
+## Version 0.99.1 (2023-04-24)
+
+ - BioPlanet database vanished from internet and there is no sign of it coming back. Removing all BioPlanet-relaed code and replacing BioPlanet with GO in the vignette and examples (this, alas, makes it longer to check).
+ - OK, it is back, but I keep GO examples and vinettes.
+ 
  
  
 

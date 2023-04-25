@@ -2,7 +2,7 @@
 #'
 #' @param de Differential expression results, use \code{yeast_de} data attached to this package.
 #'
-#' @return A list of objects containing functional terms for GO, Reactome, KEGG and BioPlanet.
+#' @return A list of objects containing functional terms for GO, Reactome and KEGG.
 #' @export
 #' @examples
 #' data(yeast_de)

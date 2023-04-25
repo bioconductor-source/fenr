@@ -2,8 +2,7 @@
 
 export(enrichment_interactive)
 export(fetch_bp)
-export(fetch_go_from_bm)
-export(fetch_go_from_go)
+export(fetch_go)
 export(fetch_go_species)
 export(fetch_kegg)
 export(fetch_kegg_species)
