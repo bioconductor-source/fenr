@@ -18,14 +18,14 @@ fetch_bp <- function() {
   #
   # SSL certificate for tripod.nih.gov expired, so normal read_csv does not work.
   # The workaround is to use httr::get in an unsecure SSL disabled environment.
-  res <- httr::with_config(
-    config = httr::config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE),
-    httr::GET(bp_file)
-  )
-  paths <- httr::content(res, show_col_types = FALSE, encoding = "UTF-8")
+  # res <- httr::with_config(
+  #  config = httr::config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE),
+  #  httr::GET(bp_file)
+  # )
+  # paths <- httr::content(res, show_col_types = FALSE, encoding = "UTF-8")
 
-  # assert_url_path(bp_file)
-  # paths <- readr::read_csv(bp_file, show_col_types = FALSE)
+  assert_url_path(bp_file)
+  paths <- readr::read_csv(bp_file, show_col_types = FALSE)
 
   terms <- paths |>
     dplyr::select(term_id = PATHWAY_ID, term_name = PATHWAY_NAME) |>

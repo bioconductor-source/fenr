@@ -78,7 +78,7 @@
  - OK, it is back, but I keep GO examples and vignettes.
  - Minor improvements to documentation.
  
+ ## Version 0.99.2 (2023-05-24)
  
+ - BioPlanet's tripod.nih.gov SSL certificate seems to be fixed, so reversing to the original read_csv code.
  
- 
-

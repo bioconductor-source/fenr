@@ -1,6 +1,6 @@
 Package: fenr
 Title: Fast functional enrichment
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
