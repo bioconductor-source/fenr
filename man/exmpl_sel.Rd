@@ -10,6 +10,9 @@ A character vector with 20 elements.
 \usage{
 data(exmpl_sel)
 }
+\value{
+A vector with selected gene names.
+}
 \description{
 A set of gene names manually selected to illustrate functional enrichment.
 }

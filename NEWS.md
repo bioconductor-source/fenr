@@ -86,4 +86,7 @@
  
  - Continuing issues with access to BioPlanet. `fetch_bp` example is now marked `donotrun` and testing `fetch_bp` is removed to ensure smooth build and check even when BioPlanet server is down.
  
+ ## Version 0.99.4
+ 
+ - Taking `BiocCheck` new warnings into account: adding `@return` to data roxygens.
  

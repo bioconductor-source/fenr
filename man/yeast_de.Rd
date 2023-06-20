@@ -10,6 +10,9 @@ A tibble with 5 columns
 \usage{
 data(yeast_de)
 }
+\value{
+Results for differential expression for yeast RNA-seq.
+}
 \description{
 A subset of 6 + 6 replicates was selected from data set reported in https://doi.org/10.1093/bioinformatics/btv425
 }

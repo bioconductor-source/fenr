@@ -5,6 +5,7 @@
 #'
 #' @usage data(exmpl_all)
 #' @format A character vector with 7075 elements.
+#' @return A vector with background gene names.
 "exmpl_all"
 
 
@@ -14,6 +15,7 @@
 #'
 #' @usage data(exmpl_sel)
 #' @format A character vector with 20 elements.
+#' @return A vector with selected gene names.
 "exmpl_sel"
 
 
@@ -23,5 +25,6 @@
 #'
 #' @usage data(yeast_de)
 #' @format A tibble with 5 columns
+#' @return Results for differential expression for yeast RNA-seq.
 "yeast_de"
 

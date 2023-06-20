@@ -10,6 +10,9 @@ A character vector with 7075 elements.
 \usage{
 data(exmpl_all)
 }
+\value{
+A vector with background gene names.
+}
 \description{
 A set of gene names for proteins that could be detected in a typical
 proteomics experiment on human samples.
