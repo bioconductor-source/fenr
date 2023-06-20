@@ -82,3 +82,8 @@
  
  - BioPlanet's tripod.nih.gov SSL certificate seems to be fixed, so reversing to the original read_csv code.
  
+ ## Version 0.99.3
+ 
+ - Continuing issues with access to BioPlanet. `fetch_bp` example is now marked `donotrun` and testing `fetch_bp` is removed to ensure smooth build and check even when BioPlanet server is down.
+ 
+ 

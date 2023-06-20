@@ -6,7 +6,9 @@
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @examples
+#' \dontrun{
 #' bioplanet_data <- fetch_bp()
+#' }
 fetch_bp <- function() {
   # Binding variables from non-standard evaluation locally
   PATHWAY_ID <- PATHWAY_NAME <- GENE_ID <- GENE_SYMBOL <- NULL

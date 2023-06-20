@@ -14,5 +14,7 @@ Download term information (term ID and name) and gene-pathway mapping
 (NCBI gene ID, gene symbol and pathway ID) from BioPlanet.
 }
 \examples{
+\dontrun{
 bioplanet_data <- fetch_bp()
+}
 }
