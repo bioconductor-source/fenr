@@ -3,13 +3,15 @@
 #' Download term information (term ID and name) and gene-pathway mapping
 #' (NCBI gene ID, gene symbol and pathway ID) from BioPlanet.
 #'
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
+#'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @examples
 #' \dontrun{
 #' bioplanet_data <- fetch_bp()
 #' }
-fetch_bp <- function() {
+fetch_bp <- function(use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   PATHWAY_ID <- PATHWAY_NAME <- GENE_ID <- GENE_SYMBOL <- NULL
 
@@ -27,7 +29,8 @@ fetch_bp <- function() {
   # paths <- httr::content(res, show_col_types = FALSE, encoding = "UTF-8")
 
   assert_url_path(bp_file)
-  paths <- readr::read_csv(bp_file, show_col_types = FALSE)
+  lpath <- cached_url_path("bioplanet", bp_file, use_cache)
+  paths <- readr::read_csv(lpath, show_col_types = FALSE)
 
   terms <- paths |>
     dplyr::select(term_id = PATHWAY_ID, term_name = PATHWAY_NAME) |>

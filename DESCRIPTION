@@ -42,7 +42,8 @@ Imports:
     progress,
     biomaRt,
     shiny,
-    ggplot2
+    ggplot2,
+    BiocFileCache
 Suggests:
     BiocStyle,
     testthat,

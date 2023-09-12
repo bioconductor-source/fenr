@@ -38,13 +38,15 @@ parse_obo_file <- function(obo) {
 #' Download GO term descriptions
 #'
 #' @param obo_file A URL or local file containing GO ontology, in OBO format.
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A tibble with term_id and term_name.
-fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo") {
+fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", use_cache) {
   # Binding variables from non-standard evaluation locally
   key <- term_id <- value <- term_name <- NULL
 
-  parsed <- readr::read_lines(obo_file) |>
+  lpath <- cached_url_path("obo", obo_file, use_cache)
+  parsed <- readr::read_lines(lpath) |>
     parse_obo_file()
 
   terms <- parsed |>
@@ -108,9 +110,10 @@ fetch_go_species <- function(url = "http://current.geneontology.org/products/pag
 #' @param species Species designation. Base file name for species file under
 #'   \url{http://current.geneontology.org/annotations}. Examples are
 #'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
-fetch_go_genes_go <- function(species) {
+fetch_go_genes_go <- function(species, use_cache) {
   # Binding variables from non-standard evaluation locally
   gene_synonym <- db_object_synonym <- gene_symbol <- symbol <- NULL
   uniprot_id <- db_id <- term_id <- go_term <- NULL
@@ -118,7 +121,9 @@ fetch_go_genes_go <- function(species) {
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   assert_url_path(gaf_file)
 
-  readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES) |>
+  lpath <- cached_url_path(stringr::str_glue("gaf_{species}"), gaf_file, use_cache)
+
+  readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
     dplyr::select(gene_symbol = symbol, gene_synonym, db_id, term_id = go_term) |>
     dplyr::distinct()
@@ -142,15 +147,16 @@ fetch_go_genes_go <- function(species) {
 #'   \file{mgi} for mouse or \file{sgd} for yeast. Full list of available
 #'   species can be obtained using \code{fetch_go_species} - column
 #'   \code{designation}.
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @importFrom assertthat assert_that
-fetch_go_from_go <- function(species) {
+fetch_go_from_go <- function(species, use_cache = TRUE) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_species(species, "fetch_go_species")
 
-  mapping <- fetch_go_genes_go(species)
-  terms <- fetch_go_terms()
+  mapping <- fetch_go_genes_go(species, use_cache)
+  terms <- fetch_go_terms(use_cache)
 
   list(
     terms = terms,
@@ -164,16 +170,18 @@ fetch_go_from_go <- function(species) {
 #'
 #' @param mart Object class \code{Mart} representing connection to BioMart
 #'   database, created with, e.g., \code{useEnsembl}.
+#' @param use_cache Logical, if TRUE, the remote data will be cached locally.
 #'
 #' @return A tibble with columns \code{ensembl_gene_id}, \code{gene_symbol} and
 #'   \code{term_id}.
-fetch_go_genes_bm <- function(mart) {
+fetch_go_genes_bm <- function(mart, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   gene_symbol <- external_gene_name <- term_id <- go_id <- NULL
 
   biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
-    mart = mart
+    mart = mart,
+    useCache = use_cache
   ) |>
     dplyr::rename(
       gene_symbol = external_gene_name,
@@ -192,14 +200,15 @@ fetch_go_genes_bm <- function(mart) {
 #'
 #' @param mart Object class \code{Mart} representing connection to BioMart
 #'   database, created with, e.g., \code{useEnsembl}.
+##' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
-fetch_go_from_bm <- function(mart) {
+fetch_go_from_bm <- function(mart, use_cache = TRUE) {
   assert_that(!missing(mart), msg = "Argument 'mart' is missing.")
   assert_that(is(mart, "Mart"))
 
-  terms <- fetch_go_terms()
-  mapping <- fetch_go_genes_bm(mart)
+  terms <- fetch_go_terms(use_cache)
+  mapping <- fetch_go_genes_bm(mart, use_cache)
 
   list(
     terms = terms,
@@ -236,6 +245,7 @@ fetch_go_from_bm <- function(mart) {
 #' @param mart (Optional) Object class \code{Mart} representing connection to
 #'   BioMart database, created with, e.g., \code{useEnsembl}. This argument is
 #'   used when fetching data from the Ensembl database.
+#' @param use_cache Logical, if TRUE, the remote data will be cached locally.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
@@ -248,15 +258,15 @@ fetch_go_from_bm <- function(mart) {
 #' }
 #' # Fetch GO data from Gene Ontology
 #' go_data_go <- fetch_go(species = "sgd")
-fetch_go <- function(species = NULL, mart = NULL) {
+fetch_go <- function(species = NULL, mart = NULL, use_cache = TRUE) {
   assert_that(!(is.null(species) & is.null(mart)),
               msg = "One of the arguments 'species' or 'mart' must be supplied.")
   assert_that(is.null(species) | is.null(mart),
               msg = "Only one of the arguments 'species' or 'mart' must be supplied.")
 
   if (!is.null(species)) {
-    fetch_go_from_go(species)
+    fetch_go_from_go(species, use_cache)
   } else  {
-    fetch_go_from_bm(mart)
+    fetch_go_from_bm(mart, use_cache)
   }
 }
