@@ -137,6 +137,59 @@ To quickly see how `fenr` works an example can be loaded directly from GitHub:
 shiny::runGitHub("bartongroup/fenr-shiny-example")
 ```
 
+# Comparison to other functional enrichment packages
+
+There's no shortage of R packages dedicated to functional enrichment analyses, including `topGO`, `GOstats`, `clusterProfiler`, and `GOfuncR`. Many of these packages provide comprehensive analyses tailored to a single gene selection. While they offer detailed insights, their extensive computational requirements often render them slower.
+
+To illustrate, let's take the example of the topGO package.
+
+
+```{r topGO, eval=FALSE}
+library(topGO)
+library(org.Hs.eg.db)
+
+# Preparing the gene set
+all_genes <- setNames(rep(0, length(exmpl_all)), exmpl_all)
+all_genes[exmpl_all %in% exmpl_sel] <- 1
+
+# Define the gene selection function
+gene_selection <- function(genes) {
+  genes > 0
+}
+
+# Mapping genes to GO
+allGO2genes <- annFUN.org(whichOnto = "BP", feasibleGenes = NULL, mapping = "org.Hs.eg.db", ID = "symbol")
+
+# Setting up the GO data for analysis
+go_data <- new(
+  "topGOdata",
+  ontology = "BP",
+  allGenes = all_genes,
+  geneSel = gene_selection,
+  annot = annFUN.GO2genes,
+  GO2genes = allGO2genes
+)
+
+# Performing the enrichment test
+fisher_test <- runTest(go_data, algorithm = "classic", statistic = "fisher")
+```
+
+Though the enrichment test (`runTest`) is fairly fast, completing in about 200 ms on an Intel Core i7 processor, the preparatory step (`new` call) demands a more substantial time commitment, around 6 seconds. Considering each additional gene selection requires a similar amount of time, conducting exploratory interactive analyses on multiple gene sets becomes notably cumbersome.
+
+`fenr` separates preparatory steps and gene selection and is designed with interactivity and speed in mind, particularly when users wish to execute rapid, multiple selection tests.
+
+```{r fenr_speed, eval=FALSE}
+# Setting up data for enrichment
+go <- fetch_go(species = "sgd")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
+
+# Executing the enrichment test
+enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
+```
+
+While data preparation with `fenr` might take a bit longer (around 10 s), the enrichment test is fast, finishing in just about 50 ms. Each new gene selection takes a similar amount of time (with an obvious caveat that a larger gene selection would take more time to calculate).
+
+
 # Session info {.unnumbered}
 
 ```{r session_info, echo=FALSE}
