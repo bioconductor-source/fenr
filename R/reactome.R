@@ -7,6 +7,7 @@
 #' @param path Path in the query
 #'
 #' @return A tibble with result
+#' @noRd
 fetch_reactome_data <- function(path) {
   base_url <-  "https://reactome.org/ContentService"
   url <- file.path(base_url, path)
@@ -37,6 +38,7 @@ fetch_reactome_species <- function() {
 #' @param tax_id Taxonomy ID of the species, a string
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
+#' @noRd
 fetch_reactome_pathways <- function(tax_id) {
   # Binding variables from non-standard evaluation locally
   stId <- displayName <- NULL
@@ -57,6 +59,7 @@ fetch_reactome_pathways <- function(tax_id) {
 #' @param spec Reactome species
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
+#' @noRd
 fetch_reactome_ensembl_genes <- function(spec) {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- term_id <- NULL
@@ -75,6 +78,7 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' @param tax_id Taxon ID
 #'
 #' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
+#' @noRd
 fetch_reactome_gene_association <- function(tax_id) {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
@@ -106,6 +110,7 @@ fetch_reactome_gene_association <- function(tax_id) {
 #'
 #' @return A tibble with columns\code{term_id}, \code{accession_number} and
 #'   \code{gene_symbol}.
+#' @noRd
 fetch_reactome_api_genes <- function(pathways) {
   identifier <- geneName <- gene_symbol <- databaseName <- NULL
 

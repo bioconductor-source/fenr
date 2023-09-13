@@ -16,7 +16,7 @@ fetch_terms_for_example <- function(de) {
 
   # load GO terms
   message("Fetching GO data\n")
-  go <- fetch_go_from_go("sgd")
+  go <- fetch_go(species = "sgd")
   go_data <- prepare_for_enrichment(go$terms, go$mapping, all_genes, feature_name = "gene_synonym")
 
   # load Reactome pathways
@@ -45,6 +45,7 @@ fetch_terms_for_example <- function(de) {
 #' @param fdr_limit FDR limit below which point will be plotted black
 #'
 #' @return A ggplot object
+#' @noRd
 plot_volcano <- function(d, fdr_limit = 0.05) {
   # Binding variables from non-standard evaluation locally
   x <- y <- FDR <- NULL
@@ -74,6 +75,7 @@ plot_volcano <- function(d, fdr_limit = 0.05) {
 #' @param fdr_limit FDR limit below which point will be plotted black
 #'
 #' @return A ggplot object
+#' @noRd
 plot_ma <- function(d, fdr_limit = 0.05) {
   # Binding variables from non-standard evaluation locally
   x <- y <- NULL
@@ -98,6 +100,7 @@ plot_ma <- function(d, fdr_limit = 0.05) {
 #' @param input App input
 #'
 #' @return A tibble with x, y
+#' @noRd
 get_xy_data <- function(de, input) {
   logFC <- PValue <- logCPM <- NULL
   if (input$plot_type == "volcano") {
@@ -118,6 +121,7 @@ get_xy_data <- function(de, input) {
 #' @param max_points Maximum number of points allowed to select
 #'
 #' @return A tibble with functional enrichment results
+#' @noRd
 enrichment_table <- function(de, term_data, input, max_points = 10000) {
   # Binding variables from non-standard evaluation locally
   p_adjust <- n_with_sel <- NULL
@@ -148,6 +152,7 @@ enrichment_table <- function(de, term_data, input, max_points = 10000) {
 #' @param input App input
 #'
 #' @return Data for volcano or ma plot
+#' @noRd
 main_plot <- function(de, input) {
   xy_data <- get_xy_data(de, input)
   if (input$plot_type == "volcano") {
@@ -171,8 +176,8 @@ main_plot <- function(de, input) {
 #'
 #' @return An interactive Shiny app
 #' @importFrom assertthat assert_that
-#' @import shiny
-#' @import ggplot2
+#' @importFrom shiny shinyUI titlePanel fluidRow column RadioButtons plotOutput
+#'   div stopApp renderTable renderPlot ShinyApp
 #' @export
 #' @examples
 #' \dontrun{

@@ -4,12 +4,13 @@
 #'
 #' @return A character string representing the path to the cache directory for `fenr`.
 #' @importFrom tools R_user_dir
+#' @noRd
 cache_location <- function() {
   tools::R_user_dir("fenr", which = "cache")
 }
 
 
-#' URL Cache Path Function
+#' URL Cache Path Location
 #'
 #' This function queries a BiocFileCache object for a given resource name (`rname`).
 #' If the resource isn't found, it's added to the cache. If there's one entry found,
@@ -21,7 +22,8 @@ cache_location <- function() {
 #' @param fpath A character string representing the path to the file.
 #'
 #' @return A character string representing the local path of the cached resource.
-url_cache_path <- function(bfc, rname, fpath) {
+#' @noRd
+cache_path <- function(bfc, rname, fpath) {
   hits <- BiocFileCache::bfcquery(bfc, rname, field = "rname")
 
   # Not found, add to cache, get local path
@@ -60,11 +62,12 @@ url_cache_path <- function(bfc, rname, fpath) {
 #'
 #' @return A character string representing either the cached local path (if caching
 #'   is enabled) or the original file path (if caching is disabled).
+#' @noRd
 cached_url_path <- function(rname, fpath, use_cache) {
   if(use_cache) {
-    cache <- fenr_cache_location()
+    cache <- cache_location()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-    lpath <- url_cache_path(bfc, rname, fpath)
+    lpath <- cache_path(bfc, rname, fpath)
   } else {
     lpath <- fpath
   }

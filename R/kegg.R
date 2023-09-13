@@ -5,6 +5,7 @@ KEGG_BASE_URL <- "https://rest.kegg.jp"
 #' @param path Path in the query
 #'
 #' @return A string with result
+#' @noRd
 fetch_kegg_data <- function(path) {
   url <- file.path(KEGG_BASE_URL, path)
   assert_url_path(url)
@@ -31,6 +32,7 @@ fetch_kegg_species <- function() {
 #' @param species A valid species designation used by KEGG.
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}.
+#' @noRd
 fetch_kegg_pathways <- function(species) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
@@ -50,29 +52,29 @@ fetch_kegg_pathways <- function(species) {
 #'
 #' @param s A string containing flat file result
 #'
-#' @import stringr
 #' @return A tibble with \code{gene_is}, \code{gene_symbol} and \code{term_id}.
+#' @noRd
 parse_kegg_genes <- function(s) {
   # Binding variables from non-standard evaluation locally
   data <- gene_symbol <- gene_id <- NULL
 
-  entries <- str_split(s, "///") |> unlist()
+  entries <- stringr::str_split(s, "///") |> unlist()
   entries <- entries[-length(entries)] # there is /// at the end
   purrr::map_dfr(entries, function(entry) {
-    d <- str_split(entry, "\n") |>
+    d <- stringr::str_split(entry, "\n") |>
       unlist()
     n <- length(d)
     i <- 1
 
     # find ENTRY key
-    while(i <= n & !(str_detect(d[i], "^ENTRY")))
+    while(i <= n & !(stringr::str_detect(d[i], "^ENTRY")))
       i <- i + 1
-    paths <- str_split(d[i], "\\s+") |> unlist()
+    paths <- stringr::str_split(d[i], "\\s+") |> unlist()
     pathway <- paths[2]
 
     # find GENE key
     i <- 1
-    while(i <= n & !(str_detect(d[i], "^GENE")))
+    while(i <= n & !(stringr::str_detect(d[i], "^GENE")))
       i <- i + 1
     # no GENE key found
     if(i > n)
@@ -82,9 +84,9 @@ parse_kegg_genes <- function(s) {
       ))
 
     # extract genes
-    genes <- str_remove(d[i], "GENE\\s+")
+    genes <- stringr::str_remove(d[i], "GENE\\s+")
     i <- i + 1
-    while(i <= n & str_detect(d[i], "^\\s+")) {
+    while(i <= n & stringr::str_detect(d[i], "^\\s+")) {
       genes <- c(genes, str_remove(d[i], "^\\s+"))
       i <- i + 1
     }
@@ -110,6 +112,7 @@ parse_kegg_genes <- function(s) {
 #'   maximum allowed is 10.
 #' @importFrom assertthat assert_that
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
+#' @noRd
 fetch_kegg_mapping <- function(pathways, batch_size) {
   assert_that(is.character(pathways))
   batches <- split(pathways, ceiling(seq_along(pathways) / batch_size))
@@ -131,8 +134,7 @@ fetch_kegg_mapping <- function(pathways, batch_size) {
 #' Download information (pathway ID and name) and gene-pathway mapping (entrez
 #' gene ID, gene symbol and pathway ID) from KEGG. Gene symbols are extracted
 #' from gene descriptions. For some species (e.g. yeast), gene symbols are
-#' returned instead of entrez IDs and not in gene description. This function is
-#' based on BioConductor package \pkg{KEGGREST}.
+#' returned instead of entrez IDs and not in gene description.
 #'
 #' @param species KEGG species code, for example "hsa" for human. The
 #'   full list of available KEGG species can be found by using \code{fetch_kegg_species}.

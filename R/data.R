@@ -1,10 +1,10 @@
 #' Example set of background genes.
 #'
 #' A set of gene names for proteins that could be detected in a typical
-#' proteomics experiment on human samples.
+#' proteomics experiment on yeast samples.
 #'
 #' @usage data(exmpl_all)
-#' @format A character vector with 7075 elements.
+#' @format A character vector with 6985 elements.
 #' @return A vector with background gene names.
 "exmpl_all"
 
@@ -14,7 +14,7 @@
 #' A set of gene names manually selected to illustrate functional enrichment.
 #'
 #' @usage data(exmpl_sel)
-#' @format A character vector with 20 elements.
+#' @format A character vector with 21 elements.
 #' @return A vector with selected gene names.
 "exmpl_sel"
 

@@ -5,7 +5,7 @@
 \alias{exmpl_sel}
 \title{Example set of selected genes.}
 \format{
-A character vector with 20 elements.
+A character vector with 21 elements.
 }
 \usage{
 data(exmpl_sel)

@@ -48,7 +48,9 @@ Suggests:
     BiocStyle,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    topGO,
+    org.Hs.eg.db
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 LazyData: false

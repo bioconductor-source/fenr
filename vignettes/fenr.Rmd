@@ -5,7 +5,6 @@ package: fenr
 output:
   BiocStyle::html_document:
     toc_float: true
-    css: style.css
 abstract: |
   The `fenr` R package enables rapid functional enrichment analysis, typically completing in a fraction of a second, which makes it well-suited for interactive applications, such as Shiny apps. To accomplish this, fenr pre-downloads functional data (e.g., GO terms or KEGG pathways) and stores them in a format optimized for swift analysis of any arbitrary selection of features, including genes or proteins.
 vignette: >
@@ -19,6 +18,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options(width = 72)
 ```
 
 
@@ -34,11 +34,20 @@ Functional enrichment analysis should not be considered the ultimate answer in u
 
 # Installation
 
-`fenr` can be installed from GitHub (you need to install `remotes` package first).
+`fenr` can be installed from *Bioconductor* by using:
 
-```{r install, eval=FALSE}
-remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
+```{r bioconductor_install, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("fenr")
 ```
+
+# Overview
+
+The input data for `fenr` consists of two tibbles or data frames. One contains functional term descriptions, the other term-feature mapping. These data can be obtain using helper functions `fetch_*` to download data from GO, KEGG, BioPlanet or WikiPathways. Alternatively, they can be provided by the user. The tibbles are converted into an object of class `fenr_terms`, which stores data in the format optimised for fast search and access. This object is then used by the function `functional_enrichment` to find enrichment for any given feature selection.
+
+![](overview.png)
 
 # Example
 
@@ -79,7 +88,8 @@ go$mapping
 To make these user-friendly data more suitable for rapid functional enrichment analysis, they need to be converted into a machine-friendly object using the following function:
 
 ```{r prepare_for_enrichment}
-go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
+                                   feature_name = "gene_symbol")
 ```
 
 `exmpl_all` is an example of gene background - a vector with gene symbols related to all detections in an imaginary RNA-seq experiment. Since different datasets use different features (gene id, gene symbol, protein id), the column name containing features in `go$mapping` needs to be specified using `feature_name = "gene_symbol"`. The resulting object, `go_terms`, is a data structure containing all the mappings in a quickly accessible form. From this point on, `go_terms` can be employed to perform multiple functional enrichment analyses on various gene selections.
@@ -116,14 +126,14 @@ The columns are as follows
 
 A small Shiny app is included in the package to demonstrate the usage of `fenr` in an interactive environment. All time-consuming data loading and preparation tasks are performed before the app is launched.
 
-```{r interactive_prepare, eval=FALSE}
+```{r interactive_prepare}
 data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
 ```
  
 `yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923).
 
-The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome* and *KEGG*.  You can view the step-by-step process by examining the function code on [GitHub](https://github.com/bartongroup/fenr/blob/main/R/iteractive_example.R). The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome* and *KEGG*. The step-by-step process of data acquisition can be examined by viewing the function by typing `fetch_terms_for_example` in the R console. The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
 
 After completing the slow tasks, you can start the Shiny app by running:
 
@@ -144,9 +154,11 @@ There's no shortage of R packages dedicated to functional enrichment analyses, i
 To illustrate, let's take the example of the topGO package.
 
 
-```{r topGO, eval=FALSE}
-library(topGO)
-library(org.Hs.eg.db)
+```{r topGO}
+suppressPackageStartupMessages({
+  library(topGO)
+  library(org.Hs.eg.db)
+})
 
 # Preparing the gene set
 all_genes <- setNames(rep(0, length(exmpl_all)), exmpl_all)
@@ -158,7 +170,8 @@ gene_selection <- function(genes) {
 }
 
 # Mapping genes to GO
-allGO2genes <- annFUN.org(whichOnto = "BP", feasibleGenes = NULL, mapping = "org.Hs.eg.db", ID = "symbol")
+allGO2genes <- annFUN.org(whichOnto = "BP", feasibleGenes = NULL,
+                          mapping = "org.Hs.eg.db", ID = "symbol")
 
 # Setting up the GO data for analysis
 go_data <- new(
@@ -178,10 +191,11 @@ Though the enrichment test (`runTest`) is fairly fast, completing in about 200 m
 
 `fenr` separates preparatory steps and gene selection and is designed with interactivity and speed in mind, particularly when users wish to execute rapid, multiple selection tests.
 
-```{r fenr_speed, eval=FALSE}
+```{r fenr_speed}
 # Setting up data for enrichment
 go <- fetch_go(species = "sgd")
-go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
+                                   feature_name = "gene_symbol")
 
 # Executing the enrichment test
 enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)

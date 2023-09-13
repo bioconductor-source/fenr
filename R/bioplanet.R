@@ -17,17 +17,6 @@ fetch_bp <- function(use_cache = TRUE) {
 
   bp_file <- "https://tripod.nih.gov/bioplanet/download/pathway.csv"
 
-  # ---------------------------
-  # WARNING: A NASTY HACK
-  #
-  # SSL certificate for tripod.nih.gov expired, so normal read_csv does not work.
-  # The workaround is to use httr::get in an unsecure SSL disabled environment.
-  # res <- httr::with_config(
-  #  config = httr::config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE),
-  #  httr::GET(bp_file)
-  # )
-  # paths <- httr::content(res, show_col_types = FALSE, encoding = "UTF-8")
-
   assert_url_path(bp_file)
   lpath <- cached_url_path("bioplanet", bp_file, use_cache)
   paths <- readr::read_csv(lpath, show_col_types = FALSE)

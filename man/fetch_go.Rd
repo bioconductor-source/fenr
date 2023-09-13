@@ -4,7 +4,7 @@
 \alias{fetch_go}
 \title{Get Gene Ontology (GO) data}
 \usage{
-fetch_go(species = NULL, mart = NULL)
+fetch_go(species = NULL, mart = NULL, use_cache = TRUE)
 }
 \arguments{
 \item{species}{(Optional) Species designation. Examples are \code{goa_human}
@@ -16,6 +16,8 @@ Ontology database.}
 \item{mart}{(Optional) Object class \code{Mart} representing connection to
 BioMart database, created with, e.g., \code{useEnsembl}. This argument is
 used when fetching data from the Ensembl database.}
+
+\item{use_cache}{Logical, if TRUE, the remote data will be cached locally.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
@@ -40,11 +42,9 @@ If \code{species} is provided, mapping from a Gene Ontology GAF
   Ensembl database. It will gene symbol and Ensembl gene ID.
 }
 \examples{
-\dontrun{
 # Fetch GO data from Ensembl
 mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
 go_data_ensembl <- fetch_go(mart = mart)
-}
 # Fetch GO data from Gene Ontology
 go_data_go <- fetch_go(species = "sgd")
 }

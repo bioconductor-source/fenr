@@ -4,6 +4,7 @@
 #' @param parameters Parameters, e.g. `organism=Homo sapiens`
 #'
 #' @return JSON with response
+#' @noRd
 get_wiki_query <- function(query, parameters = NULL) {
   pars <- paste(c(parameters, "format=json"), collapse = "&")
   qry <- stringr::str_glue("https://webservice.wikipathways.org/{query}?{pars}") |>
@@ -30,6 +31,7 @@ fetch_wiki_species <- function() {
 #' @param species Species name recognised by WikiPathways (see \code{fetch_wiki_species()})
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
+#' @noRd
 fetch_wiki_pathways <- function(species) {
   id <- name <- NULL
 
@@ -48,6 +50,7 @@ fetch_wiki_pathways <- function(species) {
 #' @param key Key to extract
 #'
 #' @return Value of the key
+#' @noRd
 extract_key <- function(s, key) {
   stringr::str_extract(s, paste0('(?<=', key, '=")(.+?)(?=")'))
 }
@@ -58,6 +61,7 @@ extract_key <- function(s, key) {
 #' @param keys Keys to be extracted.
 #'
 #' @return A tibble with selected keys and values
+#' @noRd
 parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID")) {
   gpml |>
     stringr::str_replace_all("\\n", "") |>
@@ -77,6 +81,7 @@ parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID"
 #' @param types Names of types to use
 #'
 #' @return A tibble with \code{term_id} and \code{gene_symbol}
+#' @noRd
 fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL) {
   term_id <- TextLabel <-ID <- Type <- Database <- database <- type <- NULL
 

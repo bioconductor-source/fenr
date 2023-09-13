@@ -31,6 +31,7 @@ GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
 #' @param cols A string vector with required column names
 #'
 #' @return TRUE if assertion passed
+#' @noRd
 assert_columns <- function(tb, cols) {
   if(!all(cols %in% colnames(tb)))
     stop(paste0("The data frame needs to contain the following columns\n", paste(cols, collapse = ", ")))
@@ -47,6 +48,7 @@ assert_columns <- function(tb, cols) {
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return TRUE if assertion passed
+#' @noRd
 assert_url_path <- function(url_path, stop_if_error = TRUE) {
   assert_that(is.string(url_path))
   hd <- tryCatch(
@@ -76,6 +78,7 @@ assert_url_path <- function(url_path, stop_if_error = TRUE) {
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return A tibble with valid species - a response from \code{fetch_fun}
+#' @noRd
 assert_species <- function(species, fetch_fun) {
   assert_that(is.string(species))
   assert_that(is.string(fetch_fun))
@@ -100,6 +103,7 @@ assert_species <- function(species, fetch_fun) {
 #'
 #' @return A value extracted from column \code{col_name} at row where
 #'   \code{designation} = \code{species}.
+#' @noRd
 match_species <- function(species, fetch_fun, col_name) {
   designation <- NULL
 

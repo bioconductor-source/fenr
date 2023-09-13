@@ -5,7 +5,7 @@
 \alias{exmpl_all}
 \title{Example set of background genes.}
 \format{
-A character vector with 7075 elements.
+A character vector with 6985 elements.
 }
 \usage{
 data(exmpl_all)
@@ -15,6 +15,6 @@ A vector with background gene names.
 }
 \description{
 A set of gene names for proteins that could be detected in a typical
-proteomics experiment on human samples.
+proteomics experiment on yeast samples.
 }
 \keyword{datasets}

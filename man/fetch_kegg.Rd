@@ -20,8 +20,7 @@ A list with \code{terms} and \code{mapping} tibbles.
 Download information (pathway ID and name) and gene-pathway mapping (entrez
 gene ID, gene symbol and pathway ID) from KEGG. Gene symbols are extracted
 from gene descriptions. For some species (e.g. yeast), gene symbols are
-returned instead of entrez IDs and not in gene description. This function is
-based on BioConductor package \pkg{KEGGREST}.
+returned instead of entrez IDs and not in gene description.
 }
 \examples{
 kegg_data <- fetch_kegg("sce")

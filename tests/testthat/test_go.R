@@ -28,7 +28,7 @@ test_that("Processing OBO file", {
   expected_names <- c("mitochondrion inheritance", "mitotic spindle elongation",
                       "obsolete nuclear interphase chromosome", "mitotic spindle elongation")
 
-  trms <- fetch_go_terms("../test_data/go_obo_test.txt")
+  trms <- fetch_go_terms("../test_data/go_obo_test.txt", use_cache = FALSE)
   expect_s3_class(trms, "tbl")
   expect_equal(trms$term_id, expected_ids)
   expect_equal(trms$term_name, expected_names)
@@ -51,7 +51,7 @@ test_that("GO yeast gene mapping makes sense", {
     "GO:0005199", "CWP2",
     "GO:0004365", "TDH3"
   )
-  mapping <- fetch_go_genes_go("sgd") |>
+  mapping <- fetch_go_genes_go("sgd", use_cache = TRUE) |>
     dplyr::select(term_id, gene_symbol) |>
     dplyr::distinct()
   expect_is(mapping, "tbl")

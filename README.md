@@ -15,10 +15,13 @@ shiny::runGitHub("bartongroup/fenr-shiny-example")
 
 ## Installation
 
-`fenr` can be installed from GitHub (you need to install `remotes` first):
+`fenr` can be installed using
 
 ```
-remotes::install_github("bartongroup/fenr", build_vignettes = TRUE)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("fenr")
 ```
 
 ## Usage

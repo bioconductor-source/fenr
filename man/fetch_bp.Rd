@@ -4,7 +4,10 @@
 \alias{fetch_bp}
 \title{Get functional term data from BioPlanet}
 \usage{
-fetch_bp()
+fetch_bp(use_cache = TRUE)
+}
+\arguments{
+\item{use_cache}{Logical, if TRUE, the remote file will be cached locally.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles.
