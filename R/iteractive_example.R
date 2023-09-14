@@ -52,18 +52,18 @@ plot_volcano <- function(d, fdr_limit = 0.05) {
 
   sres <- d |>
     dplyr::filter(FDR <= fdr_limit)
-  g <- ggplot(d, aes(x, y)) +
-    theme_classic() +
-    theme(
-      panel.grid = element_blank(),
-      text = element_text(size = 18)
+  g <- ggplot2::ggplot(d, ggplot2::aes(x, y)) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      text = ggplot2::element_text(size = 18)
     ) +
-    geom_point(size = 0.2) +
-    geom_vline(xintercept = 0, colour = "grey70") +
-    labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.03)))
+    ggplot2::geom_point(size = 0.2) +
+    ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
+    ggplot2::labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.03)))
   if (nrow(sres) > 0) {
-    g <- g + geom_hline(yintercept = -log10(max(sres$PValue)), colour = "red",
+    g <- g + ggplot2::geom_hline(yintercept = -log10(max(sres$PValue)), colour = "red",
                         linetype = "dashed", alpha = 0.2)
   }
   g
@@ -80,16 +80,16 @@ plot_ma <- function(d, fdr_limit = 0.05) {
   # Binding variables from non-standard evaluation locally
   x <- y <- NULL
 
-  ggplot(d, aes(x, y)) +
-    theme_classic() +
-    theme(
-      panel.grid = element_blank(),
-      text = element_text(size = 18)
+  ggplot2::ggplot(d, ggplot2::aes(x, y)) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      text = ggplot2::element_text(size = 18)
     ) +
-    geom_point(data = d[d$FDR > fdr_limit,], size = 0.1, colour = "grey50") +
-    geom_point(data = d[d$FDR <= fdr_limit,], size = 0.2, colour = "black") +
-    geom_hline(yintercept = 0, colour = "grey70") +
-    labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
+    ggplot2::geom_point(data = d[d$FDR > fdr_limit,], size = 0.1, colour = "grey50") +
+    ggplot2::geom_point(data = d[d$FDR <= fdr_limit,], size = 0.2, colour = "black") +
+    ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
+    ggplot2::labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
 }
 
 
@@ -132,7 +132,7 @@ enrichment_table <- function(de, term_data, input, max_points = 10000) {
   sel <- NULL
   fe <- NULL
   if (!is.null(input$plot_brush)) {
-    brushed <- brushedPoints(xy_data, input$plot_brush)
+    brushed <- shiny::brushedPoints(xy_data, input$plot_brush)
     sel <- brushed$gene_id
     n <- length(sel)
     if (n > 0 && n <= max_points) {
@@ -176,8 +176,6 @@ main_plot <- function(de, input) {
 #'
 #' @return An interactive Shiny app
 #' @importFrom assertthat assert_that
-#' @importFrom shiny shinyUI titlePanel fluidRow column RadioButtons plotOutput
-#'   div stopApp renderTable renderPlot ShinyApp
 #' @export
 #' @examples
 #' \dontrun{
@@ -191,20 +189,20 @@ enrichment_interactive <- function(de, term_data) {
   assert_that(is(term_data, "list"))
 
   ui <- function() {
-    shinyUI(fluidPage(
-      tags$style("table{font-size: 11px; background-color: #EAF5FF}"),
-      titlePanel("fenr example"),
-      p("Select a group of genes in the plot to see their functional enrichment."),
+    shiny::shinyUI(shiny::fluidPage(
+      shiny::tags$style("table{font-size: 11px; background-color: #EAF5FF}"),
+      shiny::titlePanel("fenr example"),
+      shiny::p("Select a group of genes in the plot to see their functional enrichment."),
 
-      fluidRow(
-        column(5,
-          radioButtons(
+      shiny::fluidRow(
+        shiny::column(5,
+                      shiny::radioButtons(
             inputId = "plot_type",
             label = "Plot type:",
             choices = c("Volcano" = "volcano", "MA" = "ma"),
             inline = TRUE
           ),
-          plotOutput(
+          shiny::plotOutput(
             outputId = "main_plot",
             height = "480px",
             width = "100%",
@@ -212,14 +210,14 @@ enrichment_interactive <- function(de, term_data) {
             hover = "plot_hover"
           )
         ),
-        column(7,
-          radioButtons(
+        shiny::column(7,
+          shiny::radioButtons(
             inputId = "ontology",
             label = "Ontology:",
             choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg"),
             inline = TRUE
           ),
-           div(style = 'height: 480px; overflow-y: scroll', tableOutput("enrichment")),
+          shiny::div(style = 'height: 480px; overflow-y: scroll', shiny::tableOutput("enrichment")),
         )
       )
     ))
@@ -228,18 +226,18 @@ enrichment_interactive <- function(de, term_data) {
   server <- function(input, output, session) {
     # Prevents RStudio from crashing when Shiny window closed manually
     session$onSessionEnded(function() {
-      stopApp()
+      shiny::stopApp()
     })
 
-    output$enrichment <- renderTable({
+    output$enrichment <- shiny::renderTable({
       enrichment_table(de, term_data, input)
     })
 
-    output$main_plot <- renderPlot({
+    output$main_plot <- shiny::renderPlot({
       main_plot(de, input)
     })
   }
 
   # Run the application
-  shinyApp(ui = ui, server = server)
+  shiny::shinyApp(ui = ui, server = server)
 }

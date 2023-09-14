@@ -87,7 +87,7 @@ parse_kegg_genes <- function(s) {
     genes <- stringr::str_remove(d[i], "GENE\\s+")
     i <- i + 1
     while(i <= n & stringr::str_detect(d[i], "^\\s+")) {
-      genes <- c(genes, str_remove(d[i], "^\\s+"))
+      genes <- c(genes, stringr::str_remove(d[i], "^\\s+"))
       i <- i + 1
     }
 
