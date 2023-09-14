@@ -27,23 +27,24 @@ biocViews:
     Reactome,
     Proteomics
 Imports:
+    tools,
     methods,
     assertthat,
     rlang,
     dplyr,
     tidyr,
+    tibble,
     purrr,
     readr,
     stringr,
-    tibble,
     httr,
     XML,
     jsonlite,
     progress,
     biomaRt,
+    BiocFileCache,
     shiny,
-    ggplot2,
-    BiocFileCache
+    ggplot2
 Suggests:
     BiocStyle,
     testthat,
