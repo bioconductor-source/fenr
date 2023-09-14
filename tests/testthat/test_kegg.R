@@ -28,18 +28,27 @@ test_that("Expected return from fetch_kegg_species", {
 })
 
 
-test_that("KEGG yeast mapping makes sense", {
-  expected <- tibble::tribble(
+test_that("Correct response from fetch_kegg", {
+  species <- "sce"
+
+  expected_terms <- tibble::tribble(
+    ~term_id, ~term_name,
+    "sce01100",  "Metabolic pathways - Saccharomyces cerevisiae (budding yeast)",
+    "sce01230", "Biosynthesis of amino acids - Saccharomyces cerevisiae (budding yeast)",
+    "sce03010", "Ribosome - Saccharomyces cerevisiae (budding yeast)",
+    "sce00052", "Galactose metabolism - Saccharomyces cerevisiae (budding yeast)"
+  )
+
+  expected_mapping <- tibble::tribble(
     ~term_id, ~gene_symbol,
     "sce00010", "FBA1",
     "sce00010", "TDH3",
     "sce03030", "POL1",
     "sce04120", "UBI4"
   )
-  mapping <- fetch_kegg_mapping(unique(expected$term_id), 1)
-  expect_is(mapping, "tbl")
-  merged <- expected |>
-    dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected), nrow(merged))
+
+  re <- fetch_kegg("sce")
+  test_fetched_structure(re)
+  test_terms(re$terms, expected_terms)
+  test_mapping(re$mapping, expected_mapping, "gene_symbol")
 })

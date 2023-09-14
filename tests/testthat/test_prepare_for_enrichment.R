@@ -23,9 +23,10 @@ mapping <- purrr::map2_dfr(term_ids, term_sizes, function(tid, n) {
     term_id = tid,
     feature_id = sample(features_all, n)
   )
-})
+}) |>
+  dplyr::add_row(term_id = "missing_term", feature_id = "gene_000")
 
-all_terms <- terms$term_id
+all_terms <- mapping$term_id |> unique()
 all_features <- mapping$feature_id |> unique()
 
 
@@ -39,11 +40,14 @@ test_that("Expected correct output", {
   expect_s3_class(td, "fenr_terms")
 
   # Check term names
-  expect_equal(length(td$term2name), nrow(terms))
+  expect_equal(length(td$term2name), length(all_terms))
   for(i in seq_along(terms$term_id)) {
     r <- terms[i, ]
     expect_equal(sort(r$term_name), sort(td$term2name[[r$term_id]]))
   }
+
+  # Check for a missing term
+  expect_contains(names(td$term2name), "missing_term")
 
   # Check term-feature hash
   term_ids <- mapping$term_id |> unique()

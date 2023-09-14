@@ -4,11 +4,11 @@ test_that("Incorrect URL in fetch_go_species", {
   )
 })
 
+
 test_that("Incorrect aruments in fetch_go", {
   expect_error(fetch_go())
   expect_error(fetch_go(species = "sgd", mart = "mart"))
 })
-
 
 
 test_that("Incorrect species in fetch_go", {
@@ -43,20 +43,52 @@ test_that("Expected return from fetch_go_species", {
 })
 
 
-test_that("GO yeast gene mapping makes sense", {
-  expected <- tibble::tribble(
+test_that("GO yeast from GO is correct", {
+  species <- "sgd"
+
+  expected_terms <- tibble::tribble(
+    ~term_id, ~term_name,
+    "GO:0000166", "nucleotide binding",
+    "GO:0006096", "glycolytic process",
+    "GO:0005199", "structural constituent of cell wall",
+    "GO:0004365", "glyceraldehyde-3-phosphate dehydrogenase (NAD+) (phosphorylating) activity"
+  )
+
+  expected_mapping <- tibble::tribble(
     ~term_id, ~gene_symbol,
     "GO:0000166", "POL1",
     "GO:0006096", "FBA1",
     "GO:0005199", "CWP2",
     "GO:0004365", "TDH3"
   )
-  mapping <- fetch_go_genes_go("sgd", use_cache = TRUE) |>
-    dplyr::select(term_id, gene_symbol) |>
-    dplyr::distinct()
-  expect_is(mapping, "tbl")
-  merged <- expected |>
-    dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected), nrow(merged))
+
+  re <- fetch_go(species = "sgd")
+  test_fetched_structure(re)
+  test_terms(re$terms, expected_terms)
+  test_mapping(re$mapping, expected_mapping, "gene_symbol")
+})
+
+
+test_that("GO yeast from Ensembl is correct", {
+  expected_terms <- tibble::tribble(
+    ~term_id, ~term_name,
+    "GO:0000166", "nucleotide binding",
+    "GO:0006096", "glycolytic process",
+    "GO:0005199", "structural constituent of cell wall",
+    "GO:0004365", "glyceraldehyde-3-phosphate dehydrogenase (NAD+) (phosphorylating) activity"
+  )
+
+  expected_mapping <- tibble::tribble(
+    ~term_id, ~ensembl_gene_id,
+    "GO:0000166", "YNL102W",
+    "GO:0006096", "YKL060C",
+    "GO:0005199", "YKL096W-A",
+    "GO:0004365", "YGR192C"
+  )
+
+  mart <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
+  re <- fetch_go(mart = mart)
+  test_fetched_structure(re)
+  test_terms(re$terms, expected_terms)
+  test_mapping(re$mapping, expected_mapping, "ensembl_gene_id")
 })

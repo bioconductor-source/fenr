@@ -160,3 +160,51 @@ get_feature_terms <- function(term_data, feature_id) {
   term_data$feature2term[[feature_id]]
 }
 
+
+
+#' Test correctness of data structure returned by fetch_*
+#'
+#' @param re The data structure returned by fetch_*
+#' @noRd
+test_fetched_structure <- function(re) {
+  expect_is(re, "list")
+  expect_length(re, 2)
+  expect_named(re)
+  expect_equal(names(re), c("terms", "mapping"))
+}
+
+
+#' Test if returned terms tibble is consistent with expected selection
+#'
+#' @param returned A tibble, the terms data returned by  fetch_*.
+#' @param expected A tibble, a selection of expected terms data.
+test_terms <- function(returned, expected) {
+  expect_is(returned, "tbl")
+  expect_contains(names(returned), c("term_id", "term_name"))
+
+  returned <- returned |> dplyr::select(term_id, term_name)
+
+  merged <- expected |>
+    dplyr::left_join(returned, by = c("term_id", "term_name")) |>
+    tidyr::drop_na()
+  expect_equal(nrow(expected), nrow(merged))
+}
+
+#' Test if returned mapping is consistent with expected selection
+#'
+#' @param returned A tibble, the mapping returned by  fetch_*.
+#' @param expected A tibble, a selection of expected mapping.
+test_mapping <- function(returned, expected, feature_id) {
+  expect_is(returned, "tbl")
+  expect_contains(names(returned), c("term_id", feature_id))
+
+  returned <- returned |> dplyr::select(term_id, all_of(feature_id))
+
+  merged <- expected |>
+    dplyr::left_join(returned, by = c("term_id", feature_id)) |>
+    dplyr::distinct() |>
+    tidyr::drop_na()
+  expect_equal(nrow(expected), nrow(merged))
+}
+
+
