@@ -3,7 +3,6 @@
 #' This function returns the cache directory location for the `fenr` package.
 #'
 #' @return A character string representing the path to the cache directory for `fenr`.
-#' @importFrom tools R_user_dir
 #' @noRd
 cache_location <- function() {
   tools::R_user_dir("fenr", which = "cache")
