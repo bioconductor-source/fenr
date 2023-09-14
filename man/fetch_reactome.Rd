@@ -4,7 +4,11 @@
 \alias{fetch_reactome}
 \title{Get functional term data from Reactome}
 \usage{
-fetch_reactome(species, source = c("ensembl", "api", "gene_association"))
+fetch_reactome(
+  species,
+  source = c("ensembl", "api", "gene_association"),
+  use_cache = TRUE
+)
 }
 \arguments{
 \item{species}{Reactome species designation, for example "Homo sapiens" for
@@ -14,6 +18,8 @@ human. Full list of available species can be found using
 \item{source}{How to download the mapping. If 'ensembl' or
 'gene_association', one mapping file provided by Reactome will be
 downloaded, if 'api', then Reactome API will be used. See details.}
+
+\item{use_cache}{Logical, if TRUE, the remote file will be cached locally.}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles
