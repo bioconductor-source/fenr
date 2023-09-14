@@ -33,6 +33,7 @@ Imports:
     rlang,
     dplyr,
     tidyr,
+    tidyselect,
     tibble,
     purrr,
     readr,
