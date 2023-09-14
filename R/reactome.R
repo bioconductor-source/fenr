@@ -57,17 +57,20 @@ fetch_reactome_pathways <- function(tax_id) {
 #'   additional ID conversion.
 #'
 #' @param spec Reactome species
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_reactome_ensembl_genes <- function(spec) {
+fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- term_id <- NULL
 
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   assert_url_path(url)
+
+  lpath <- cached_url_path("ensembl2reactome", url, use_cache)
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
-  readr::read_tsv(url, col_names = colms, show_col_types = FALSE) |>
+  readr::read_tsv(lpath, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
     dplyr::select(gene_id, term_id) |>
     dplyr::distinct()
@@ -76,16 +79,19 @@ fetch_reactome_ensembl_genes <- function(spec) {
 #' Download term - gene association from Reactome
 #'
 #' @param tax_id Taxon ID
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
 #' @noRd
-fetch_reactome_gene_association <- function(tax_id) {
+fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
 
   gaf_file <- "https://reactome.org/download/current/gene_association.reactome.gz"
-  assert_url_path(url)
-  readr::read_tsv(gaf_file, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES, skip = 4) |>
+  assert_url_path(gaf_file)
+
+  lpath <- cached_url_path("reactome_gaf", gaf_file, use_cache)
+  readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES, skip = 4) |>
     dplyr::mutate(
       symbol = stringr::str_remove(symbol, "_.+$"),
       taxon = stringr::str_remove(taxon, "taxon:"),
@@ -148,22 +154,24 @@ fetch_reactome_api_genes <- function(pathways) {
 #' @param source How to download the mapping. If 'ensembl' or
 #'   'gene_association', one mapping file provided by Reactome will be
 #'   downloaded, if 'api', then Reactome API will be used. See details.
+#' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles
 #' @importFrom assertthat assert_that
 #' @export
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
-fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association")) {
+fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association"),
+                           use_cache = TRUE) {
   source <- match.arg(source)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
 
   tax_id <- match_species(species, "fetch_reactome_species", "tax_id")
   terms <- fetch_reactome_pathways(tax_id)
   if (source == "ensembl") {
-    mapping <- fetch_reactome_ensembl_genes(species)
+    mapping <- fetch_reactome_ensembl_genes(species, use_cache = use_cache)
   } else if (source == "gene_association") {
-    mapping <- fetch_reactome_gene_association(tax_id)
+    mapping <- fetch_reactome_gene_association(tax_id, use_cache = use_cache)
   } else {
     mapping <- fetch_reactome_api_genes(terms$term_id)
   }
