@@ -53,5 +53,6 @@ included in this package, such as \code{fetch_reactome} or
 \examples{
 data(exmpl_all)
 go <- fetch_go(species = "sgd")
-go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
+go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
+                                   feature_name = "gene_symbol")
 }

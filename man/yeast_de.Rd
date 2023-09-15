@@ -14,6 +14,7 @@ data(yeast_de)
 Results for differential expression for yeast RNA-seq.
 }
 \description{
-A subset of 6 + 6 replicates was selected from data set reported in https://doi.org/10.1093/bioinformatics/btv425
+A subset of 6 + 6 replicates was selected from data set reported in
+https://doi.org/10.1093/bioinformatics/btv425
 }
 \keyword{datasets}

@@ -29,9 +29,9 @@ mapping (gene ID, symbol, and GO term ID) from either the Ensembl database
 the provided argument.
 }
 \details{
-If \code{species} is provided, mapping from a Gene Ontology GAF
-  file will be downloaded. GAF files contain more generic information than
-  gene symbols. In this function, the third column of the GAF file (DB Object
+If \code{species} is provided, mapping from a Gene Ontology GAF file
+  will be downloaded. GAF files contain more generic information than gene
+  symbols. In this function, the third column of the GAF file (DB Object
   Symbol) is returned as \code{gene_symbol}, but, depending on the
   \code{species} argument it can contain other entities, e.g. RNA or protein
   complex names. Similarly, the eleventh column of the GAF file (DB Object

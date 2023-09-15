@@ -4,7 +4,7 @@
 \name{fenr-package}
 \alias{fenr}
 \alias{fenr-package}
-\title{fenr: Fast functional enrichment}
+\title{fenr: Fast functional enrichment for interactive applications}
 \value{
 Package fenr.
 }

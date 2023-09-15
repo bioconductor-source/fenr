@@ -30,7 +30,8 @@ A tibble with enrichment results, providing the following information
     \item{\code{odds_ratio} - odds ratio for enrichment; is infinite when all
       features with the given term are in the selection}
     \item{\code{p_value} - p-value from a single hypergeometric test}
-    \item{\code{p_adjust} - p-value adjusted for multiple tests using the Benjamini-Hochberg approach}
+    \item{\code{p_adjust} - p-value adjusted for multiple tests using the
+      Benjamini-Hochberg approach}
   }.
 }
 \description{
