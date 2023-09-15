@@ -45,9 +45,11 @@ BiocManager::install("fenr")
 
 # Overview
 
-The input data for `fenr` consists of two tibbles or data frames. One contains functional term descriptions, the other term-feature mapping. These data can be obtain using helper functions `fetch_*` to download data from GO, KEGG, BioPlanet or WikiPathways. Alternatively, they can be provided by the user. The tibbles are converted into an object of class `fenr_terms`, which stores data in the format optimised for fast search and access. This object is then used by the function `functional_enrichment` to find enrichment for any given feature selection.
+The input data for `fenr` consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, BioPlanet, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
 
-![](overview.png)
+```{r figure, fig.cap="Overview of fenr data pipeline.", echo=FALSE}
+knitr::include_graphics("figures/overview.png")
+```
 
 # Example
 
