@@ -90,3 +90,7 @@
  
  - Taking `BiocCheck` new warnings into account: adding `@return` to data roxygens.
  
+## Version 0.99.5
+
+ - Major overhaul following comments from Bioconductor's reviewer.
+
