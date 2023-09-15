@@ -1,16 +1,15 @@
 #' Create term data for interactive example
 #'
-#' @param de Differential expression results, use \code{yeast_de} data attached to this package.
+#' @param de Differential expression results, use \code{yeast_de} data attached
+#'   to this package.
 #'
-#' @return A list of objects containing functional terms for GO, Reactome and KEGG.
+#' @return A list of objects containing functional terms for GO, Reactome and
+#'   KEGG.
 #' @export
 #' @examples
 #' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
 fetch_terms_for_example <- function(de) {
-  # Binding variables from non-standard evaluation locally
-  gene_id <- gene_symbol <- NULL
-
   # All gene background
   all_genes <- de$gene_id
 
@@ -86,8 +85,8 @@ plot_ma <- function(d, fdr_limit = 0.05) {
       panel.grid = ggplot2::element_blank(),
       text = ggplot2::element_text(size = 18)
     ) +
-    ggplot2::geom_point(data = d[d$FDR > fdr_limit,], size = 0.1, colour = "grey50") +
-    ggplot2::geom_point(data = d[d$FDR <= fdr_limit,], size = 0.2, colour = "black") +
+    ggplot2::geom_point(data = d[d$FDR > fdr_limit, ], size = 0.1, colour = "grey50") +
+    ggplot2::geom_point(data = d[d$FDR <= fdr_limit, ], size = 0.2, colour = "black") +
     ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
     ggplot2::labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
 }
@@ -140,7 +139,7 @@ enrichment_table <- function(de, term_data, input, max_points = 10000) {
       if(!is.null(fe))
         fe <- dplyr::filter(fe, p_adjust < 0.05 & n_with_sel > 2)
     } else if (n > 0) {
-      fe <- data.frame(Error = paste('only', max_points, 'points can be selected.'))
+      fe <- data.frame(Error = paste("only", max_points, "points can be selected."))
     }
   }
   fe
@@ -196,7 +195,7 @@ enrichment_interactive <- function(de, term_data) {
 
       shiny::fluidRow(
         shiny::column(5,
-                      shiny::radioButtons(
+          shiny::radioButtons(
             inputId = "plot_type",
             label = "Plot type:",
             choices = c("Volcano" = "volcano", "MA" = "ma"),
@@ -217,7 +216,7 @@ enrichment_interactive <- function(de, term_data) {
             choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg"),
             inline = TRUE
           ),
-          shiny::div(style = 'height: 480px; overflow-y: scroll', shiny::tableOutput("enrichment")),
+          shiny::div(style = "height: 480px; overflow-y: scroll", shiny::tableOutput("enrichment")),
         )
       )
     ))

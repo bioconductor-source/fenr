@@ -7,4 +7,5 @@
 #' To learn more about fenr, start with the vignette: vignette("fenr").
 #'
 #' @keywords internal
+#' @return Package fenr.
 "_PACKAGE"

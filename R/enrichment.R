@@ -38,8 +38,10 @@
 #' @examples
 #' data(exmpl_all)
 #' go <- fetch_go(species = "sgd")
-#' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
-prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_name = "gene_id") {
+#' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
+#'                                    feature_name = "gene_symbol")
+prepare_for_enrichment <- function(terms, mapping, all_features = NULL,
+                                   feature_name = "gene_id") {
   # Binding variables from non-standard evaluation locally
   feature_id <- term_id <- NULL
 
@@ -69,7 +71,8 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 
   # Check for feature name
   assert_that(feature_name %in% colnames(mapping),
-              msg = paste0(feature_name, " column not found in mapping table. Check 'feature_name' argument."))
+              msg = paste0(feature_name, " column not found in mapping table.
+                           Check 'feature_name' argument."))
 
   # Replace empty all_features with everything from mapping
   map_features <- mapping[[feature_name]] |>
@@ -79,7 +82,8 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
   } else {
     # Check if mapping is contained in all features
     if (length(intersect(all_features, map_features)) == 0)
-      stop("No overlap between 'all_features' and features found in 'mapping'. Did you provide correct 'all_features'?")
+      stop("No overlap between 'all_features' and features found in 'mapping'.
+           Did you provide correct 'all_features'?")
   }
 
   # Check for missing term descriptions
@@ -163,7 +167,8 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL, feature_
 #'     \item{\code{odds_ratio} - odds ratio for enrichment; is infinite when all
 #'       features with the given term are in the selection}
 #'     \item{\code{p_value} - p-value from a single hypergeometric test}
-#'     \item{\code{p_adjust} - p-value adjusted for multiple tests using the Benjamini-Hochberg approach}
+#'     \item{\code{p_adjust} - p-value adjusted for multiple tests using the
+#'       Benjamini-Hochberg approach}
 #'   }.
 #'
 #' @importFrom assertthat assert_that
@@ -258,7 +263,8 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
       p_value = p
     )
   })
-  # Drawback - if all selections below minimum, res is tibble 0 x 0, need to catch it
+  # Drawback - if all selections below minimum, res is tibble 0 x 0, need to
+  # catch it
   if (nrow(res) == 0) {
     res <- NULL
   } else {
@@ -274,5 +280,3 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
   }
   res
 }
-
-

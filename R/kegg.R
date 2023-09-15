@@ -40,7 +40,8 @@ fetch_kegg_pathways <- function(species) {
   query <- stringr::str_glue("list/pathway/{species}")
   url <- file.path(KEGG_BASE_URL, query)
   if(!assert_url_path(url, stop_if_error = FALSE))
-    stop(stringr::str_glue("Cannot get pathways for species {species}. Check that your species designation is correct using fetch_kegg_species()."))
+    stop(stringr::str_glue("Cannot get pathways for species {species}. Check that your
+                           species designation is correct using fetch_kegg_species()."))
 
   s <- fetch_kegg_data(query)
   readr::read_tsv(I(s), col_names = c("term_id", "term_name"), show_col_types = FALSE) |>
@@ -159,4 +160,3 @@ fetch_kegg <- function(species, batch_size = 10) {
     mapping = mapping
   )
 }
-

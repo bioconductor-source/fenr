@@ -178,6 +178,7 @@ test_fetched_structure <- function(re) {
 #'
 #' @param returned A tibble, the terms data returned by  fetch_*.
 #' @param expected A tibble, a selection of expected terms data.
+#' @noRd
 test_terms <- function(returned, expected) {
   # Binding variables from non-standard evaluation locally
   term_id <- term_name <- NULL
@@ -199,6 +200,7 @@ test_terms <- function(returned, expected) {
 #' @param expected A tibble, a selection of expected mapping.
 #' @param feature_id A character string, the name of the column containing the feature
 #'   ID.
+#' @noRd
 test_mapping <- function(returned, expected, feature_id) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
@@ -214,5 +216,3 @@ test_mapping <- function(returned, expected, feature_id) {
     tidyr::drop_na()
   testthat::expect_equal(nrow(expected), nrow(merged))
 }
-
-

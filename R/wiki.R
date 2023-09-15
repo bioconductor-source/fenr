@@ -52,7 +52,7 @@ fetch_wiki_pathways <- function(species) {
 #' @return Value of the key
 #' @noRd
 extract_key <- function(s, key) {
-  stringr::str_extract(s, paste0('(?<=', key, '=")(.+?)(?=")'))
+  stringr::str_extract(s, paste0("(?<=", key, '=\")(.+?)(?=")'))
 }
 
 #' Parse GPML string provided by WikiPathways
@@ -69,7 +69,7 @@ parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID"
     purrr::pluck(1) |>
     purrr::map_dfr(function(s) {
       purrr::map_chr(keys, ~extract_key(s, .x)) |>
-      purrr::set_names(keys)
+        purrr::set_names(keys)
     })
 }
 
@@ -138,8 +138,8 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #' @examples
 #' wiki_data <- fetch_wiki("Saccharomyces cerevisiae")
 fetch_wiki <- function(species,
-    databases = c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL"),
-    types = c("GeneProduct", "Protein", "Rna", "RNA")
+  databases = c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL"),
+  types = c("GeneProduct", "Protein", "Rna", "RNA")
                        ) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_species(species, "fetch_wiki_species")

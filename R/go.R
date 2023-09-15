@@ -43,7 +43,8 @@ parse_obo_file <- function(obo) {
 #'
 #' @return A tibble with term_id and term_name.
 #' @noRd
-fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", use_cache) {
+fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo",
+                           use_cache) {
   # Binding variables from non-standard evaluation locally
   key <- term_id <- value <- term_name <- NULL
 
@@ -84,7 +85,8 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", u
 #' @export
 #' @examples
 #' go_species <- fetch_go_species()
-fetch_go_species <- function(url = "http://current.geneontology.org/products/pages/downloads.html") {
+fetch_go_species <- function(
+    url = "http://current.geneontology.org/products/pages/downloads.html") {
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
@@ -117,15 +119,16 @@ fetch_go_species <- function(url = "http://current.geneontology.org/products/pag
 #' @noRd
 fetch_go_genes_go <- function(species, use_cache) {
   # Binding variables from non-standard evaluation locally
-  gene_synonym <- db_object_synonym <- gene_symbol <- symbol <- NULL
-  uniprot_id <- db_id <- term_id <- go_term <- NULL
+  gene_synonym <- db_object_synonym <- symbol <- NULL
+  db_id <- go_term <- NULL
 
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   assert_url_path(gaf_file)
 
   lpath <- cached_url_path(stringr::str_glue("gaf_{species}"), gaf_file, use_cache)
 
-  readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES) |>
+  readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS,
+                  col_types = GAF_TYPES) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
     dplyr::select(gene_symbol = symbol, gene_synonym, db_id, term_id = go_term) |>
     dplyr::distinct()
@@ -180,7 +183,7 @@ fetch_go_from_go <- function(species, use_cache) {
 #' @noRd
 fetch_go_genes_bm <- function(mart, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
-  gene_symbol <- external_gene_name <- term_id <- go_id <- NULL
+  external_gene_name <- term_id <- go_id <- NULL
 
   biomaRt::getBM(
     attributes = c("ensembl_gene_id", "external_gene_name", "go_id"),
@@ -230,9 +233,9 @@ fetch_go_from_bm <- function(mart, use_cache = TRUE) {
 #' (using BioMart) or the Gene Ontology database (using GAF files), depending on
 #' the provided argument.
 #'
-#' @details If \code{species} is provided, mapping from a Gene Ontology GAF
-#'   file will be downloaded. GAF files contain more generic information than
-#'   gene symbols. In this function, the third column of the GAF file (DB Object
+#' @details If \code{species} is provided, mapping from a Gene Ontology GAF file
+#'   will be downloaded. GAF files contain more generic information than gene
+#'   symbols. In this function, the third column of the GAF file (DB Object
 #'   Symbol) is returned as \code{gene_symbol}, but, depending on the
 #'   \code{species} argument it can contain other entities, e.g. RNA or protein
 #'   complex names. Similarly, the eleventh column of the GAF file (DB Object

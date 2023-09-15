@@ -115,4 +115,3 @@ test_that("No overlap between all_features and mapping", {
     prepare_for_enrichment(terms, mapping, all_features = c("a", "b", "c"),  feature_name = "feature_id")
   )
 })
-

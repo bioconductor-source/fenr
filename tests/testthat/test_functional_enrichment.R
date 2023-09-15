@@ -53,7 +53,6 @@ term_data <- list(
 
 term_stats <- function(tid, N_sel, n_with_sel) {
   N_with <- length(term2feature[[tid]])
-  N_without <- N - N_with
   n_without_sel <- N_sel - n_with_sel
   n_expect <- N_with * N_sel / N
   enrichment <- n_with_sel / n_expect
@@ -73,7 +72,7 @@ term_stats <- function(tid, N_sel, n_with_sel) {
   if (n_without_sel > 0) {
     sel_without <- setdiff(features_all, term2feature[[tid]])[seq_len(n_without_sel)]
   } else {
-    sel_without = character(0)
+    sel_without <- character(0)
   }
   sel <- c(sel_with, sel_without)
 

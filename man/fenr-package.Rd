@@ -5,6 +5,9 @@
 \alias{fenr}
 \alias{fenr-package}
 \title{fenr: Fast functional enrichment}
+\value{
+Package fenr.
+}
 \description{
 This R package provides a fast and efficient method for functional enrichment
 analysis, optimized for speed and designed for use in interactive
