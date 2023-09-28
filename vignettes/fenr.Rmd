@@ -6,7 +6,7 @@ output:
   BiocStyle::html_document:
     toc_float: true
 abstract: |
-  The `fenr` R package enables rapid functional enrichment analysis, typically completing in a fraction of a second, which makes it well-suited for interactive applications, such as Shiny apps. To accomplish this, fenr pre-downloads functional data (e.g., GO terms or KEGG pathways) and stores them in a format optimized for swift analysis of any arbitrary selection of features, including genes or proteins.
+  The *fenr* R package enables rapid functional enrichment analysis, typically completing in a fraction of a second, which makes it well-suited for interactive applications, such as Shiny apps. To accomplish this, fenr pre-downloads functional data (e.g., GO terms or KEGG pathways) and stores them in a format optimized for swift analysis of any arbitrary selection of features, including genes or proteins.
 vignette: >
   %\VignetteIndexEntry{Fast functional enrichment}
   %\VignetteEngine{knitr::rmarkdown}
@@ -26,7 +26,7 @@ options(width = 72)
 
 Functional enrichment analysis determines if specific biological functions or pathways are overrepresented in a set of features (e.g., genes, proteins). These sets often originate from differential expression analysis, while the functions and pathways are derived from databases such as *GO*, *Reactome*, or *KEGG*. In its simplest form, enrichment analysis employs Fisher's test to evaluate if a given function is enriched in the selection. The null hypothesis asserts that the proportion of features annotated with that function is the same between selected and non-selected features.
 
-Functional enrichment analysis requires downloading large datasets from the aforementioned databases before conducting the actual analysis. While downloading data is time-consuming, Fisher's test can be performed rapidly. This package aims to separate these two steps, enabling fast enrichment analysis for various feature selections using a given database. It is specifically designed for interactive applications like Shiny. A small Shiny app, included in the package, demonstrates the usage of `fenr`.
+Functional enrichment analysis requires downloading large datasets from the aforementioned databases before conducting the actual analysis. While downloading data is time-consuming, Fisher's test can be performed rapidly. This package aims to separate these two steps, enabling fast enrichment analysis for various feature selections using a given database. It is specifically designed for interactive applications like Shiny. A small Shiny app, included in the package, demonstrates the usage of *fenr*.
 
 ## Caveats
 
@@ -34,7 +34,7 @@ Functional enrichment analysis should not be considered the ultimate answer in u
 
 # Installation
 
-`fenr` can be installed from *Bioconductor* by using:
+*fenr* can be installed from *Bioconductor* by using:
 
 ```{r bioconductor_install, eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
@@ -45,7 +45,7 @@ BiocManager::install("fenr")
 
 # Overview
 
-The input data for `fenr` consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, BioPlanet, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
+The input data for *fenr* consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, BioPlanet, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
 
 ```{r figure, fig.cap="Overview of fenr data pipeline.", echo=FALSE}
 knitr::include_graphics("figures/overview.png")
@@ -53,7 +53,7 @@ knitr::include_graphics("figures/overview.png")
 
 # Example
 
-Package `fenr` and example data are loaded with the following commands:
+Package *fenr* and example data are loaded with the following commands:
 
 ```{r load_fenr}
 library(fenr)
@@ -62,7 +62,7 @@ data(exmpl_all, exmpl_sel)
 
 ## Data preparation
 
-The initial step involves downloading functional term data. `fenr` supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
+The initial step involves downloading functional term data. *fenr* supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
 
 ```{r fetch_go}
 go <- fetch_go(species = "sgd")
@@ -126,7 +126,7 @@ The columns are as follows
 
 # Interactive Example
 
-A small Shiny app is included in the package to demonstrate the usage of `fenr` in an interactive environment. All time-consuming data loading and preparation tasks are performed before the app is launched.
+A small Shiny app is included in the package to demonstrate the usage of *fenr* in an interactive environment. All time-consuming data loading and preparation tasks are performed before the app is launched.
 
 ```{r interactive_prepare}
 data(yeast_de)
@@ -135,7 +135,7 @@ term_data <- fetch_terms_for_example(yeast_de)
  
 `yeast_de` is the result of differential expression (using `edgeR`) on a subset of 6+6 replicates from [Gierlinski et al. (2015)](https://academic.oup.com/bioinformatics/article/31/22/3625/240923).
 
-The function `fetch_terms_for_example` uses `fetch_*` functions from `fenr` to download and process data from *GO*, *Reactome* and *KEGG*. The step-by-step process of data acquisition can be examined by viewing the function by typing `fetch_terms_for_example` in the R console. The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
+The function `fetch_terms_for_example` uses `fetch_*` functions from *fenr* to download and process data from *GO*, *Reactome* and *KEGG*. The step-by-step process of data acquisition can be examined by viewing the function by typing `fetch_terms_for_example` in the R console. The object `term_data` is a named list of `fenr_terms` objects, one for each ontology.
 
 After completing the slow tasks, you can start the Shiny app by running:
 
@@ -143,7 +143,7 @@ After completing the slow tasks, you can start the Shiny app by running:
 enrichment_interactive(yeast_de, term_data)
 ```
 
-To quickly see how `fenr` works an example can be loaded directly from GitHub:
+To quickly see how *fenr* works an example can be loaded directly from GitHub:
 
 ```
 shiny::runGitHub("bartongroup/fenr-shiny-example")
@@ -151,9 +151,9 @@ shiny::runGitHub("bartongroup/fenr-shiny-example")
 
 # Comparison to other functional enrichment packages
 
-There's no shortage of R packages dedicated to functional enrichment analyses, including `topGO`, `GOstats`, `clusterProfiler`, and `GOfuncR`. Many of these packages provide comprehensive analyses tailored to a single gene selection. While they offer detailed insights, their extensive computational requirements often render them slower.
+There's no shortage of R packages dedicated to functional enrichment analyses, including *topGO*, *GOstats*, *clusterProfiler*, and *GOfuncR*. Many of these packages provide comprehensive analyses tailored to a single gene selection. While they offer detailed insights, their extensive computational requirements often render them slower.
 
-To illustrate, let's take the example of the topGO package.
+In exploratory data analysis, one often conducts several enrichment analyses. This might involve assessing genes that exhibit both upward and downward shifts across diverse condition pairs, while also taking into account various significance levels and fold change thresholds. Even though the underlying dataset remains the same, different gene selections come into play. To illustrate, let's take the example of the *topGO* package. 
 
 
 ```{r topGO}
@@ -191,7 +191,7 @@ fisher_test <- runTest(go_data, algorithm = "classic", statistic = "fisher")
 
 Though the enrichment test (`runTest`) is fairly fast, completing in about 200 ms on an Intel Core i7 processor, the preparatory step (`new` call) demands a more substantial time commitment, around 6 seconds. Considering each additional gene selection requires a similar amount of time, conducting exploratory interactive analyses on multiple gene sets becomes notably cumbersome.
 
-`fenr` separates preparatory steps and gene selection and is designed with interactivity and speed in mind, particularly when users wish to execute rapid, multiple selection tests.
+*fenr* separates preparatory steps and gene selection and is designed with interactivity and speed in mind, particularly when users wish to execute rapid, multiple selection tests.
 
 ```{r fenr_speed}
 # Setting up data for enrichment
@@ -203,7 +203,7 @@ go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
 enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
 ```
 
-While data preparation with `fenr` might take a bit longer (around 10 s), the enrichment test is fast, finishing in just about 50 ms. Each new gene selection takes a similar amount of time (with an obvious caveat that a larger gene selection would take more time to calculate).
+While data preparation with *fenr* might take a bit longer (around 10 s), the enrichment test is fast, finishing in just about 50 ms. Each new gene selection takes a similar amount of time (with an obvious caveat that a larger gene selection would take more time to calculate).
 
 
 # Session info {.unnumbered}

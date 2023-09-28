@@ -6,8 +6,10 @@
 .RData
 .Ruserdata
 fenr.Rproj
+vignettes/figures/overview.pdf
 /doc/
 /Meta/
 /renv/
 /renv.lock
 /extra/
+BIOCONDUCTOR

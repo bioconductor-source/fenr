@@ -36,24 +36,23 @@ test_that("Expected return from fetch_wiki_species", {
 
 
 test_that("WikiPathways correct yeast response", {
-  species <- "Saccharomyces cerevisiae"
+  species <- "Bacillus subtilis"
   databases <- c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL")
   types <- c("GeneProduct", "Protein", "Rna", "RNA")
 
   expected_terms <- tibble::tribble(
     ~term_id, ~term_name,
-    "WP13", "DNA replication",
-    "WP345", "Glycine degradation",
-    "WP14", "Sucrose biosynthesis",
-    "WP575", "Anaerobic respiration"
+    "WP1466", "Response regulator aspartate phosphatase interactions",
+    "WP1527", "Stress response",
+    "WP2360", "Folate biosynthesis"
   )
 
   expected_mapping <- tibble::tribble(
     ~term_id, ~text_label,
-    "WP253", "FBA1",
-    "WP253", "TDH3",
-    "WP13", "POL1",
-    "WP13", "UBI4"
+    "WP1466", "rapA",
+    "WP1466", "rapE",
+    "WP1527", "sinR",
+    "WP1527", "sinI"
   )
 
   re <- fetch_wiki(species, databases = databases, types = types)

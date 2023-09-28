@@ -11,8 +11,7 @@ fetch_terms_for_example(de)
 to this package.}
 }
 \value{
-A list of objects containing functional terms for GO, Reactome and
-  KEGG.
+A list of objects containing functional terms for GO and Reactome.
 }
 \description{
 Create term data for interactive example

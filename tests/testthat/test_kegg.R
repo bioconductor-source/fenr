@@ -29,25 +29,25 @@ test_that("Expected return from fetch_kegg_species", {
 
 
 test_that("Correct response from fetch_kegg", {
-  species <- "sce"
+  species <- "mge"
 
   expected_terms <- tibble::tribble(
     ~term_id, ~term_name,
-    "sce01100",  "Metabolic pathways - Saccharomyces cerevisiae (budding yeast)",
-    "sce01230", "Biosynthesis of amino acids - Saccharomyces cerevisiae (budding yeast)",
-    "sce03010", "Ribosome - Saccharomyces cerevisiae (budding yeast)",
-    "sce00052", "Galactose metabolism - Saccharomyces cerevisiae (budding yeast)"
+    "mge01100", "Metabolic pathways - Mycoplasmoides genitalium G37",
+    "mge01230", "Biosynthesis of amino acids - Mycoplasmoides genitalium G37",
+    "mge03010", "Ribosome - Mycoplasmoides genitalium G37",
+    "mge03030", "DNA replication - Mycoplasmoides genitalium G37"
   )
 
   expected_mapping <- tibble::tribble(
     ~term_id, ~gene_symbol,
-    "sce00010", "FBA1",
-    "sce00010", "TDH3",
-    "sce03030", "POL1",
-    "sce04120", "UBI4"
+    "mge00010", "pgi",
+    "mge00010", "fba",
+    "mge03010", "rpsB",
+    "mge03030", "polC"
   )
 
-  re <- fetch_kegg("sce")
+  re <- fetch_kegg(species)
   test_fetched_structure(re)
   test_terms(re$terms, expected_terms)
   test_mapping(re$mapping, expected_mapping, "gene_symbol")

@@ -94,3 +94,12 @@
 
  - Major overhaul following comments from Bioconductor's reviewer.
 
+## Version 0.99.6
+
+ - Removed BioPlanet for good, as their webpage is continuously down and the maintainer is not responding
+ - Removed KEGG from interactive example to speed up vignette building (GO and Reactome are sufficient for a simple example)
+ - Replaced yeast with simpler organisms in Wiki and KEGG tests to speed up testing
+ - Replaced yeast with simpler organisms in Wiki and KEGG examples to speed up checking
+ - The wording in the vignette was adjusted to more clearly convey the purpose of the package to users
+ 
+ 

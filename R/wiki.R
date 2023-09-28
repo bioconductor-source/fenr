@@ -136,7 +136,7 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #' @export
 #' @importFrom assertthat assert_that
 #' @examples
-#' wiki_data <- fetch_wiki("Saccharomyces cerevisiae")
+#' wiki_data <- fetch_wiki("Bacillus subtilis")
 fetch_wiki <- function(species,
   databases = c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL"),
   types = c("GeneProduct", "Protein", "Rna", "RNA")

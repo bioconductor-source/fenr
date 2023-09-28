@@ -146,7 +146,7 @@ fetch_kegg_mapping <- function(pathways, batch_size) {
 #' @importFrom assertthat assert_that is.count
 #' @export
 #' @examples
-#' kegg_data <- fetch_kegg("sce")
+#' kegg_data <- fetch_kegg("mge")
 fetch_kegg <- function(species, batch_size = 10) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_that(is.count(batch_size))

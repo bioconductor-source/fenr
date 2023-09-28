@@ -3,8 +3,7 @@
 #' @param de Differential expression results, use \code{yeast_de} data attached
 #'   to this package.
 #'
-#' @return A list of objects containing functional terms for GO, Reactome and
-#'   KEGG.
+#' @return A list of objects containing functional terms for GO and Reactome.
 #' @export
 #' @examples
 #' data(yeast_de)
@@ -23,17 +22,11 @@ fetch_terms_for_example <- function(de) {
   re <- fetch_reactome("Saccharomyces cerevisiae")
   re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "gene_id")
 
-  # load KEGG pathways
-  message("Fetching KEGG data\n")
-  kg <- fetch_kegg("sce")
-  kg_data <- prepare_for_enrichment(kg$terms, kg$mapping, all_genes, feature_name = "gene_id")
-
   # Put all functional term data in one structure; Shiny app will access
   # individual ontologies from this list
   list(
     go = go_data,
-    re = re_data,
-    kg = kg_data
+    re = re_data
   )
 }
 
@@ -162,7 +155,10 @@ main_plot <- function(de, input) {
 }
 
 
-
+# Note for Bioconductor: Using "donttest" is problematic here. When running
+# `devtools::check()`, it stalls at "checking examples with --run-donttest ...".
+# I suspect it's attempting to launch the Shiny app, which fails. As a result,
+# contrary to `BiocCheck()` guidelines, we've opted for "dontrun" in this instance.
 
 
 #' Small Shiny app serving as example for fast enrichment
@@ -213,7 +209,7 @@ enrichment_interactive <- function(de, term_data) {
           shiny::radioButtons(
             inputId = "ontology",
             label = "Ontology:",
-            choices = c("GO" = "go", "Reactome" = "re", "KEGG" = "kg"),
+            choices = c("GO" = "go", "Reactome" = "re"),
             inline = TRUE
           ),
           shiny::div(style = "height: 480px; overflow-y: scroll", shiny::tableOutput("enrichment")),

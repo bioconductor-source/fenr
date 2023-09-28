@@ -43,5 +43,5 @@ WikiPathways contain mapping between pathways and a variety of
   selection.
 }
 \examples{
-wiki_data <- fetch_wiki("Saccharomyces cerevisiae")
+wiki_data <- fetch_wiki("Bacillus subtilis")
 }
