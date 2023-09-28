@@ -101,5 +101,6 @@
  - Replaced yeast with simpler organisms in Wiki and KEGG tests to speed up testing
  - Replaced yeast with simpler organisms in Wiki and KEGG examples to speed up checking
  - The wording in the vignette was adjusted to more clearly convey the purpose of the package to users
+ - Rewritten the description in DESCRIPTION file to clearly convey the purpose of the package to users
  
  

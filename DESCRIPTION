@@ -8,11 +8,13 @@ Authors@R: person(
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-9149-3514")
     )
-Description: Functional enrichment from a list of features (genes, proteins, etc)
-    using hypergeometric distribution. Optimised for speed for use in interactive
-    applications, e.g., Shiny. Allows to download functional data from GO, KEGG,
-    BioPlanet, Reactome and WikiPathways. Once downloaded, data are converted into
-    a format allowing for fast enrichment analysis.
+Description: Perform fast functional enrichment on feature lists (like genes
+    or proteins) using the hypergeometric distribution. Tailored for speed,
+    this package is ideal for interactive platforms such as Shiny. It supports
+    the retrieval of functional data from sources like GO, KEGG, Reactome,
+    and WikiPathways. By downloading and preparing data first, it allows for
+    rapid successive tests on various feature selections without the need
+    for repetitive, time-consuming preparatory steps typical of other packages. 
 URL: https://github.com/bartongroup/fenr
 BugReports: https://github.com/bartongroup/fenr/issues
 Depends: R (>= 4.3.0)
