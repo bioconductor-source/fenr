@@ -45,7 +45,7 @@ BiocManager::install("fenr")
 
 # Overview
 
-The input data for *fenr* consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, BioPlanet, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
+The input data for *fenr* consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
 
 ```{r figure, fig.cap="Overview of fenr data pipeline.", echo=FALSE}
 knitr::include_graphics("figures/overview.png")
@@ -62,7 +62,7 @@ data(exmpl_all, exmpl_sel)
 
 ## Data preparation
 
-The initial step involves downloading functional term data. *fenr* supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
+The initial step involves downloading functional term data. *fenr* supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
 
 ```{r fetch_go}
 go <- fetch_go(species = "sgd")
