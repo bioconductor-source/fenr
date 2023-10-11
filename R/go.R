@@ -48,6 +48,9 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo",
   # Binding variables from non-standard evaluation locally
   key <- term_id <- value <- term_name <- NULL
 
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
+
   lpath <- cached_url_path("obo", obo_file, use_cache)
   parsed <- readr::read_lines(lpath) |>
     parse_obo_file()
@@ -121,6 +124,9 @@ fetch_go_genes_go <- function(species, use_cache) {
   # Binding variables from non-standard evaluation locally
   gene_synonym <- db_object_synonym <- symbol <- NULL
   db_id <- go_term <- NULL
+
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
 
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   assert_url_path(gaf_file)

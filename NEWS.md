@@ -111,4 +111,7 @@
  - Replaced yeast with simpler organisms in Wiki and KEGG tests to speed up testing
  - Replaced yeast with simpler organisms in Wiki and KEGG examples to speed up checking
  
- 
+## Version 0.99.7
+
+ - Minor changes to prepare for Bioconductor release
+ - Reverting temporarily to *readr* version 1 to circumvent a *vroom* 1.6.4 bug

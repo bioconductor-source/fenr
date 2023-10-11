@@ -22,6 +22,10 @@ fetch_kegg_data <- function(path) {
 #' @examples
 #' spe <- fetch_kegg_species()
 fetch_kegg_species <- function() {
+
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
+
   s <- fetch_kegg_data("list/organism")
   readr::read_tsv(I(s), col_names = c("id", "designation", "species", "phylogeny"), show_col_types = FALSE)
 }
@@ -36,6 +40,9 @@ fetch_kegg_species <- function() {
 fetch_kegg_pathways <- function(species) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
+
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
 
   query <- stringr::str_glue("list/pathway/{species}")
   url <- file.path(KEGG_BASE_URL, query)

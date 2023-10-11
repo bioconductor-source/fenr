@@ -173,10 +173,10 @@ main_plot <- function(de, input) {
 #' @importFrom assertthat assert_that
 #' @export
 #' @examples
-#' \dontrun{
 #' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
-#' enrichment_interactive(yeast_de, term_data)
+#' if(interactive()) {
+#'   enrichment_interactive(yeast_de, term_data)
 #' }
 enrichment_interactive <- function(de, term_data) {
   assert_that(is.data.frame(de))

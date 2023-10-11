@@ -65,6 +65,9 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- term_id <- NULL
 
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
+
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   assert_url_path(url)
 
@@ -86,6 +89,9 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
 fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
+
+  # Temporary patch to circumvent vroom 1.6.4 bug
+  readr::local_edition(1)
 
   gaf_file <- "https://reactome.org/download/current/gene_association.reactome.gz"
   assert_url_path(gaf_file)
