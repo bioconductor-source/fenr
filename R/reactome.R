@@ -138,6 +138,8 @@ fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
 #'   \code{gene_symbol}.
 #' @noRd
 fetch_reactome_api_genes <- function(pathways, on_error) {
+  # Binding variables from non-standard evaluation locally
+  database_name <- gene_symbol <- NULL
 
   raise_error <- FALSE
   pb <- progress::progress_bar$new(total = length(pathways))

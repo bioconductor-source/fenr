@@ -44,26 +44,25 @@ assert_columns <- function(tb, cols) {
 #' responding.
 #'
 #' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
-#' @param stop_if_error Logical, if TRUE stops with error message, otherwise returns FALSE
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `FALSE`.
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return TRUE if assertion passed
 #' @noRd
-assert_url_path <- function(url_path, stop_if_error = TRUE) {
+assert_url_path <- function(url_path, on_error = "stop") {
   assert_that(is.string(url_path))
-  hd <- tryCatch(
-    httr::HEAD(url_path),
-    error = function(e) {
-      stop(e)
-    }
-  )
-  status <- hd$all_headers[[1]]$status
-  if (!(status %in% c(HTTP_OK, HTTP_FOUND))) {
-    if(stop_if_error) {
-      stop(stringr::str_glue("HTTP path {url_path} cannot be found. Status = {status}."))
-    } else {
-      return(FALSE)
-    }
+
+  resp <- httr2::request(url_path) |>
+    httr2::req_method("HEAD") |>
+    httr2::req_error(is_error = ~FALSE) |>
+    httr2::req_perform()
+
+  if(httr2::resp_is_error(resp)) {
+    catch_error("url_path", resp, on_error)
+    return(FALSE)
   }
   return(TRUE)
 }

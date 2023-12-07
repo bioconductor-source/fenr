@@ -40,7 +40,7 @@ fetch_wiki_pathways <- function(species, on_error = "stop") {
     return(catch_error("WikiPathways", resp, on_error))
 
   js <- httr2::resp_body_json(resp$response)
-  if(class(js[[1]]) == "character" && js[[1]] == "error")
+  if(is(js[[1]], "character") && js[[1]] == "error")
     stop(stringr::str_glue("Cannot retrieve pathways from WikiPathways for species {species}."))
 
   js$pathways |>
@@ -85,10 +85,13 @@ parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID"
 #' @param pathways A character vector with pathway names.
 #' @param databases Names of databases to use
 #' @param types Names of types to use
+#' @param on_error A string selecting how to react to server errors. If "stop",
+#'   an R error will be produced, if "warn", only a warning will be printed and
+#'   the function will return NULL.
 #'
 #' @return A tibble with \code{term_id} and \code{gene_symbol}
 #' @noRd
-fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL) {
+fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL, on_error = "stop") {
   term_id <- TextLabel <-ID <- Type <- Database <- database <- type <- NULL
 
   pb <- progress::progress_bar$new(total = length(pathways))

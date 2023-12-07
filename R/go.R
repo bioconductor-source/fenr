@@ -83,6 +83,10 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo",
 #' \file{goa_chicken}).
 #'
 #' @param url URL of the Gene Ontology web page with downloads.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @export
@@ -93,12 +97,15 @@ fetch_go_species <- function(
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
-  assert_url_path(url)
-  u <- httr::GET(url) |>
-    httr::content("text", encoding = "UTF-8") |>
-    XML::readHTMLTable(as.data.frame = TRUE)
+  resp <- api_query(url, "")
+  if(resp$is_error)
+    return(catch_error("GO species website", resp, on_error))
+
+  u <- resp$response |>
+    httr2::resp_body_html() |>
+    rvest::html_table()
+
   u[[1]] |>
-    tibble::as_tibble() |>
     dplyr::mutate(
       species = `Species/Database` |>
         stringr::str_replace_all("\\n", "-") |>
