@@ -5,7 +5,8 @@
 \title{Find all species available from geneontology.org}
 \usage{
 fetch_go_species(
-  url = "http://current.geneontology.org/products/pages/downloads.html"
+  url = "http://current.geneontology.org/products/pages/downloads.html",
+  on_error = c("stop", "warn")
 )
 }
 \arguments{

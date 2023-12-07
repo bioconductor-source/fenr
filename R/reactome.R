@@ -1,5 +1,5 @@
 REACTOME_BASE_URL <- "https://reactome.org/ContentService"
-REACTOME_BASE_URL <- "https://httpstat.us/500"
+# REACTOME_BASE_URL <- "https://httpstat.us/500"
 
 #' List of available Reactome species
 #'
