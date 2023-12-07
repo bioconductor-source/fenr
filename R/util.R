@@ -75,15 +75,21 @@ assert_url_path <- function(url_path, stop_if_error = TRUE) {
 #' @param species A string, species designation for a given database
 #' @param fetch_fun A string, name of the function to retrieve available
 #'   species, must return a tibble with a column \code{designation}.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return A tibble with valid species - a response from \code{fetch_fun}
 #' @noRd
-assert_species <- function(species, fetch_fun) {
+assert_species <- function(species, fetch_fun, on_error) {
   assert_that(is.string(species))
   assert_that(is.string(fetch_fun))
   f <- match.fun(fetch_fun)
-  valid_species <- f()
+  valid_species <- f(on_error = on_error)
+  if(is.null(valid_species))
+    return(NULL)
   assert_that(species %in% valid_species$designation,
     msg = stringr::str_glue("Invalid species {species}. Use {fetch_fun}() to find all available species.")
   )
@@ -100,17 +106,24 @@ assert_species <- function(species, fetch_fun) {
 #'   species, must return a tibble with a column \code{designation}.
 #' @param col_name Column name in the tibble returned by \code{fetch_fun} to
 #'   extract, e.g. \code{tax_id}
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A value extracted from column \code{col_name} at row where
 #'   \code{designation} = \code{species}.
 #' @noRd
-match_species <- function(species, fetch_fun, col_name) {
+match_species <- function(species, fetch_fun, col_name, on_error) {
   designation <- NULL
 
-  sp <- assert_species(species, fetch_fun)
+  sp <- assert_species(species, fetch_fun, on_error)
+  if(is.null(sp))
+    return(NULL)
   sp |>
     dplyr::filter(designation == species) |>
-    dplyr::pull(get(col_name))
+    dplyr::pull(get(col_name)) |>
+    unique()
 }
 
 
@@ -215,4 +228,77 @@ test_mapping <- function(returned, expected, feature_id) {
     dplyr::distinct() |>
     tidyr::drop_na()
   testthat::expect_equal(nrow(expected), nrow(merged))
+}
+
+#' Catch and Handle Errors Based on Specified Action
+#'
+#' This function handles errors by either stopping execution or issuing a
+#' warning, depending on the specified action. It takes a message and an action
+#' choice (`"stop"` or `"warn"`) as inputs.
+#'
+#' @param server Name of the server.
+#' @param resp Response from the server.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
+#'
+#' @return In case of `"warn"`, the function returns `NULL`. If `"stop"` is
+#'   chosen, the function halts with an error and does not return a value.
+catch_error <- function(server, resp, on_error = c("stop", "warn")) {
+  on_error <- match.arg(on_error)
+
+  st <- stringr::str_glue("Cannot access {server}. {resp$status}: {resp$description}.")
+
+  if(on_error == "stop") {
+    stop(st)
+  } else {
+    warning(st, "\nNULL returned.", call. = FALSE)
+    return(NULL)
+  }
+}
+
+#' Perform an API Query Using httr2
+#'
+#' This function sends an HTTP request to a specified API endpoint and returns
+#' various details about the response. It is designed to work with the httr2
+#' package.
+#'
+#' @param base_url A string specifying the base URL of the API.
+#' @param path A string specifying the path of the specific API endpoint.
+#' @param parameters An optional named list of query parameters to be included
+#'   in the request.
+#'
+#' @return A list containing the following elements:
+#' \itemize{
+#'   \item{response}{The complete response object returned by the API.}
+#'   \item{is_error}{Logical value indicating if the response was an error.}
+#'   \item{status}{The HTTP status code of the response.}
+#'   \item{description}{The description of the HTTP status.}
+#' }
+#'
+#' @details The function constructs a request using the base URL and the path.
+#' If provided, query parameters are appended to the request. The function then
+#' performs the request and checks for errors. It returns a list containing the
+#' response, error status, HTTP status code, and the description of the status.
+#'
+api_query <- function(base_url, path, parameters = NULL) {
+  req <- httr2::request(base_url) |>
+    httr2::req_url_path_append(path)
+
+  if(!is.null(parameters)) {
+    req <- req |>
+      httr2::req_url_query(!!!parameters)
+  }
+
+  resp <- req |>
+    httr2::req_error(is_error = ~FALSE) |>
+    httr2::req_perform()
+
+  list(
+    response = resp,
+    is_error = httr2::resp_is_error(resp),
+    status = httr2::resp_status(resp),
+    description = httr2::resp_status_desc(resp)
+  )
 }

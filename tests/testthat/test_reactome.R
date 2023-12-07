@@ -46,61 +46,69 @@ test_that("Incorrect species in fetch_reactome", {
 test_that("Expected return from fetch_reactome_species", {
   expected_selection <- c("Homo sapiens", "Mus musculus", "Rattus norvegicus",
                           "Saccharomyces cerevisiae", "Drosophila melanogaster", "Caenorhabditis elegans")
-  spec <- fetch_reactome_species()
-  expect_is(spec, "tbl")
-  expect_true(all(expected_selection %in% spec$designation))
+  spec <- fetch_reactome_species(on_error = "warn")
+  if(!is.null(spec)) {
+    expect_is(spec, "tbl")
+    expect_true(all(expected_selection %in% spec$designation))
+  }
 })
 
 
 test_that("Correct Reactome Ensembl from yeast", {
-  re <- fetch_reactome(species, source = "ensembl", use_cache = TRUE)
-  expect_is(re, "list")
-  expect_length(re, 2)
-  expect_named(re)
-  expect_equal(names(re), c("terms", "mapping"))
+  re <- fetch_reactome(species, source = "ensembl", use_cache = TRUE, on_error = "warn")
+  if(!is.null(re)) {
+    expect_is(re, "list")
+    expect_length(re, 2)
+    expect_named(re)
+    expect_equal(names(re), c("terms", "mapping"))
 
-  # Check pathways
-  paths <- re$terms
-  expect_is(paths, "tbl")
+    # Check pathways
+    paths <- re$terms
+    expect_is(paths, "tbl")
 
-  merged <- expected_pathways |>
-    dplyr::left_join(paths, by = c("term_id", "term_name")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected_pathways), nrow(merged))
+    merged <- expected_pathways |>
+      dplyr::left_join(paths, by = c("term_id", "term_name")) |>
+      tidyr::drop_na()
+    expect_equal(nrow(expected_pathways), nrow(merged))
 
-  # Check mapping
-  mapping <- re$mapping
-  expect_is(mapping, "tbl")
-  merged <- expected_ensembl |>
-    dplyr::left_join(mapping, by = c("term_id", "gene_id")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected_ensembl), nrow(merged))
+    # Check mapping
+    mapping <- re$mapping
+    expect_is(mapping, "tbl")
+    merged <- expected_ensembl |>
+      dplyr::left_join(mapping, by = c("term_id", "gene_id")) |>
+      tidyr::drop_na()
+    expect_equal(nrow(expected_ensembl), nrow(merged))
+  }
 })
 
 
 test_that("Correct Reactome gene association from yeast", {
-  re <- fetch_reactome(species, source = "gene_association", use_cache = TRUE)
-  expect_is(re, "list")
-  expect_length(re, 2)
-  expect_named(re)
-  expect_equal(names(re), c("terms", "mapping"))
+  re <- fetch_reactome(species, source = "gene_association", use_cache = TRUE, on_error = "warn")
+  if(!is.null(re)) {
+    expect_is(re, "list")
+    expect_length(re, 2)
+    expect_named(re)
+    expect_equal(names(re), c("terms", "mapping"))
 
-  # Check mapping
-  mapping <- re$mapping
-  expect_is(mapping, "tbl")
-  merged <- expected_gene_association |>
-    dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected_gene_association), nrow(merged))
+    # Check mapping
+    mapping <- re$mapping
+    expect_is(mapping, "tbl")
+    merged <- expected_gene_association |>
+      dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
+      tidyr::drop_na()
+    expect_equal(nrow(expected_gene_association), nrow(merged))
+  }
 })
 
 
 test_that("Correct Reactome API from yeast", {
   # Doing this on all pathways takes forever
-  mapping <- fetch_reactome_api_genes(expected_api$term_id)
-  expect_is(mapping, "tbl")
-  merged <- expected_api |>
-    dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
-    tidyr::drop_na()
-  expect_equal(nrow(expected_api), nrow(merged))
+  mapping <- fetch_reactome_api_genes(expected_api$term_id, on_error = "warn")
+  if(!is.null(mapping)) {
+    expect_is(mapping, "tbl")
+    merged <- expected_api |>
+      dplyr::left_join(mapping, by = c("term_id", "gene_symbol")) |>
+      tidyr::drop_na()
+    expect_equal(nrow(expected_api), nrow(merged))
+  }
 })

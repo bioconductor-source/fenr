@@ -1,50 +1,60 @@
-#' A helper function to retrieve API data from Reactome
-#'
-#' This is used to quickly retrieve Reactome species. Alas, Reactome does not
-#' provide API to download all pathways, so we need to download them directly
-#' from a URL.
-#'
-#' @param path Path in the query
-#'
-#' @return A tibble with result
-#' @noRd
-fetch_reactome_data <- function(path) {
-  base_url <-  "https://reactome.org/ContentService"
-  url <- file.path(base_url, path)
-  assert_url_path(url)
-  res <- httr::GET(url)
-  jsonlite::fromJSON(rawToChar(res$content)) |>
-    tibble::as_tibble()
-}
-
+REACTOME_BASE_URL <- "https://reactome.org/ContentService"
+REACTOME_BASE_URL <- "https://httpstat.us/500"
 
 #' List of available Reactome species
 #'
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #' @return A tibble with species names used by Reactome.
 #' @export
 #' @examples
 #' re <- fetch_reactome_species()
-fetch_reactome_species <- function() {
+fetch_reactome_species <- function(on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   dbId <- displayName <- taxId <- NULL
 
-  fetch_reactome_data("data/species/main") |>
-    dplyr::select(db_id = dbId, designation = displayName, tax_id = taxId)
+  resp <- api_query(REACTOME_BASE_URL, "data/species/main")
+  if(resp$is_error)
+    return(catch_error("Reactome", resp, on_error))
+
+  httr2::resp_body_json(resp$response) |>
+    purrr::map(tibble::as_tibble) |>
+    purrr::list_rbind() |>
+    dplyr::select(db_id = dbId, designation = displayName, tax_id = taxId) |>
+    dplyr::distinct()
 }
 
 
 #' Download pathway data from Reactome
 #'
 #' @param tax_id Taxonomy ID of the species, a string
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 #' @noRd
-fetch_reactome_pathways <- function(tax_id) {
+fetch_reactome_pathways <- function(tax_id, on_error) {
   # Binding variables from non-standard evaluation locally
   stId <- displayName <- NULL
 
-  qry <- stringr::str_glue("data/schema/Pathway/min?species={tax_id}&page=1&offset=20000")
-  fetch_reactome_data(qry) |>
+  path = "data/schema/Pathway/min"
+  params = list(
+    species = tax_id,
+    page = 1,
+    offset = 20000
+  )
+
+  resp <- api_query(REACTOME_BASE_URL, path, params)
+  if(resp$is_error)
+    return(catch_error("Reactome", resp, on_error))
+
+  httr2::resp_body_json(resp$response) |>
+    purrr::map(tibble::as_tibble) |>
+    purrr::list_rbind() |>
     dplyr::select(term_id = stId, term_name = displayName)
 }
 
@@ -66,7 +76,7 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
   species <- gene_id <- term_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
-  readr::local_edition(1)
+  # readr::local_edition(1)
 
   url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
   assert_url_path(url)
@@ -91,7 +101,7 @@ fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
   symbol <- taxon <- db_ref <- db_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
-  readr::local_edition(1)
+  # readr::local_edition(1)
 
   gaf_file <- "https://reactome.org/download/current/gene_association.reactome.gz"
   assert_url_path(gaf_file)
@@ -119,23 +129,47 @@ fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
 #'
 #' @param pathways A character vector with Reactome patway IDs to get
 #'   corresponding genes from.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A tibble with columns\code{term_id}, \code{accession_number} and
 #'   \code{gene_symbol}.
 #' @noRd
-fetch_reactome_api_genes <- function(pathways) {
-  identifier <- geneName <- gene_symbol <- databaseName <- NULL
+fetch_reactome_api_genes <- function(pathways, on_error) {
 
+  raise_error <- FALSE
   pb <- progress::progress_bar$new(total = length(pathways))
-  purrr::map_dfr(pathways, function(pathway) {
+  tb <- purrr::map(pathways, function(pathway) {
     pb$tick()
-    qry <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
-    fetch_reactome_data(qry) |>
-      dplyr::filter(databaseName == "UniProt") |>
-      dplyr::select(gene_symbol = geneName, accession_number = identifier) |>
+    path <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
+    resp <- api_query(REACTOME_BASE_URL, path)
+    if(resp$is_error) {
+      raise_error <<- TRUE
+      return(catch_error("Reactome", resp, on_error))
+    }
+
+    httr2::resp_body_json(resp$response) |>
+      purrr::map(function(js) {
+        tibble::tibble(
+          database_name = js$databaseName,
+          gene_symbol = js$geneName,
+          accession_number = js$identifier
+        )
+      }) |>
+      purrr::list_rbind() |>
+      dplyr::filter(database_name == "UniProt") |>
+      dplyr::select(-database_name) |>
       tidyr::unnest(gene_symbol) |>
       tibble::add_column(term_id = pathway, .before = 1)
-  })
+  }) |>
+    purrr::list_rbind()
+  if(raise_error) {
+    return(NULL)
+  } else {
+    return(tb)
+  }
 }
 
 
@@ -161,6 +195,10 @@ fetch_reactome_api_genes <- function(pathways) {
 #'   'gene_association', one mapping file provided by Reactome will be
 #'   downloaded, if 'api', then Reactome API will be used. See details.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles
 #' @importFrom assertthat assert_that
@@ -168,18 +206,24 @@ fetch_reactome_api_genes <- function(pathways) {
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae")
 fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association"),
-                           use_cache = TRUE) {
+                           use_cache = TRUE, on_error = c("stop", "warn")) {
   source <- match.arg(source)
+  on_error <- match.arg(on_error)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
 
-  tax_id <- match_species(species, "fetch_reactome_species", "tax_id")
-  terms <- fetch_reactome_pathways(tax_id)
+  tax_id <- match_species(species, "fetch_reactome_species", "tax_id", on_error)
+  if(is.null(tax_id))
+    return(NULL)
+  terms <- fetch_reactome_pathways(tax_id, on_error)
+  if(is.null(terms))
+    return(NULL)
+
   if (source == "ensembl") {
     mapping <- fetch_reactome_ensembl_genes(species, use_cache = use_cache)
   } else if (source == "gene_association") {
     mapping <- fetch_reactome_gene_association(tax_id, use_cache = use_cache)
   } else {
-    mapping <- fetch_reactome_api_genes(terms$term_id)
+    mapping <- fetch_reactome_api_genes(terms$term_id, on_error)
   }
 
   list(

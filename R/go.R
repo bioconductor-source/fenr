@@ -49,7 +49,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo",
   key <- term_id <- value <- term_name <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
-  readr::local_edition(1)
+  # readr::local_edition(1)
 
   lpath <- cached_url_path("obo", obo_file, use_cache)
   parsed <- readr::read_lines(lpath) |>
@@ -89,7 +89,7 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo",
 #' @examples
 #' go_species <- fetch_go_species()
 fetch_go_species <- function(
-    url = "http://current.geneontology.org/products/pages/downloads.html") {
+    url = "http://current.geneontology.org/products/pages/downloads.html", on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
@@ -126,7 +126,7 @@ fetch_go_genes_go <- function(species, use_cache) {
   db_id <- go_term <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
-  readr::local_edition(1)
+  # readr::local_edition(1)
 
   gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
   assert_url_path(gaf_file)
@@ -165,7 +165,7 @@ fetch_go_genes_go <- function(species, use_cache) {
 #' @noRd
 fetch_go_from_go <- function(species, use_cache) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, "fetch_go_species")
+  assert_species(species, "fetch_go_species", "stop")
 
   mapping <- fetch_go_genes_go(species, use_cache)
   terms <- fetch_go_terms(use_cache = use_cache)

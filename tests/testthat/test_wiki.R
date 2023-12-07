@@ -29,13 +29,15 @@ test_that("Parsing GPLM", {
 test_that("Expected return from fetch_wiki_species", {
   expected_selection <- c("Homo sapiens", "Mus musculus", "Rattus norvegicus",
                           "Saccharomyces cerevisiae", "Drosophila melanogaster", "Caenorhabditis elegans")
-  spec <- fetch_wiki_species()
-  expect_is(spec, "tbl")
-  expect_true(all(expected_selection %in% spec$designation))
+  spec <- fetch_wiki_species(on_error = "warn")
+  if(!is.null(spec)) {
+    expect_is(spec, "tbl")
+    expect_true(all(expected_selection %in% spec$designation))
+  }
 })
 
 
-test_that("WikiPathways correct yeast response", {
+test_that("WikiPathways correct response", {
   species <- "Bacillus subtilis"
   databases <- c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL")
   types <- c("GeneProduct", "Protein", "Rna", "RNA")
@@ -55,8 +57,10 @@ test_that("WikiPathways correct yeast response", {
     "WP1527", "sinI"
   )
 
-  re <- fetch_wiki(species, databases = databases, types = types)
-  test_fetched_structure(re)
-  test_terms(re$terms, expected_terms)
-  test_mapping(re$mapping, expected_mapping, "text_label")
+  re <- fetch_wiki(species, databases = databases, types = types, on_error = "warn")
+  if(!is.null(re)) {
+    test_fetched_structure(re)
+    test_terms(re$terms, expected_terms)
+    test_mapping(re$mapping, expected_mapping, "text_label")
+  }
 })
