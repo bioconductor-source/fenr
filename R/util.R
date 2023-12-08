@@ -303,3 +303,24 @@ api_query <- function(base_url, path, parameters = NULL) {
     description = httr2::resp_status_desc(resp)
   )
 }
+
+
+#' Test a function for correct response when server is non-responsive.
+#'
+#' @details When the server is not responsive (replaced with a 500 server using
+#'   options), the function should throw an error, if `on_error = "stop"` and
+#'   throw a warning and return NULL, it `on_error = "warn"`.
+#'
+#'
+#' @param fun A function to test
+#' @param ... Parameters to pass to the function
+#'
+#' @return Test result
+#' @noRd
+test_unresponsive_server <- function(fun, ...) {
+  testthat::expect_error(fun(..., on_error = "stop"))
+  testthat::expect_warning({res <- fun(..., on_error = "warn")})
+  testthat::expect_null(res)
+}
+
+

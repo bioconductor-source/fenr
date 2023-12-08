@@ -1,5 +1,26 @@
-REACTOME_BASE_URL <- "https://reactome.org/ContentService"
-# REACTOME_BASE_URL <- "https://httpstat.us/500"
+#' Reactome server base URL
+#'
+#' @return A string with URL.
+#' @noRd
+get_reactome_url <- function() {
+  getOption("REACTOME_BASE_URL", "https://reactome.org/ContentService")
+}
+
+#' URL of Reactome Ensembl file
+#'
+#' @return A string with URL.
+#' @noRd
+get_reactome_ensembl_file <- function() {
+  getOption("REACTOME_ENSEMBL_FILE", "https://reactome.org/download/current/Ensembl2Reactome.txt")
+}
+
+#' URL of Reactome gene association file
+#'
+#' @return A string with URL.
+#' @noRd
+get_reactome_gaf_file <- function() {
+  getOption("REACTOME_GAF_FILE", "https://reactome.org/download/current/gene_association.reactome.gz")
+}
 
 #' List of available Reactome species
 #'
@@ -15,7 +36,7 @@ fetch_reactome_species <- function(on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   dbId <- displayName <- taxId <- NULL
 
-  qry <- api_query(REACTOME_BASE_URL, "data/species/main")
+  qry <- api_query(get_reactome_url(), "data/species/main")
   if(qry$is_error)
     return(catch_error("Reactome", qry$response, on_error))
 
@@ -37,7 +58,7 @@ fetch_reactome_species <- function(on_error = c("stop", "warn")) {
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 #' @noRd
-fetch_reactome_pathways <- function(tax_id, on_error) {
+fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   stId <- displayName <- NULL
 
@@ -48,7 +69,7 @@ fetch_reactome_pathways <- function(tax_id, on_error) {
     offset = 20000
   )
 
-  qry <- api_query(REACTOME_BASE_URL, path, params)
+  qry <- api_query(get_reactome_url(), path, params)
   if(qry$is_error)
     return(catch_error("Reactome", qry$response, on_error))
 
@@ -66,7 +87,6 @@ fetch_reactome_pathways <- function(tax_id, on_error) {
 #'   \code{fetch_reactome_genes}, but if gene symbols are required, needs
 #'   additional ID conversion.
 #'
-#' @param e2r_file URL of the Ensembl-to-Reactome file.
 #' @param spec Reactome species.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #' @param on_error A character vector specifying the error handling method. It
@@ -76,18 +96,18 @@ fetch_reactome_pathways <- function(tax_id, on_error) {
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_reactome_ensembl_genes <- function(e2r_file = "https://reactome.org/download/current/Ensembl2Reactome.txt",
-                                         spec, use_cache = TRUE, on_error = "stop") {
+fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- term_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  if(!assert_url_path(e2r_file, on_error))
+  ensembl_file <- get_reactome_ensembl_file()
+  if(!assert_url_path(ensembl_file, on_error))
     return(NULL)
 
-  lpath <- cached_url_path("ensembl2reactome", e2r_file, use_cache)
+  lpath <- cached_url_path("ensembl2reactome", ensembl_file, use_cache)
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(lpath, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
@@ -97,7 +117,6 @@ fetch_reactome_ensembl_genes <- function(e2r_file = "https://reactome.org/downlo
 
 #' Download term - gene association from Reactome
 #'
-#' @param gaf_file A URL of the Reactome gene association file.
 #' @param tax_id Taxon ID
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #' @param on_error A character vector specifying the error handling method. It
@@ -107,14 +126,14 @@ fetch_reactome_ensembl_genes <- function(e2r_file = "https://reactome.org/downlo
 #'
 #' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
 #' @noRd
-fetch_reactome_gene_association <- function(gaf_file = "https://reactome.org/download/current/gene_association.reactome.gz",
-                                            tax_id, use_cache = TRUE, on_error = "stop") {
+fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
+  gaf_file <- get_reactome_gaf_file()
   if(!assert_url_path(gaf_file, on_error))
     return(NULL)
 
@@ -158,7 +177,7 @@ fetch_reactome_api_genes <- function(pathways, on_error) {
   tb <- purrr::map(pathways, function(pathway) {
     pb$tick()
     path <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
-    qry <- api_query(REACTOME_BASE_URL, path)
+    qry <- api_query(get_reactome_url(), path)
     if(qry$is_error) {
       raise_error <<- TRUE
       return(catch_error("Reactome", qry$response, on_error))

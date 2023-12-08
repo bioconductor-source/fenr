@@ -23,6 +23,19 @@ test_that("Parsing KEGG flat file", {
 })
 
 
+test_that("Expected behaviour from a non-responsive server", {
+  species <- "mge"
+  pathway <- "mge01100"
+  url <- get_kegg_url()
+  options(KEGG_BASE_URL = SERVER_500)
+  test_unresponsive_server(fetch_kegg_species)
+  test_unresponsive_server(fetch_kegg_pathways, species = species)
+  test_unresponsive_server(fetch_kegg_mapping, pathways = pathway, batch_size = 1)
+  test_unresponsive_server(fetch_kegg, species = species)
+  options(KEGG_BASE_URL = url)
+})
+
+
 test_that("Expected return from fetch_kegg_species", {
   expected_selection <- c("hsa", "mmu", "rno", "sce", "dme", "cel")
   spec <- fetch_kegg_species(on_error = "warn")

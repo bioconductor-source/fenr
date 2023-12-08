@@ -1,6 +1,10 @@
-KEGG_BASE_URL <- "https://rest.kegg.jp"
-# KEGG_BASE_URL <- "https://httpstat.us/500"
-
+#' KEGG server base URL
+#'
+#' @return A string with URL. This can be changed by options(KEGG_BASE_URL = "different/url").
+#' @noRd
+get_kegg_url <- function() {
+  getOption("KEGG_BASE_URL", "https://rest.kegg.jp")
+}
 
 #' Find all species available from KEGG
 #'
@@ -19,7 +23,7 @@ fetch_kegg_species <- function(on_error = c("stop", "warn")) {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  qry <- api_query(KEGG_BASE_URL, "list/organism")
+  qry <- api_query(get_kegg_url(), "list/organism")
   if(qry$is_error)
     return(catch_error("KEGG", qry$response, on_error))
 
@@ -45,7 +49,7 @@ fetch_kegg_pathways <- function(species, on_error) {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  qry <- api_query(KEGG_BASE_URL, stringr::str_glue("list/pathway/{species}"))
+  qry <- api_query(get_kegg_url(), stringr::str_glue("list/pathway/{species}"))
   if(qry$is_error)
     return(catch_error("KEGG", qry$response, on_error))
 
@@ -124,23 +128,33 @@ parse_kegg_genes <- function(s) {
 #' @importFrom assertthat assert_that
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_kegg_mapping <- function(pathways, batch_size, on_error) {
+fetch_kegg_mapping <- function(pathways, batch_size, on_error = "stop") {
   assert_that(is.character(pathways))
   batches <- split(pathways, ceiling(seq_along(pathways) / batch_size))
 
+  raise_error <- FALSE
   pb <- progress::progress_bar$new(total = length(batches))
-  purrr::map_dfr(batches, function(batch) {
+  tb <- purrr::map(batches, function(batch) {
     dbentries <- paste(batch, collapse = "+")
 
     # this returns a flat file
-    qry <- api_query(KEGG_BASE_URL, stringr::str_glue("get/{dbentries}"))
-    if(qry$is_error)
-      return(catch_error("KEGG", qry$response, on_error))
+    qry <- api_query(get_kegg_url(), stringr::str_glue("get/{dbentries}"))
+    if(qry$is_error) {
+      catch_error("KEGG", qry$response, on_error)
+      raise_error <<- TRUE
+    }
 
     pb$tick()
     st <- httr2::resp_body_string(qry$response)
     parse_kegg_genes(st)
-  })
+  }) |>
+    purrr::list_rbind()
+
+  if(raise_error) {
+    return(NULL)
+  } else {
+    return(tb)
+  }
 }
 
 

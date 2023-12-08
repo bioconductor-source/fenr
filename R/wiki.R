@@ -1,5 +1,10 @@
-WIKI_BASE_URL <- "https://webservice.wikipathways.org"
-#WIKI_BASE_URL <- "https://httpstat.us/500"
+#' WikiPathways server base URL
+#'
+#' @return A string with URL. This can be changed by options(WIKI_BASE_URL = "different/url").
+#' @noRd
+get_wiki_url <- function() {
+  getOption("WIKI_BASE_URL", "https://webservice.wikipathways.org")
+}
 
 #' List of available WikiPathways species
 #'
@@ -15,7 +20,7 @@ WIKI_BASE_URL <- "https://webservice.wikipathways.org"
 fetch_wiki_species <- function(on_error = c("stop", "warn")) {
   on_error <- match.arg(on_error)
 
-  qry <- api_query(WIKI_BASE_URL, "listOrganisms", list(format = "json"))
+  qry <- api_query(get_wiki_url(), "listOrganisms", list(format = "json"))
   if(qry$is_error)
     return(catch_error("WikiPathways", qry$response, on_error))
 
@@ -35,7 +40,7 @@ fetch_wiki_species <- function(on_error = c("stop", "warn")) {
 fetch_wiki_pathways <- function(species, on_error = "stop") {
   id <- name <- NULL
 
-  qry <- api_query(WIKI_BASE_URL, "listPathways", list(format = "json", organism = species))
+  qry <- api_query(get_wiki_url(), "listPathways", list(format = "json", organism = species))
   if(qry$is_error)
     return(catch_error("WikiPathways", qry$response, on_error))
 
@@ -94,16 +99,25 @@ parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID"
 fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL, on_error = "stop") {
   term_id <- TextLabel <-ID <- Type <- Database <- database <- type <- NULL
 
+  raise_error <- FALSE
   pb <- progress::progress_bar$new(total = length(pathways))
-  res <- purrr::map_dfr(pathways, function(pathway) {
+  res <- purrr::map(pathways, function(pathway) {
     pb$tick()
-    qry <- api_query(WIKI_BASE_URL, "getPathway", list(format = "json", pwId = pathway))
-    if(qry$is_error)
-      return(catch_error("WikiPathways", qry$response, on_error))
+    qry <- api_query(get_wiki_url(), "getPathway", list(format = "json", pwId = pathway))
+    if(qry$is_error) {
+      catch_error("WikiPathways", qry$response, on_error)
+      raise_error <<- TRUE
+      return()
+    }
     js <- httr2::resp_body_json(qry$response)
     parse_wiki_gpml(js$pathway$gpml) |>
       tibble::add_column(term_id = pathway)
   }) |>
+    purrr::list_rbind()
+  if(raise_error)
+    return(NULL)
+
+  res <- res |>
     dplyr::select(term_id, text_label = TextLabel, id = ID, type = Type, database = Database) |>
     dplyr::distinct()
   if(!is.null(databases)) {

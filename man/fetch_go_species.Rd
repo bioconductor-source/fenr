@@ -4,9 +4,14 @@
 \alias{fetch_go_species}
 \title{Find all species available from geneontology.org}
 \usage{
-fetch_go_species(on_error = c("stop", "warn"))
+fetch_go_species(
+  url = "http://current.geneontology.org/products/pages/downloads.html",
+  on_error = c("stop", "warn")
+)
 }
 \arguments{
+\item{url}{URL of the Gene Ontology web page with downloads.}
+
 \item{on_error}{A character vector specifying the error handling method. It
 can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
 will halt the function execution and throw an error, while `"warn"` will

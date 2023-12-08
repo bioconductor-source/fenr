@@ -42,13 +42,23 @@ test_that("Incorrect species in fetch_reactome", {
   expect_error(fetch_reactome("Homo sapiens", "blah"))
 })
 
-test_that("Expected response from a non-responsive server", {
-  expect_error(fetch_reactome_ensembl_genes(e2r_file = SERVER_500, spec = species, use_cache = FALSE, on_error = "stop"))
-  expect_error(fetch_reactome_gene_association(gaf_file = SERVER_500, tax_id = tax_id, use_cache = FALSE, on_error = "stop"))
-  expect_warning({res_1 <- fetch_reactome_ensembl_genes(e2r_file = SERVER_500, spec = species, use_cache = FALSE, on_error = "warn")})
-  expect_null(res_1)
-  expect_warning({res_2 <- fetch_reactome_gene_association(gaf_file = SERVER_500, tax_id = tax_id, use_cache = FALSE, on_error = "warn")})
-  expect_null(res_2)
+test_that("Expected behaviour from a non-responsive server", {
+  url <- get_reactome_url()
+  options(REACTOME_BASE_URL = SERVER_500)
+  test_unresponsive_server(fetch_reactome_species)
+  test_unresponsive_server(fetch_reactome_pathways, tax_id = tax_id)
+  test_unresponsive_server(fetch_reactome, species = species)
+  options(REACTOME_BASE_URL = url)
+
+  url <- get_reactome_ensembl_file()
+  options(REACTOME_ENSEMBL_FILE = SERVER_500)
+  test_unresponsive_server(fetch_reactome_ensembl_genes, spec = species, use_cache = FALSE)
+  options(REACTOME_ENSEMBL_FILE = url)
+
+  url <- get_reactome_gaf_file()
+  options(REACTOME_GAF_FILE = SERVER_500)
+  test_unresponsive_server(fetch_reactome_gene_association, tax_id = tax_id, use_cache = FALSE)
+  options(REACTOME_GAF_FILE = url)
 })
 
 test_that("Expected return from fetch_reactome_species", {

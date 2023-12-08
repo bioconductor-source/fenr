@@ -25,6 +25,18 @@ test_that("Parsing GPLM", {
   expect_equal(res, expected)
 })
 
+test_that("Expected behaviour from a non-responsive server", {
+  species <- "Bacillus subtilis"
+  pathway <- "WP1466"
+  url <- get_wiki_url()
+  options(WIKI_BASE_URL = SERVER_500)
+  test_unresponsive_server(fetch_wiki_species)
+  test_unresponsive_server(fetch_wiki_pathways, species = species)
+  test_unresponsive_server(fetch_wiki, species = species)
+  test_unresponsive_server(fetch_wiki_pathway_genes_api, pathways = pathway)
+  test_unresponsive_server(fetch_wiki, species = species)
+  options(WIKI_BASE_URL = url)
+})
 
 test_that("Expected return from fetch_wiki_species", {
   expected_selection <- c("Homo sapiens", "Mus musculus", "Rattus norvegicus",

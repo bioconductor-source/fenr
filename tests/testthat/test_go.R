@@ -30,10 +30,26 @@ test_that("Processing OBO file", {
   expect_equal(trms$term_name, expected_names)
 })
 
-test_that("Expected warning from a non-responsive server", {
-  expect_warning(fetch_go_terms(obo_file = SERVER_500, use_cache = FALSE, on_error = "warn"))
-  expect_warning(fetch_go_species(obo_file = SERVER_500, on_error = "warn"))
+
+test_that("Expected behaviour from a non-responsive server", {
+  species <- "sgd"
+
+  url <- get_go_obo_file()
+  options(GO_OBO_FILE = SERVER_500)
+  test_unresponsive_server(fetch_go_terms, use_cache = FALSE)
+  options(GO_OBO_FILE = url)
+
+  url <- get_go_species_url()
+  options(GO_SPECIES_URL = SERVER_500)
+  test_unresponsive_server(fetch_go_species)
+  options(GO_SPECIES_URL = url)
+
+  url <- get_go_annotation_url()
+  options(GO_ANNOTATION_URL = SERVER_500)
+  test_unresponsive_server(fetch_go_genes_go, species = species)
+  options(GO_ANNOTATION_URL = url)
 })
+
 
 test_that("Expected return from fetch_go_species", {
   expected_selection <- c("goa_human", "mgi", "rgd", "sgd", "fb", "wb")
@@ -41,7 +57,6 @@ test_that("Expected return from fetch_go_species", {
   if(!is.null(spec)) {
     expect_is(spec, "tbl")
     expect_true(all(expected_selection %in% spec$designation))
-
   }
 })
 

@@ -1,3 +1,27 @@
+#' URL of GO gene association file
+#'
+#' @return A string with URL.
+#' @noRd
+get_go_obo_file <- function() {
+  getOption("GO_OBO_FILE", "http://purl.obolibrary.org/obo/go.obo")
+}
+
+#' URL of GO species webpage
+#'
+#' @return A string with URL.
+#' @noRd
+get_go_species_url <- function() {
+  getOption("GO_SPECIES_URL", "http://current.geneontology.org/products/pages/downloads.html")
+}
+
+#' URL of GO annotation server
+#'
+#' @return A string with URL.
+#' @noRd
+get_go_annotation_url <- function() {
+  getOption("GO_ANNOTATION_URL", "http://current.geneontology.org/annotations")
+}
+
 #' Parse OBO file and return a tibble with key and value
 #'
 #' @param obo Obo file content as a character vector
@@ -63,7 +87,6 @@ extract_obo_terms <- function(parsed) {
 
 #' Download GO term descriptions
 #'
-#' @parap A URL or local file containing GO ontology, in OBO format.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
 #' @param on_error A character vector specifying the error handling method. It
 #'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
@@ -72,16 +95,15 @@ extract_obo_terms <- function(parsed) {
 #'
 #' @return A tibble with term_id and term_name.
 #' @noRd
-fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", use_cache,
-                           on_error = "stop") {
+fetch_go_terms <- function(use_cache, on_error = "stop") {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-
+  obo_file <- get_go_obo_file()
   if(!assert_url_path(obo_file, on_error))
     return(NULL)
 
-  lpath <- cached_url_path("obo", obo_file, use_cache, on_error)
+  lpath <- cached_url_path("obo", obo_file, use_cache)
   readr::read_lines(lpath) |>
     parse_obo_file() |>
     extract_obo_terms()
@@ -99,7 +121,6 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", u
 #' without extension (e.g. for a file \file{goa_chicken.gaf} the designation is
 #' \file{goa_chicken}).
 #'
-#' @param url URL of the Gene Ontology web page with downloads.
 #' @param on_error A character vector specifying the error handling method. It
 #'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
 #'   will halt the function execution and throw an error, while `"warn"` will
@@ -109,11 +130,11 @@ fetch_go_terms <- function(obo_file = "http://purl.obolibrary.org/obo/go.obo", u
 #' @export
 #' @examples
 #' go_species <- fetch_go_species()
-fetch_go_species <- function(url = "http://current.geneontology.org/products/pages/downloads.html",
-                             on_error = c("stop", "warn")) {
+fetch_go_species <- function(on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
+  url <- get_go_species_url()
   qry <- api_query(url, "")
   if(qry$is_error)
     return(catch_error("GO species website", qry$response, on_error))
@@ -156,11 +177,12 @@ fetch_go_genes_go <- function(species, use_cache, on_error = "stop") {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  gaf_file <- stringr::str_glue("http://current.geneontology.org/annotations/{species}.gaf.gz")
+  url <- get_go_annotation_url()
+  gaf_file <- stringr::str_glue("{url}/{species}.gaf.gz")
   if(!assert_url_path(gaf_file, on_error))
     return(NULL)
 
-  lpath <- cached_url_path(stringr::str_glue("gaf_{species}"), gaf_file, use_cache, on_error)
+  lpath <- cached_url_path(stringr::str_glue("gaf_{species}"), gaf_file, use_cache)
   readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS,
                   col_types = GAF_TYPES) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>
@@ -199,7 +221,7 @@ fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_species(species, "fetch_go_species", "stop")
 
-  mapping <- fetch_go_genes_go(species, use_cache, on_error = on_error)
+  mapping <- fetch_go_genes_go(species = species, use_cache = use_cache, on_error = on_error)
   if(is.null(mapping))
     return(NULL)
 
