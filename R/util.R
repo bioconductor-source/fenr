@@ -1,5 +1,4 @@
-HTTP_OK <- 200
-HTTP_FOUND <- 302
+SERVER_500 <- "https://httpstat.us/500"
 
 GAF_COLUMNS <- c(
   "db",
@@ -61,7 +60,7 @@ assert_url_path <- function(url_path, on_error = "stop") {
     httr2::req_perform()
 
   if(httr2::resp_is_error(resp)) {
-    catch_error("url_path", resp, on_error)
+    catch_error(stringr::str_glue("{url_path}"), resp, on_error)
     return(FALSE)
   }
   return(TRUE)
@@ -244,10 +243,13 @@ test_mapping <- function(returned, expected, feature_id) {
 #'
 #' @return In case of `"warn"`, the function returns `NULL`. If `"stop"` is
 #'   chosen, the function halts with an error and does not return a value.
+#' @noRd
 catch_error <- function(server, resp, on_error = c("stop", "warn")) {
   on_error <- match.arg(on_error)
 
-  st <- stringr::str_glue("Cannot access {server}. {resp$status}: {resp$description}.")
+  status <- httr2::resp_status(resp)
+  desc <- httr2::resp_status_desc(resp)
+  st <- stringr::str_glue("Cannot access {server}. {status}: {desc}.")
 
   if(on_error == "stop") {
     stop(st)
@@ -280,7 +282,7 @@ catch_error <- function(server, resp, on_error = c("stop", "warn")) {
 #' If provided, query parameters are appended to the request. The function then
 #' performs the request and checks for errors. It returns a list containing the
 #' response, error status, HTTP status code, and the description of the status.
-#'
+#' @noRd
 api_query <- function(base_url, path, parameters = NULL) {
   req <- httr2::request(base_url) |>
     httr2::req_url_path_append(path)

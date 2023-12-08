@@ -19,11 +19,11 @@ fetch_kegg_species <- function(on_error = c("stop", "warn")) {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  resp <- api_query(KEGG_BASE_URL, "list/organism")
-  if(resp$is_error)
-    return(catch_error("KEGG", resp, on_error))
+  qry <- api_query(KEGG_BASE_URL, "list/organism")
+  if(qry$is_error)
+    return(catch_error("KEGG", qry$response, on_error))
 
-  st <- httr2::resp_body_string(resp$response)
+  st <- httr2::resp_body_string(qry$response)
   readr::read_tsv(I(st), col_names = c("id", "designation", "species", "phylogeny"), show_col_types = FALSE)
 }
 
@@ -45,11 +45,11 @@ fetch_kegg_pathways <- function(species, on_error) {
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  resp <- api_query(KEGG_BASE_URL, stringr::str_glue("list/pathway/{species}"))
-  if(resp$is_error)
-    return(catch_error("KEGG", resp, on_error))
+  qry <- api_query(KEGG_BASE_URL, stringr::str_glue("list/pathway/{species}"))
+  if(qry$is_error)
+    return(catch_error("KEGG", qry$response, on_error))
 
-  st <- httr2::resp_body_string(resp$response)
+  st <- httr2::resp_body_string(qry$response)
   readr::read_tsv(I(st), col_names = c("term_id", "term_name"), show_col_types = FALSE) |>
     dplyr::mutate(term_id = stringr::str_remove(term_id, "path:"))
 }
@@ -133,12 +133,12 @@ fetch_kegg_mapping <- function(pathways, batch_size, on_error) {
     dbentries <- paste(batch, collapse = "+")
 
     # this returns a flat file
-    resp <- api_query(KEGG_BASE_URL, stringr::str_glue("get/{dbentries}"))
-    if(resp$is_error)
-      return(catch_error("KEGG", resp, on_error))
+    qry <- api_query(KEGG_BASE_URL, stringr::str_glue("get/{dbentries}"))
+    if(qry$is_error)
+      return(catch_error("KEGG", qry$response, on_error))
 
     pb$tick()
-    st <- httr2::resp_body_string(resp$response)
+    st <- httr2::resp_body_string(qry$response)
     parse_kegg_genes(st)
   })
 }

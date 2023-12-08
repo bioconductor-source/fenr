@@ -69,13 +69,11 @@ cache_path <- function(bfc, rname, fpath) {
 #' @noRd
 cached_url_path <- function(rname, fpath, use_cache) {
   if(use_cache) {
-    assert_url_path(fpath)
     cache <- cache_location()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     lpath <- cache_path(bfc, rname, fpath)
   } else {
     lpath <- fpath
   }
-
   return(lpath)
 }

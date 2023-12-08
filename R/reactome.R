@@ -15,11 +15,11 @@ fetch_reactome_species <- function(on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   dbId <- displayName <- taxId <- NULL
 
-  resp <- api_query(REACTOME_BASE_URL, "data/species/main")
-  if(resp$is_error)
-    return(catch_error("Reactome", resp, on_error))
+  qry <- api_query(REACTOME_BASE_URL, "data/species/main")
+  if(qry$is_error)
+    return(catch_error("Reactome", qry$response, on_error))
 
-  httr2::resp_body_json(resp$response) |>
+  httr2::resp_body_json(qry$response) |>
     purrr::map(tibble::as_tibble) |>
     purrr::list_rbind() |>
     dplyr::select(db_id = dbId, designation = displayName, tax_id = taxId) |>
@@ -48,11 +48,11 @@ fetch_reactome_pathways <- function(tax_id, on_error) {
     offset = 20000
   )
 
-  resp <- api_query(REACTOME_BASE_URL, path, params)
-  if(resp$is_error)
-    return(catch_error("Reactome", resp, on_error))
+  qry <- api_query(REACTOME_BASE_URL, path, params)
+  if(qry$is_error)
+    return(catch_error("Reactome", qry$response, on_error))
 
-  httr2::resp_body_json(resp$response) |>
+  httr2::resp_body_json(qry$response) |>
     purrr::map(tibble::as_tibble) |>
     purrr::list_rbind() |>
     dplyr::select(term_id = stId, term_name = displayName)
@@ -66,22 +66,28 @@ fetch_reactome_pathways <- function(tax_id, on_error) {
 #'   \code{fetch_reactome_genes}, but if gene symbols are required, needs
 #'   additional ID conversion.
 #'
-#' @param spec Reactome species
+#' @param e2r_file URL of the Ensembl-to-Reactome file.
+#' @param spec Reactome species.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
+fetch_reactome_ensembl_genes <- function(e2r_file = "https://reactome.org/download/current/Ensembl2Reactome.txt",
+                                         spec, use_cache = TRUE, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- term_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  url <- "https://reactome.org/download/current/Ensembl2Reactome.txt"
-  assert_url_path(url)
+  if(!assert_url_path(e2r_file, on_error))
+    return(NULL)
 
-  lpath <- cached_url_path("ensembl2reactome", url, use_cache)
+  lpath <- cached_url_path("ensembl2reactome", e2r_file, use_cache)
   colms <- c("gene_id", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(lpath, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
@@ -91,20 +97,26 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE) {
 
 #' Download term - gene association from Reactome
 #'
+#' @param gaf_file A URL of the Reactome gene association file.
 #' @param tax_id Taxon ID
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
+#' @param on_error A character vector specifying the error handling method. It
+#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
+#'   will halt the function execution and throw an error, while `"warn"` will
+#'   issue a warning and return `NULL`.
 #'
 #' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
 #' @noRd
-fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE) {
+fetch_reactome_gene_association <- function(gaf_file = "https://reactome.org/download/current/gene_association.reactome.gz",
+                                            tax_id, use_cache = TRUE, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
 
   # Temporary patch to circumvent vroom 1.6.4 bug
   # readr::local_edition(1)
 
-  gaf_file <- "https://reactome.org/download/current/gene_association.reactome.gz"
-  assert_url_path(gaf_file)
+  if(!assert_url_path(gaf_file, on_error))
+    return(NULL)
 
   lpath <- cached_url_path("reactome_gaf", gaf_file, use_cache)
   readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES, skip = 4) |>
@@ -146,13 +158,13 @@ fetch_reactome_api_genes <- function(pathways, on_error) {
   tb <- purrr::map(pathways, function(pathway) {
     pb$tick()
     path <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
-    resp <- api_query(REACTOME_BASE_URL, path)
-    if(resp$is_error) {
+    qry <- api_query(REACTOME_BASE_URL, path)
+    if(qry$is_error) {
       raise_error <<- TRUE
-      return(catch_error("Reactome", resp, on_error))
+      return(catch_error("Reactome", qry$response, on_error))
     }
 
-    httr2::resp_body_json(resp$response) |>
+    httr2::resp_body_json(qry$response) |>
       purrr::map(function(js) {
         tibble::tibble(
           database_name = js$databaseName,
@@ -216,14 +228,15 @@ fetch_reactome <- function(species, source = c("ensembl", "api", "gene_associati
   tax_id <- match_species(species, "fetch_reactome_species", "tax_id", on_error)
   if(is.null(tax_id))
     return(NULL)
+
   terms <- fetch_reactome_pathways(tax_id, on_error)
   if(is.null(terms))
     return(NULL)
 
   if (source == "ensembl") {
-    mapping <- fetch_reactome_ensembl_genes(species, use_cache = use_cache)
+    mapping <- fetch_reactome_ensembl_genes(spec = species, use_cache = use_cache)
   } else if (source == "gene_association") {
-    mapping <- fetch_reactome_gene_association(tax_id, use_cache = use_cache)
+    mapping <- fetch_reactome_gene_association(tax_id = tax_id, use_cache = use_cache)
   } else {
     mapping <- fetch_reactome_api_genes(terms$term_id, on_error)
   }

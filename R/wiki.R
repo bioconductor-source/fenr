@@ -15,11 +15,11 @@ WIKI_BASE_URL <- "https://webservice.wikipathways.org"
 fetch_wiki_species <- function(on_error = c("stop", "warn")) {
   on_error <- match.arg(on_error)
 
-  resp <- api_query(WIKI_BASE_URL, "listOrganisms", list(format = "json"))
-  if(resp$is_error)
-    return(catch_error("WikiPathways", resp, on_error))
+  qry <- api_query(WIKI_BASE_URL, "listOrganisms", list(format = "json"))
+  if(qry$is_error)
+    return(catch_error("WikiPathways", qry$response, on_error))
 
-  js <- httr2::resp_body_json(resp$response)
+  js <- httr2::resp_body_json(qry$response)
   tibble::tibble(designation = unlist(js))
 }
 
@@ -35,11 +35,11 @@ fetch_wiki_species <- function(on_error = c("stop", "warn")) {
 fetch_wiki_pathways <- function(species, on_error = "stop") {
   id <- name <- NULL
 
-  resp <- api_query(WIKI_BASE_URL, "listPathways", list(format = "json", organism = species))
-  if(resp$is_error)
-    return(catch_error("WikiPathways", resp, on_error))
+  qry <- api_query(WIKI_BASE_URL, "listPathways", list(format = "json", organism = species))
+  if(qry$is_error)
+    return(catch_error("WikiPathways", qry$response, on_error))
 
-  js <- httr2::resp_body_json(resp$response)
+  js <- httr2::resp_body_json(qry$response)
   if(is(js[[1]], "character") && js[[1]] == "error")
     stop(stringr::str_glue("Cannot retrieve pathways from WikiPathways for species {species}."))
 
@@ -97,10 +97,10 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
   pb <- progress::progress_bar$new(total = length(pathways))
   res <- purrr::map_dfr(pathways, function(pathway) {
     pb$tick()
-    resp <- api_query(WIKI_BASE_URL, "getPathway", list(format = "json", pwId = pathway))
-    if(resp$is_error)
-      return(catch_error("WikiPathways", resp, on_error))
-    js <- httr2::resp_body_json(resp$response)
+    qry <- api_query(WIKI_BASE_URL, "getPathway", list(format = "json", pwId = pathway))
+    if(qry$is_error)
+      return(catch_error("WikiPathways", qry$response, on_error))
+    js <- httr2::resp_body_json(qry$response)
     parse_wiki_gpml(js$pathway$gpml) |>
       tibble::add_column(term_id = pathway)
   }) |>
