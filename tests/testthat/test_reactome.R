@@ -25,14 +25,6 @@ expected_gene_association <- tibble::tribble(
   "R-SCE-9749381", "CDC6",
 )
 
-expected_api <- tibble::tribble(
-  ~term_id, ~gene_symbol,
-  "R-SCE-68952", "POL12",
-  "R-SCE-983168", "CDC16",
-  "R-HSA-114608", "CFD",
-  "R-MMU-352230", "Slc7a5"
-)
-
 ##################################################
 
 test_that("Incorrect species in fetch_reactome", {
@@ -47,6 +39,7 @@ test_that("Expected behaviour from a non-responsive server", {
   options(REACTOME_BASE_URL = SERVER_500)
   test_unresponsive_server(fetch_reactome_species)
   test_unresponsive_server(fetch_reactome_pathways, tax_id = tax_id)
+  test_unresponsive_server(fetch_reactome_api_genes, pathways = "R-SCE-68952")
   test_unresponsive_server(fetch_reactome, species = species)
   options(REACTOME_BASE_URL = url)
 
@@ -118,10 +111,20 @@ test_that("Correct Reactome gene association from yeast", {
   }
 })
 
+# API mapping is slow, so we use much smaller organism for tests
+
+small_species <- "Mycobacterium tuberculosis"
+expected_api <- tibble::tribble(
+  ~term_id, ~gene_symbol,
+  "R-MTU-964903", "aroA",
+  "R-MTU-870392", "cysU",
+  "R-MTU-870392", "sir",
+  "R-MTU-879299", "mca"
+)
 
 test_that("Correct Reactome API from yeast", {
-  # Doing this on all pathways takes forever
-  mapping <- fetch_reactome_api_genes(expected_api$term_id, on_error = "warn")
+  re <- fetch_reactome(species = small_species, source = "api")
+  mapping <- re$mapping
   if(!is.null(mapping)) {
     expect_is(mapping, "tbl")
     merged <- expected_api |>

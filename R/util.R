@@ -24,19 +24,6 @@ GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
   stringr::str_c(collapse = "")
 
 
-#' Check if a tibble contains all required columns
-#'
-#' @param tb Tibble or data frame to examine
-#' @param cols A string vector with required column names
-#'
-#' @return TRUE if assertion passed
-#' @noRd
-assert_columns <- function(tb, cols) {
-  if(!all(cols %in% colnames(tb)))
-    stop(paste0("The data frame needs to contain the following columns\n", paste(cols, collapse = ", ")))
-  return(TRUE)
-}
-
 #' Check if URL with a path is responding OK
 #'
 #' Stops with error message if the path is not accessible or server not

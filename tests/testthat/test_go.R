@@ -46,7 +46,7 @@ test_that("Expected behaviour from a non-responsive server", {
 
   url <- get_go_annotation_url()
   options(GO_ANNOTATION_URL = SERVER_500)
-  test_unresponsive_server(fetch_go_genes_go, species = species)
+  test_unresponsive_server(fetch_go_from_go, species = species, use_cache = FALSE)
   options(GO_ANNOTATION_URL = url)
 })
 

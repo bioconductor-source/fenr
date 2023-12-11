@@ -180,8 +180,12 @@ main_plot <- function(de, input) {
 #' }
 enrichment_interactive <- function(de, term_data) {
   assert_that(is.data.frame(de))
-  assert_columns(de, c("gene_id", "gene_symbol", "logFC", "logCPM", "PValue", "FDR"))
   assert_that(is(term_data, "list"))
+
+  req_cols <- c("gene_id", "gene_symbol", "logFC", "logCPM", "PValue", "FDR")
+  if(!all(req_cols %in% colnames(de)))
+    stop(paste0("The data frame needs to contain the following columns\n", paste(req_cols, collapse = ", ")))
+
 
   ui <- function() {
     shiny::shinyUI(shiny::fluidPage(

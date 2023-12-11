@@ -249,8 +249,6 @@ fetch_reactome <- function(species, source = c("ensembl", "api", "gene_associati
     return(NULL)
 
   terms <- fetch_reactome_pathways(tax_id, on_error)
-  if(is.null(terms))
-    return(NULL)
 
   if (source == "ensembl") {
     mapping <- fetch_reactome_ensembl_genes(spec = species, use_cache = use_cache)
