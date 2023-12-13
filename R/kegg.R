@@ -1,6 +1,7 @@
 #' KEGG server base URL
 #'
-#' @return A string with URL. This can be changed by options(KEGG_BASE_URL = "different/url").
+#' @return A string with URL. This can be changed by options(KEGG_BASE_URL =
+#'   "different/url").
 #' @noRd
 get_kegg_url <- function() {
   getOption("KEGG_BASE_URL", "https://rest.kegg.jp")
@@ -142,6 +143,7 @@ fetch_kegg_mapping <- function(pathways, batch_size, on_error = "stop") {
     if(qry$is_error) {
       catch_error("KEGG", qry$response, on_error)
       raise_error <<- TRUE
+      return(NULL)
     }
 
     pb$tick()

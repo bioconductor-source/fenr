@@ -131,6 +131,7 @@ fetch_go_terms <- function(use_cache, on_error = "stop") {
 #' @examples
 #' go_species <- fetch_go_species()
 fetch_go_species <- function(on_error = c("stop", "warn")) {
+  on_error <- match.arg(on_error)
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
 
@@ -219,7 +220,7 @@ fetch_go_genes_go <- function(species, use_cache, on_error = "stop") {
 #' @noRd
 fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
-  assert_species(species, "fetch_go_species", "stop")
+  assert_species(species, "fetch_go_species", on_error)
 
   mapping <- fetch_go_genes_go(species = species, use_cache = use_cache, on_error = on_error)
   if(is.null(mapping))

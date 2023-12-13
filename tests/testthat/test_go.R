@@ -33,21 +33,13 @@ test_that("Processing OBO file", {
 
 test_that("Expected behaviour from a non-responsive server", {
   species <- "sgd"
-
-  url <- get_go_obo_file()
-  options(GO_OBO_FILE = SERVER_500)
-  test_unresponsive_server(fetch_go_terms, use_cache = FALSE)
-  options(GO_OBO_FILE = url)
-
-  url <- get_go_species_url()
-  options(GO_SPECIES_URL = SERVER_500)
-  test_unresponsive_server(fetch_go_species)
-  options(GO_SPECIES_URL = url)
-
-  url <- get_go_annotation_url()
-  options(GO_ANNOTATION_URL = SERVER_500)
-  test_unresponsive_server(fetch_go_from_go, species = species, use_cache = FALSE)
-  options(GO_ANNOTATION_URL = url)
+  httr2::with_mocked_responses(
+    mock = mocked_500,
+    code = {
+      test_unresponsive_server(fetch_go_terms, use_cache = FALSE)
+      test_unresponsive_server(fetch_go_species)
+      test_unresponsive_server(fetch_go_from_go, species = species, use_cache = FALSE)
+    })
 })
 
 

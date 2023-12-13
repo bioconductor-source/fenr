@@ -35,23 +35,16 @@ test_that("Incorrect species in fetch_reactome", {
 })
 
 test_that("Expected behaviour from a non-responsive server", {
-  url <- get_reactome_url()
-  options(REACTOME_BASE_URL = SERVER_500)
-  test_unresponsive_server(fetch_reactome_species)
-  test_unresponsive_server(fetch_reactome_pathways, tax_id = tax_id)
-  test_unresponsive_server(fetch_reactome_api_genes, pathways = "R-SCE-68952")
-  test_unresponsive_server(fetch_reactome, species = species)
-  options(REACTOME_BASE_URL = url)
-
-  url <- get_reactome_ensembl_file()
-  options(REACTOME_ENSEMBL_FILE = SERVER_500)
-  test_unresponsive_server(fetch_reactome_ensembl_genes, spec = species, use_cache = FALSE)
-  options(REACTOME_ENSEMBL_FILE = url)
-
-  url <- get_reactome_gaf_file()
-  options(REACTOME_GAF_FILE = SERVER_500)
-  test_unresponsive_server(fetch_reactome_gene_association, tax_id = tax_id, use_cache = FALSE)
-  options(REACTOME_GAF_FILE = url)
+  httr2::with_mocked_responses(
+    mock = mocked_500,
+    code = {
+      test_unresponsive_server(fetch_reactome_species)
+      test_unresponsive_server(fetch_reactome_pathways, tax_id = tax_id)
+      test_unresponsive_server(fetch_reactome_api_genes, pathways = "R-SCE-68952")
+      test_unresponsive_server(fetch_reactome, species = species)
+      test_unresponsive_server(fetch_reactome_ensembl_genes, spec = species, use_cache = FALSE)
+      test_unresponsive_server(fetch_reactome_gene_association, tax_id = tax_id, use_cache = FALSE)
+    })
 })
 
 test_that("Expected return from fetch_reactome_species", {

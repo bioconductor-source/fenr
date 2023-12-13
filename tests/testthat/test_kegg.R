@@ -25,14 +25,15 @@ test_that("Parsing KEGG flat file", {
 
 test_that("Expected behaviour from a non-responsive server", {
   species <- "mge"
-  pathway <- "mge01100"
-  url <- get_kegg_url()
-  options(KEGG_BASE_URL = SERVER_500)
-  test_unresponsive_server(fetch_kegg_species)
-  test_unresponsive_server(fetch_kegg_pathways, species = species)
-  test_unresponsive_server(fetch_kegg_mapping, pathways = pathway, batch_size = 1)
-  test_unresponsive_server(fetch_kegg, species = species)
-  options(KEGG_BASE_URL = url)
+  pathway <- "mge00010"
+  httr2::with_mocked_responses(
+    mock = mocked_500,
+    code = {
+      test_unresponsive_server(fetch_kegg_species)
+      test_unresponsive_server(fetch_kegg_pathways, species = species)
+      test_unresponsive_server(fetch_kegg_mapping, pathways = pathway, batch_size = 1)
+      test_unresponsive_server(fetch_kegg, species = species)
+    })
 })
 
 

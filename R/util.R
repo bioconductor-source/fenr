@@ -1,5 +1,3 @@
-SERVER_500 <- "https://httpstat.us/500"
-
 GAF_COLUMNS <- c(
   "db",
   "db_id",
@@ -256,6 +254,7 @@ catch_error <- function(server, resp, on_error = c("stop", "warn")) {
 #' @param path A string specifying the path of the specific API endpoint.
 #' @param parameters An optional named list of query parameters to be included
 #'   in the request.
+#' @param timeout Timeout limit in secods.
 #'
 #' @return A list containing the following elements:
 #' \itemize{
@@ -270,7 +269,7 @@ catch_error <- function(server, resp, on_error = c("stop", "warn")) {
 #' performs the request and checks for errors. It returns a list containing the
 #' response, error status, HTTP status code, and the description of the status.
 #' @noRd
-api_query <- function(base_url, path, parameters = NULL) {
+api_query <- function(base_url, path, parameters = NULL, timeout = 15) {
   req <- httr2::request(base_url) |>
     httr2::req_url_path_append(path)
 
@@ -294,9 +293,10 @@ api_query <- function(base_url, path, parameters = NULL) {
 
 #' Test a function for correct response when server is non-responsive.
 #'
-#' @details When the server is not responsive (replaced with a 500 server using
-#'   options), the function should throw an error, if `on_error = "stop"` and
-#'   throw a warning and return NULL, it `on_error = "warn"`.
+#' @details When the server is not responsive (using
+#'   httr2::with_mocked_responses), the function should throw an error, if
+#'   `on_error = "stop"` and throw a warning and return NULL, it `on_error =
+#'   "warn"`.
 #'
 #'
 #' @param fun A function to test
@@ -311,3 +311,12 @@ test_unresponsive_server <- function(fun, ...) {
 }
 
 
+#' A mock function used with httr2::with_mocked_responses() for testing an
+#' unresponsive server behaviour.
+#'
+#' @param req A httr2 request
+#'
+#' @return Mocked response with error 500.
+mocked_500 <- function(req) {
+  httr2::response(status_code = 500)
+}
