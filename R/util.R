@@ -1,3 +1,4 @@
+# Gene Annotation File column names. GAF is used by GO and Reactome.
 GAF_COLUMNS <- c(
   "db",
   "db_id",

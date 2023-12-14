@@ -96,9 +96,6 @@ extract_obo_terms <- function(parsed) {
 #' @return A tibble with term_id and term_name.
 #' @noRd
 fetch_go_terms <- function(use_cache, on_error = "stop") {
-  # Temporary patch to circumvent vroom 1.6.4 bug
-  # readr::local_edition(1)
-
   obo_file <- get_go_obo_file()
   if(!assert_url_path(obo_file, on_error))
     return(NULL)
@@ -175,15 +172,12 @@ fetch_go_genes_go <- function(species, use_cache, on_error = "stop") {
   gene_synonym <- db_object_synonym <- symbol <- NULL
   db_id <- go_term <- NULL
 
-  # Temporary patch to circumvent vroom 1.6.4 bug
-  # readr::local_edition(1)
-
   url <- get_go_annotation_url()
   gaf_file <- stringr::str_glue("{url}/{species}.gaf.gz")
   if(!assert_url_path(gaf_file, on_error))
     return(NULL)
 
-  lpath <- cached_url_path(stringr::str_glue("gaf_{species}"), gaf_file, use_cache)
+  lpath <- cached_url_path(stringr::str_glue("go_gaf_{species}"), gaf_file, use_cache)
   readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS,
                   col_types = GAF_TYPES) |>
     dplyr::mutate(gene_synonym = stringr::str_remove(db_object_synonym, "\\|.*$")) |>

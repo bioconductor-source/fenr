@@ -13,11 +13,8 @@ test_that("Incorrect batch size in fetch_kegg", {
 
 
 test_that("Parsing KEGG flat file", {
-  # Temporary patch to circumvent vroom 1.6.4 bug
-  # readr::local_edition(1)
-
   flat <- readr::read_file("../test_data/kegg_test.txt")
-  expected <- readr::read_rds("../test_data/kegg_parseing_result.rds")
+  expected <- readr::read_rds("../test_data/kegg_parsing_result.rds")
   parsed <- parse_kegg_genes(flat)
   expect_equal(parsed, expected)
 })

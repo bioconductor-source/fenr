@@ -20,10 +20,6 @@ get_kegg_url <- function() {
 #' @examples
 #' spe <- fetch_kegg_species()
 fetch_kegg_species <- function(on_error = c("stop", "warn")) {
-
-  # Temporary patch to circumvent vroom 1.6.4 bug
-  # readr::local_edition(1)
-
   qry <- api_query(get_kegg_url(), "list/organism")
   if(qry$is_error)
     return(catch_error("KEGG", qry$response, on_error))
@@ -46,9 +42,6 @@ fetch_kegg_species <- function(on_error = c("stop", "warn")) {
 fetch_kegg_pathways <- function(species, on_error) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
-
-  # Temporary patch to circumvent vroom 1.6.4 bug
-  # readr::local_edition(1)
 
   qry <- api_query(get_kegg_url(), stringr::str_glue("list/pathway/{species}"))
   if(qry$is_error)
