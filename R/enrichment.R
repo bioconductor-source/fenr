@@ -268,6 +268,7 @@ functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NUL
       p_value = p
     )
   })
+
   # Drawback - if all selections below minimum, res is tibble 0 x 0, need to
   # catch it
   if (nrow(res) == 0) {

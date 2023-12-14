@@ -62,8 +62,8 @@ fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
   stId <- displayName <- NULL
 
-  path = "data/schema/Pathway/min"
-  params = list(
+  path <- "data/schema/Pathway/min"
+  params <- list(
     species = tax_id,
     page = 1,
     offset = 20000

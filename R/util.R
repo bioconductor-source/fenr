@@ -317,6 +317,7 @@ test_unresponsive_server <- function(fun, ...) {
 #' @param req A httr2 request
 #'
 #' @return Mocked response with error 500.
+#' @noRd
 mocked_500 <- function(req) {
   httr2::response(status_code = 500)
 }

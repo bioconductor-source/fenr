@@ -72,7 +72,7 @@ parse_kegg_genes <- function(s) {
 
   entries <- stringr::str_split(s, "///") |> unlist()
   entries <- entries[-length(entries)] # there is /// at the end
-  purrr::map_dfr(entries, function(entry) {
+  purrr::map(entries, function(entry) {
     d <- stringr::str_split(entry, "\n") |>
       unlist()
     n <- length(d)
@@ -113,7 +113,8 @@ parse_kegg_genes <- function(s) {
         gene_id
       )) |>
       tibble::add_column(term_id = pathway)
-  })
+  }) |>
+    purrr::list_rbind()
 }
 
 
