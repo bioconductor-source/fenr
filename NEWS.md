@@ -116,7 +116,7 @@
  - Minor changes to prepare for Bioconductor release
  - Reverting temporarily to *readr* version 1 to circumvent a *vroom* 1.6.4 bug
 
-## Version 1.1.1
+## Version 1.0.1
 
  - First update after Bioconductor release
  - Implemented changes to prevent the package from build/check fail, if one of the remote servers is not responding
@@ -125,12 +125,12 @@
  - Added tests for behaviour in case of a non-responsive server
  - Extended test coverage to 100%, except for the interactive example
  
-## Version 1.1.2
+## Version 1.0.2
 
  - Bug fixes, examples need on_error = "warn"
 
-## Version 1.1.3
+## Version 1.0.4
 
  - Reinstated Bioplanet access, this time with graceful fail when the website is down.
  - Minor code changes.
- 
+
