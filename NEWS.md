@@ -139,6 +139,8 @@
  - Bug fix: if feature id - term id mapping is not unique (which can happen), features are duplicated in counting; fixed by `dplyr::distinct()` on mapping
  - Correction in vignette: using yeast genome for `topGO`, instead of human.
  - Improving test coverage
- - Making tests and examples resilient to Ensembl outage.
+ - Making tests and examples resilient to Ensembl outage
 
+## Version 1.0.6
 
+ - Replaced biomaRt with a single RESTful XML call; as biomaRt is used only once to obtain GO terms, this replacement reduced dependency footprint of the package
