@@ -18,7 +18,7 @@ Description: Perform fast functional enrichment on feature lists (like genes
     packages. 
 URL: https://github.com/bartongroup/fenr
 BugReports: https://github.com/bartongroup/fenr/issues
-Depends: R (>= 4.3.0)
+Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 biocViews:
