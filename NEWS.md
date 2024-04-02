@@ -140,5 +140,11 @@
  - Correction in vignette: using yeast genome for `topGO`, instead of human.
  - Improving test coverage
  - Making tests and examples resilient to Ensembl outage.
+ 
+## Version 1.0.6
+
+ - Changed the Ensembl mapping file downloaded from Reactome to "Physical entity" mapping, as it contains gene symbols, in addition to the Ensembl IDs.
+ - Note, `fetch_reactome()` with `source = "ensembl"` will now return a column `ensembl_id` instead of `gene_id` in the mapping tibble.
+
 
 
