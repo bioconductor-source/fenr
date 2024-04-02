@@ -144,7 +144,7 @@
 ## Version 1.0.6
 
  - Changed the Ensembl mapping file downloaded from Reactome to "Physical entity" mapping, as it contains gene symbols, in addition to the Ensembl IDs.
- - Note, `fetch_reactome()` with `source = "ensembl"` will now return a column `ensembl_id` instead of `gene_id` in the mapping tibble.
-
+ - Changed the name of GAF column `DB Object Synonym` from `gene_synonym` to `gene_id` for consistency with other methods.
+ - Corrected Reactome test as it failed with multiple gene symbols per gene id.
 
 

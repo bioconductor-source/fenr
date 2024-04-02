@@ -107,11 +107,11 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE, on_error = "sto
     return(NULL)
 
   lpath <- cached_url_path("ensembl2reactome", ensembl_file, use_cache)
-  colms <- c("ensembl_id", "reactome_gene_id", "gene_name", "term_id", "url", "event", "evidence", "species")
+  colms <- c("gene_id", "reactome_gene_id", "gene_name", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(lpath, col_names = colms, show_col_types = FALSE) |>
     dplyr::filter(species == spec) |>
     dplyr::mutate(gene_symbol = stringr::str_remove(gene_name, "\\s.+$")) |>
-    dplyr::select(ensembl_id, gene_symbol, term_id) |>
+    dplyr::select(gene_id, gene_symbol, term_id) |>
     # Apart from gene symbols there are other entities in Reactome
     dplyr::filter(stringr::str_detect(gene_symbol, "^[A-Z0-9]+$")) |>
     dplyr::distinct()

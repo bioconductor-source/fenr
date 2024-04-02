@@ -15,12 +15,12 @@ fetch_terms_for_example <- function(de) {
   # load GO terms
   message("Fetching GO data\n")
   go <- fetch_go(species = "sgd")
-  go_data <- prepare_for_enrichment(go$terms, go$mapping, all_genes, feature_name = "gene_synonym")
+  go_data <- prepare_for_enrichment(go$terms, go$mapping, all_genes, feature_name = "gene_id")
 
   # load Reactome pathways
   message("Fetching Reactome data\n")
   re <- fetch_reactome("Saccharomyces cerevisiae", on_error = "warn")
-  re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "ensembl_id")
+  re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "gene_id")
 
   # Put all functional term data in one structure; Shiny app will access
   # individual ontologies from this list
