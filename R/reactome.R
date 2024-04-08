@@ -100,7 +100,7 @@ fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
 #' @noRd
 fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE, on_error = "stop") {
   # Binding variables from non-standard evaluation locally
-  species <- gene_id <- term_id <- NULL
+  species <- gene_id <- gene_name <- gene_symbol <- term_id <- NULL
 
   ensembl_file <- get_reactome_ensembl_file()
   if(!assert_url_path(ensembl_file, on_error))

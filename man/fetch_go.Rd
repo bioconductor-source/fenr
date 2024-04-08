@@ -47,7 +47,7 @@ If \code{species} is provided, mapping from a Gene Ontology GAF file
   Symbol) is returned as \code{gene_symbol}, but, depending on the
   \code{species} argument it can contain other entities, e.g. RNA or protein
   complex names. Similarly, the eleventh column of the GAF file (DB Object
-  Synonym) is returned as \code{gene_synonym}. It is up to the user to select
+  Synonym) is returned as \code{gene_id}. It is up to the user to select
   the appropriate database.
 
   Alternatively, if \code{dataset} is provided, mapping will be downloaded
