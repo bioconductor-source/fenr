@@ -266,7 +266,7 @@ fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
 #'   will halt the function execution and throw an error, while `"warn"` will
 #'   issue a warning and return `NULL`.
 #'
-#' @return A tibble with columns \code{ensembl_gene_id}, \code{gene_symbol} and
+#' @return A tibble with columns \code{gene_id}, \code{gene_symbol} and
 #'   \code{term_id}.
 #' @noRd
 fetch_go_genes_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "warn")) {
@@ -276,10 +276,11 @@ fetch_go_genes_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "w
   if(!assert_url_path(qry, on_error))
     return(NULL)
 
-  lpath <- cached_url_path(stringr::str_glue("biomart_{dataset}"), qry, use_cache)
-  res <- readr::read_tsv(lpath, show_col_types = FALSE)
+  # Problems with cache, bfcneedsupdate returns error for this query
+  # lpath <- cached_url_path(stringr::str_glue("biomart_{dataset}"), qry, use_cache)
+  res <- readr::read_tsv(qry, show_col_types = FALSE)
   if(ncol(res) == 3) {
-    res |> rlang::set_names(c("ensembl_gene_id", "gene_symbol", "term_id"))
+    res |> rlang::set_names(c("gene_id", "gene_symbol", "term_id"))
   } else {
     warning("Problem with Biomart")
     return(NULL)
