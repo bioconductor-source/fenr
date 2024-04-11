@@ -93,7 +93,7 @@ test_that("GO yeast from Ensembl is correct", {
   )
 
   expected_mapping <- tibble::tribble(
-    ~term_id, ~ensembl_gene_id,
+    ~term_id, ~gene_id,
     "GO:0000166", "YNL102W",
     "GO:0006096", "YKL060C",
     "GO:0005199", "YKL096W-A",
@@ -105,6 +105,6 @@ test_that("GO yeast from Ensembl is correct", {
   if(!is.null(re)) {
     test_fetched_structure(re)
     test_terms(re$terms, expected_terms)
-    test_mapping(re$mapping, expected_mapping, "ensembl_gene_id")
+    test_mapping(re$mapping, expected_mapping, "gene_id")
   }
 })
