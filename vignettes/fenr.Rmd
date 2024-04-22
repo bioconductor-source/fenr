@@ -128,7 +128,7 @@ The columns are as follows
 
 A small Shiny app is included in the package to demonstrate the usage of *fenr* in an interactive environment. All time-consuming data loading and preparation tasks are performed before the app is launched.
 
-```{r interactive_prepare}
+```{r interactive_prepare, eval=FALSE}
 data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
 ```
