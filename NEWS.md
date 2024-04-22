@@ -146,3 +146,8 @@
  - Changed the name of GAF column `DB Object Synonym` from `gene_synonym` to `gene_id` for consistency with other methods.
  - Corrected Reactome test as it failed with multiple gene symbols per gene id.
  - Replaced biomaRt with a single RESTful XML call; as biomaRt is used only once to obtain GO terms, this replacement reduced dependency footprint of the package
+
+## Version 1.0.7
+
+ - Improved error handling with unresponsive servers - timeouts are now handled gracefully
+ 
