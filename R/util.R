@@ -46,7 +46,11 @@ assert_url_path <- function(url_path, on_error = "stop") {
     httr2::req_perform()
 
   if(httr2::resp_is_error(resp)) {
-    catch_error(stringr::str_glue("{url_path}"), resp, on_error)
+    rsp <- list(
+      status = httr2::resp_status(resp),
+      description = httr2::resp_status_desc(resp)
+    )
+    catch_error(stringr::str_glue("{url_path}"), rsp, on_error)
     return(FALSE)
   }
   return(TRUE)
@@ -221,7 +225,8 @@ test_mapping <- function(returned, expected, feature_id) {
 #' choice (`"stop"` or `"warn"`) as inputs.
 #'
 #' @param server Name of the server.
-#' @param resp Response from the server.
+#' @param resp Response from \code{http_request()}. A list with "status" and
+#'   "desc" strings.
 #' @param on_error A character vector specifying the error handling method. It
 #'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
 #'   will halt the function execution and throw an error, while `"warn"` will
@@ -233,9 +238,7 @@ test_mapping <- function(returned, expected, feature_id) {
 catch_error <- function(server, resp, on_error = c("stop", "warn")) {
   on_error <- match.arg(on_error)
 
-  status <- httr2::resp_status(resp)
-  desc <- httr2::resp_status_desc(resp)
-  st <- stringr::str_glue("Cannot access {server}. {status}: {desc}.")
+  st <- stringr::str_glue("Cannot access {server}. {resp$status}: {resp$description}.")
 
   error_response(st, on_error)
 }
@@ -265,7 +268,7 @@ error_response <- function(msg, on_error = c("stop", "warn")) {
   }
 }
 
-#' Perform an API Query Using httr2
+#' Perform a HTTP request using httr2
 #'
 #' This function sends an HTTP request to a specified API endpoint and returns
 #' various details about the response. It is designed to work with the httr2
@@ -275,9 +278,7 @@ error_response <- function(msg, on_error = c("stop", "warn")) {
 #' @param path A string specifying the path of the specific API endpoint.
 #' @param parameters An optional named list of query parameters to be included
 #'   in the request.
-#' @param body A string with the raw body (e.q. an XML query) to be included in
-#'   the request.
-#' @param timeout Timeout limit in secods.
+#' @param timeout Timeout limit in seconds.
 #'
 #' @return A list containing the following elements:
 #' \itemize{
@@ -291,32 +292,45 @@ error_response <- function(msg, on_error = c("stop", "warn")) {
 #'   If provided, query parameters are appended to the request. The function
 #'   then performs the request and checks for errors. It returns a list
 #'   containing the response, error status, HTTP status code, and the
-#'   description of the status.
+#'   description of the status. In case of a time-out, when the server does not
+#'   return any code, a list with NULL response, and fixed status and
+#'   description are returned.
 #' @noRd
-api_query <- function(base_url, path, parameters = NULL, body = NULL, timeout = 15) {
+http_request <- function(base_url, path, parameters = NULL, timeout = 15) {
   req <- httr2::request(base_url) |>
-    httr2::req_url_path_append(path)
+    httr2::req_url_path_append(path) |>
+    httr2::req_timeout(timeout)
 
   if(!is.null(parameters)) {
     req <- req |>
       httr2::req_url_query(!!!parameters)
   }
 
-  if(!is.null(body)) {
-    req <- req |>
-      httr2::req_body_raw(body)
+  resp <- tryCatch(
+    {req |>
+        httr2::req_error(is_error = ~FALSE) |>
+        httr2::req_perform()
+    },
+    error = function(err) NULL
+  )
+
+  if(is.null(resp)) {
+    ans <- list(
+      response = NULL,
+      is_error = TRUE,
+      status = "unknown",
+      description = "Unknown error (probably timeout)"
+    )
+  } else {
+    ans <- list(
+      response = resp,
+      is_error = httr2::resp_is_error(resp),
+      status = httr2::resp_status(resp),
+      description = httr2::resp_status_desc(resp)
+    )
   }
 
-  resp <- req |>
-    httr2::req_error(is_error = ~FALSE) |>
-    httr2::req_perform()
-
-  list(
-    response = resp,
-    is_error = httr2::resp_is_error(resp),
-    status = httr2::resp_status(resp),
-    description = httr2::resp_status_desc(resp)
-  )
+  ans
 }
 
 

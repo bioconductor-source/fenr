@@ -117,8 +117,8 @@ expected_api <- tibble::tribble(
   "R-MTU-879299", "mca"
 )
 
-test_that("Correct Reactome API from yeast", {
-  re <- fetch_reactome(species = small_species, source = "api")
+test_that("Correct Reactome API from M. tuberculosis", {
+  re <- fetch_reactome(species = small_species, source = "api", on_error = "warn")
   mapping <- re$mapping
   if(!is.null(mapping)) {
     expect_is(mapping, "tbl")

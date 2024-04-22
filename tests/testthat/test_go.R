@@ -16,6 +16,11 @@ test_that("Incorrect mart in fetch_go", {
 })
 
 
+test_that("Incorrect dataset triggers error", {
+  expect_error(fetch_go(dataset = "not a dataset"))
+  expect_error(fetch_go_from_bm(dataset = "not a dataset"))
+})
+
 test_that("Processing OBO file", {
   expected_ids <- c("GO:0000001", "GO:0000022", "GO:0000232", "GO:1905121")
   expected_names <- c("mitochondrion inheritance", "mitotic spindle elongation",
@@ -39,6 +44,8 @@ test_that("Expected behaviour from a non-responsive server", {
       test_unresponsive_server(fetch_go_terms, use_cache = FALSE)
       test_unresponsive_server(fetch_go_species)
       test_unresponsive_server(fetch_go_from_go, species = species, use_cache = FALSE)
+      test_unresponsive_server(fetch_go_from_bm, dataset = "scerevisiae_gene_ensembl", use_cache = FALSE)
+      test_unresponsive_server(fetch_go_genes_bm, dataset = "scerevisiae_gene_ensembl", use_cache = FALSE)
     })
 })
 

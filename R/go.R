@@ -157,11 +157,11 @@ fetch_go_species <- function(on_error = c("stop", "warn")) {
   species <- designation <- `Species/Database` <- File <- NULL
 
   url <- get_go_species_url()
-  qry <- api_query(url, "")
-  if(qry$is_error)
-    return(catch_error("GO species website", qry$response, on_error))
+  resp <- http_request(url, "")
+  if(resp$is_error)
+    return(catch_error("GO species website", resp, on_error))
 
-  u <- qry$response |>
+  u <- resp$response |>
     httr2::resp_body_html() |>
     rvest::html_table()
 
@@ -272,18 +272,17 @@ fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
 fetch_go_genes_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "warn")) {
   xml <- get_biomart_xml(dataset) |>
     stringr::str_replace_all("\\s", "%20")
-  qry <- paste0(get_biomart_url(), "/biomart/martservice?query=", xml)
-  if(!assert_url_path(qry, on_error))
+  req <- paste0(get_biomart_url(), "/biomart/martservice?query=", xml)
+  if(!assert_url_path(req, on_error))
     return(NULL)
 
   # Problems with cache, bfcneedsupdate returns error for this query
-  # lpath <- cached_url_path(stringr::str_glue("biomart_{dataset}"), qry, use_cache)
-  res <- readr::read_tsv(qry, show_col_types = FALSE)
+  # lpath <- cached_url_path(stringr::str_glue("biomart_{dataset}"), resp, use_cache)
+  res <- readr::read_tsv(req, show_col_types = FALSE)
   if(ncol(res) == 3) {
     res |> rlang::set_names(c("gene_id", "gene_symbol", "term_id"))
   } else {
-    warning("Problem with Biomart")
-    return(NULL)
+    error_response("Problem with Biomart", on_error)
   }
 }
 
@@ -311,10 +310,10 @@ fetch_go_from_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "wa
   assert_that(!missing(dataset), msg = "Argument 'dataset' is missing.")
   assert_that(is.string(dataset))
 
-  terms <- fetch_go_terms(use_cache = use_cache, on_error)
-  mapping <- fetch_go_genes_bm(dataset, use_cache = use_cache)
+  mapping <- fetch_go_genes_bm(dataset, use_cache = use_cache, on_error = on_error)
   if(is.null(mapping))
-    error_response("Could not retrieve mapping from Ensembl", on_error)
+    return(error_response("Could not retrieve mapping from Ensembl", on_error))
+  terms <- fetch_go_terms(use_cache = use_cache, on_error)
 
   list(
     terms = terms,
@@ -377,7 +376,7 @@ fetch_go <- function(species = NULL, dataset = NULL, use_cache = TRUE, on_error 
 
   if (!is.null(species)) {
     fetch_go_from_go(species, use_cache = use_cache, on_error = on_error)
-  } else  {
+  } else {
     fetch_go_from_bm(dataset, use_cache = use_cache, on_error = on_error)
   }
 }

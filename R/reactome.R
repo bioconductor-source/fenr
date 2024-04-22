@@ -38,11 +38,11 @@ fetch_reactome_species <- function(on_error = c("stop", "warn")) {
   # Binding variables from non-standard evaluation locally
   dbId <- displayName <- taxId <- NULL
 
-  qry <- api_query(get_reactome_url(), "data/species/main")
-  if(qry$is_error)
-    return(catch_error("Reactome", qry$response, on_error))
+  resp <- http_request(get_reactome_url(), "data/species/main")
+  if(resp$is_error)
+    return(catch_error("Reactome", resp, on_error))
 
-  httr2::resp_body_json(qry$response) |>
+  httr2::resp_body_json(resp$response) |>
     purrr::map(tibble::as_tibble) |>
     purrr::list_rbind() |>
     dplyr::select(db_id = dbId, designation = displayName, tax_id = taxId) |>
@@ -71,11 +71,11 @@ fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
     offset = 20000
   )
 
-  qry <- api_query(get_reactome_url(), path, params)
-  if(qry$is_error)
-    return(catch_error("Reactome", qry$response, on_error))
+  resp <- http_request(get_reactome_url(), path, parameters = params)
+  if(resp$is_error)
+    return(catch_error("Reactome", resp, on_error))
 
-  httr2::resp_body_json(qry$response) |>
+  httr2::resp_body_json(resp$response) |>
     purrr::map(tibble::as_tibble) |>
     purrr::list_rbind() |>
     dplyr::select(term_id = stId, term_name = displayName)
@@ -176,13 +176,13 @@ fetch_reactome_api_genes <- function(pathways, on_error) {
   tb <- purrr::map(pathways, function(pathway) {
     pb$tick()
     path <- stringr::str_glue("data/participants/{pathway}/referenceEntities")
-    qry <- api_query(get_reactome_url(), path)
-    if(qry$is_error) {
+    resp <- http_request(get_reactome_url(), path)
+    if(resp$is_error) {
       raise_error <<- TRUE
-      return(catch_error("Reactome", qry$response, on_error))
+      return(catch_error("Reactome", resp, on_error))
     }
 
-    httr2::resp_body_json(qry$response) |>
+    httr2::resp_body_json(resp$response) |>
       purrr::map(function(js) {
         tibble::tibble(
           database_name = js$databaseName,

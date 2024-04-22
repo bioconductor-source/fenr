@@ -22,11 +22,11 @@ get_kegg_url <- function() {
 fetch_kegg_species <- function(on_error = c("stop", "warn")) {
   on_error <- match.arg(on_error)
 
-  qry <- api_query(get_kegg_url(), "list/organism")
-  if(qry$is_error)
-    return(catch_error("KEGG", qry$response, on_error))
+  resp <- http_request(get_kegg_url(), "list/organism")
+  if(resp$is_error)
+    return(catch_error("KEGG", resp, on_error))
 
-  st <- httr2::resp_body_string(qry$response)
+  st <- httr2::resp_body_string(resp$response)
   readr::read_tsv(I(st), col_names = c("id", "designation", "species", "phylogeny"), show_col_types = FALSE)
 }
 
@@ -45,11 +45,11 @@ fetch_kegg_pathways <- function(species, on_error) {
   # Binding variables from non-standard evaluation locally
   term_id <- NULL
 
-  qry <- api_query(get_kegg_url(), stringr::str_glue("list/pathway/{species}"))
-  if(qry$is_error)
-    return(catch_error("KEGG", qry$response, on_error))
+  resp <- http_request(get_kegg_url(), stringr::str_glue("list/pathway/{species}"))
+  if(resp$is_error)
+    return(catch_error("KEGG", resp, on_error))
 
-  st <- httr2::resp_body_string(qry$response)
+  st <- httr2::resp_body_string(resp$response)
   readr::read_tsv(I(st), col_names = c("term_id", "term_name"), show_col_types = FALSE) |>
     dplyr::mutate(term_id = stringr::str_remove(term_id, "path:"))
 }
@@ -135,15 +135,15 @@ fetch_kegg_mapping <- function(pathways, batch_size, on_error = "stop") {
     dbentries <- paste(batch, collapse = "+")
 
     # this returns a flat file
-    qry <- api_query(get_kegg_url(), stringr::str_glue("get/{dbentries}"))
-    if(qry$is_error) {
-      catch_error("KEGG", qry$response, on_error)
+    resp <- http_request(get_kegg_url(), stringr::str_glue("get/{dbentries}"))
+    if(resp$is_error) {
+      catch_error("KEGG", resp, on_error)
       raise_error <<- TRUE
       return(NULL)
     }
 
     pb$tick()
-    st <- httr2::resp_body_string(qry$response)
+    st <- httr2::resp_body_string(resp$response)
     parse_kegg_genes(st)
   }) |>
     purrr::list_rbind()
