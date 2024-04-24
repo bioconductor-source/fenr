@@ -21,9 +21,9 @@ An interactive Shiny app
 Small Shiny app serving as example for fast enrichment
 }
 \examples{
+\dontrun{
 data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
-if(interactive()) {
   enrichment_interactive(yeast_de, term_data)
 }
 }

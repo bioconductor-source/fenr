@@ -7,7 +7,7 @@ expected_mapping <- tibble::tribble(
 )
 
 test_that("Bioplanet mapping makes sense", {
-  bp <- fetch_bp(on_error = "warn")
+  bp <- fetch_bp(on_error = "ignore")
   if(!is.null(bp)) {
     expect_is(bp, "list")
     expect_setequal(names(bp), c("terms", "mapping"))

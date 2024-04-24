@@ -8,7 +8,7 @@ fetch_reactome(
   species,
   source = c("ensembl", "api", "gene_association"),
   use_cache = TRUE,
-  on_error = c("stop", "warn")
+  on_error = c("stop", "warn", "ignore")
 )
 }
 \arguments{
@@ -22,10 +22,9 @@ downloaded, if 'api', then Reactome API will be used. See details.}
 
 \item{use_cache}{Logical, if TRUE, the remote file will be cached locally.}
 
-\item{on_error}{A character vector specifying the error handling method. It
-can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-will halt the function execution and throw an error, while `"warn"` will
-issue a warning and return `NULL`.}
+\item{on_error}{A character string indicating the error handling strategy:
+either "stop" to halt execution, "warn" to issue a warning and return
+`NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".}
 }
 \value{
 A list with \code{terms} and \code{mapping} tibbles

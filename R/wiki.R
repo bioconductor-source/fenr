@@ -8,16 +8,15 @@ get_wiki_url <- function() {
 
 #' List of available WikiPathways species
 #'
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A character vector with species names used by WikiPathways.
 #' @export
 #' @examples
 #' spec <- fetch_wiki_species(on_error = "warn")
-fetch_wiki_species <- function(on_error = c("stop", "warn")) {
+fetch_wiki_species <- function(on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   resp <- http_request(get_wiki_url(), "listOrganisms", parameters = list(format = "json"))
@@ -31,13 +30,13 @@ fetch_wiki_species <- function(on_error = c("stop", "warn")) {
 #' Download pathway data from WikiPathways
 #'
 #' @param species Species name recognised by WikiPathways (see \code{fetch_wiki_species()})
-#' @param on_error A string selecting how to react to server errors. If "stop",
-#'   an R error will be produced, if "warn", only a warning will be printed and
-#'   the function will return NULL.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_wiki_pathways <- function(species, on_error = "stop") {
+fetch_wiki_pathways <- function(species, on_error) {
   id <- name <- NULL
 
   resp <- http_request(get_wiki_url(), "listPathways",
@@ -91,13 +90,13 @@ parse_wiki_gpml <- function(gpml, keys = c("TextLabel", "Type", "Database", "ID"
 #' @param pathways A character vector with pathway names.
 #' @param databases Names of databases to use
 #' @param types Names of types to use
-#' @param on_error A string selecting how to react to server errors. If "stop",
-#'   an R error will be produced, if "warn", only a warning will be printed and
-#'   the function will return NULL.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with \code{term_id} and \code{gene_symbol}
 #' @noRd
-fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL, on_error = "stop") {
+fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NULL, on_error) {
   term_id <- TextLabel <-ID <- Type <- Database <- database <- type <- NULL
 
   raise_error <- FALSE
@@ -159,10 +158,9 @@ fetch_wiki_pathway_genes_api <- function(pathways, databases = NULL, types = NUL
 #'   data. See details. Full result will be returned if NULL.
 #' @param types A character vector with types of entities to pre-filter mapping
 #'   data. See details. Full result will be returned if NULL.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
@@ -173,7 +171,7 @@ fetch_wiki <- function(
     species,
     databases = c("Ensembl", "Entrez Gene", "HGNC", "HGNC Accession number", "Uniprot-TrEMBL"),
     types = c("GeneProduct", "Protein", "Rna", "RNA"),
-    on_error = c("stop", "warn")
+    on_error = c("stop", "warn", "ignore")
   ) {
   on_error <- match.arg(on_error)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")

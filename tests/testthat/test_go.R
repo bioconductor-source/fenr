@@ -52,7 +52,7 @@ test_that("Expected behaviour from a non-responsive server", {
 
 test_that("Expected return from fetch_go_species", {
   expected_selection <- c("goa_human", "mgi", "rgd", "sgd", "fb", "wb")
-  spec <- fetch_go_species(on_error = "warn")
+  spec <- fetch_go_species(on_error = "ignore")
   if(!is.null(spec)) {
     expect_is(spec, "tbl")
     expect_true(all(expected_selection %in% spec$designation))
@@ -79,7 +79,7 @@ test_that("GO yeast from GO is correct", {
     "GO:0004365", "TDH3"
   )
 
-  re <- fetch_go(species = species, on_error = "warn")
+  re <- fetch_go(species = species, on_error = "ignore")
   if(!is.null(re)) {
     test_fetched_structure(re)
     test_terms(re$terms, expected_terms)
@@ -107,7 +107,7 @@ test_that("GO yeast from Ensembl is correct", {
     "GO:0004365", "YGR192C"
   )
 
-  re <- fetch_go(dataset = dataset, on_error = "warn")
+  re <- fetch_go(dataset = dataset, on_error = "ignore")
 
   if(!is.null(re)) {
     test_fetched_structure(re)

@@ -4,13 +4,12 @@
 \alias{fetch_kegg_species}
 \title{Find all species available from KEGG}
 \usage{
-fetch_kegg_species(on_error = c("stop", "warn"))
+fetch_kegg_species(on_error = c("stop", "warn", "ignore"))
 }
 \arguments{
-\item{on_error}{A character vector specifying the error handling method. It
-can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-will halt the function execution and throw an error, while `"warn"` will
-issue a warning and return `NULL`.}
+\item{on_error}{A character string indicating the error handling strategy:
+either "stop" to halt execution, "warn" to issue a warning and return
+`NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".}
 }
 \value{
 A tibble, in which column \code{designation} contains species

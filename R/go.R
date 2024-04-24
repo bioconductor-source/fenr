@@ -112,14 +112,13 @@ extract_obo_terms <- function(parsed) {
 #' Download GO term descriptions
 #'
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `FALSE`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with term_id and term_name.
 #' @noRd
-fetch_go_terms <- function(use_cache, on_error = "stop") {
+fetch_go_terms <- function(use_cache, on_error) {
   obo_file <- get_go_obo_file()
   if(!assert_url_path(obo_file, on_error))
     return(NULL)
@@ -142,16 +141,15 @@ fetch_go_terms <- function(use_cache, on_error = "stop") {
 #' without extension (e.g. for a file \file{goa_chicken.gaf} the designation is
 #' \file{goa_chicken}).
 #'
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{species} and \code{designation}.
 #' @export
 #' @examples
 #' go_species <- fetch_go_species(on_error = "warn")
-fetch_go_species <- function(on_error = c("stop", "warn")) {
+fetch_go_species <- function(on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
   # Binding variables from non-standard evaluation locally
   species <- designation <- `Species/Database` <- File <- NULL
@@ -184,14 +182,13 @@ fetch_go_species <- function(on_error = c("stop", "warn")) {
 #'   \url{http://current.geneontology.org/annotations}. Examples are
 #'   \file{goa_human} for human, \file{mgi} for mouse or \file{sgd} for yeast.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{gene_symbol}, \code{uniprot_id} and \code{term_id}.
 #' @noRd
-fetch_go_genes_go <- function(species, use_cache, on_error = "stop") {
+fetch_go_genes_go <- function(species, use_cache, on_error) {
   # Binding variables from non-standard evaluation locally
   gene_id <- db_object_synonym <- symbol <- NULL
   db_id <- go_term <- NULL
@@ -228,15 +225,14 @@ fetch_go_genes_go <- function(species, use_cache, on_error = "stop") {
 #'   species can be obtained using \code{fetch_go_species} - column
 #'   \code{designation}.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @importFrom assertthat assert_that
 #' @noRd
-fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
+fetch_go_from_go <- function(species, use_cache, on_error) {
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
   assert_species(species, "fetch_go_species", on_error)
 
@@ -244,7 +240,9 @@ fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
   if(is.null(mapping))
     return(NULL)
 
-  terms <- fetch_go_terms(use_cache = use_cache)
+  terms <- fetch_go_terms(use_cache = use_cache, on_error = on_error)
+  if(is.null(terms))
+    return(NULL)
 
   list(
     terms = terms,
@@ -261,15 +259,14 @@ fetch_go_from_go <- function(species, use_cache, on_error = "stop") {
 #'   biomaRt::useEnsembl(biomart = "ensembl"), followed by
 #'   biomaRt::listDatasets(mart).
 #' @param use_cache Logical, if TRUE, the remote data will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{gene_id}, \code{gene_symbol} and
 #'   \code{term_id}.
 #' @noRd
-fetch_go_genes_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "warn")) {
+fetch_go_genes_bm <- function(dataset, use_cache, on_error) {
   xml <- get_biomart_xml(dataset) |>
     stringr::str_replace_all("\\s", "%20")
   req <- paste0(get_biomart_url(), "/biomart/martservice?query=", xml)
@@ -298,15 +295,14 @@ fetch_go_genes_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "w
 #'   biomaRt::useEnsembl(biomart = "ensembl"), followed by
 #'   biomaRt::listDatasets(mart).
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @noRd
-fetch_go_from_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "warn")) {
+fetch_go_from_bm <- function(dataset, use_cache, on_error) {
   assert_that(!missing(dataset), msg = "Argument 'dataset' is missing.")
   assert_that(is.string(dataset))
 
@@ -353,10 +349,9 @@ fetch_go_from_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "wa
 #'   biomaRt::useEnsembl(biomart = "ensembl"), followed by
 #'   biomaRt::listDatasets(mart).
 #' @param use_cache Logical, if TRUE, the remote data will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
@@ -366,7 +361,8 @@ fetch_go_from_bm <- function(dataset, use_cache = TRUE, on_error = c("stop", "wa
 #' go_data_ensembl <- fetch_go(dataset = "scerevisiae_gene_ensembl", on_error = "warn")
 #' # Fetch GO data from Gene Ontology
 #' go_data_go <- fetch_go(species = "sgd", on_error = "warn")
-fetch_go <- function(species = NULL, dataset = NULL, use_cache = TRUE, on_error = c("stop", "warn")) {
+fetch_go <- function(species = NULL, dataset = NULL, use_cache = TRUE,
+                     on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   assert_that(!(is.null(species) & is.null(dataset)),

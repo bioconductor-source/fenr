@@ -29,28 +29,22 @@ GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
 #' responding.
 #'
 #' @param url_path Full URL with a path, e.g. `https://reactome.org/download/current/ReactomePathways.txt`.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `FALSE`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
+#' @param timeout Timeout limit in seconds.
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return TRUE if assertion passed
 #' @noRd
-assert_url_path <- function(url_path, on_error = "stop") {
+assert_url_path <- function(url_path, on_error = c("stop", "warn", "ignore"), timeout = 15) {
+  on_error <- match.arg(on_error)
   assert_that(is.string(url_path))
 
-  resp <- httr2::request(url_path) |>
-    httr2::req_method("HEAD") |>
-    httr2::req_error(is_error = ~FALSE) |>
-    httr2::req_perform()
+  resp <- http_request(url_path, "", timeout = timeout)
 
-  if(httr2::resp_is_error(resp)) {
-    rsp <- list(
-      status = httr2::resp_status(resp),
-      description = httr2::resp_status_desc(resp)
-    )
-    catch_error(stringr::str_glue("{url_path}"), rsp, on_error)
+  if(resp$is_error) {
+    catch_error(stringr::str_glue("{url_path}"), resp, on_error)
     return(FALSE)
   }
   return(TRUE)
@@ -63,10 +57,9 @@ assert_url_path <- function(url_path, on_error = "stop") {
 #' @param species A string, species designation for a given database
 #' @param fetch_fun A string, name of the function to retrieve available
 #'   species, must return a tibble with a column \code{designation}.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @importFrom assertthat assert_that is.string
 #' @return A tibble with valid species - a response from \code{fetch_fun}
@@ -94,10 +87,9 @@ assert_species <- function(species, fetch_fun, on_error) {
 #'   species, must return a tibble with a column \code{designation}.
 #' @param col_name Column name in the tibble returned by \code{fetch_fun} to
 #'   extract, e.g. \code{tax_id}
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A value extracted from column \code{col_name} at row where
 #'   \code{designation} = \code{species}.
@@ -227,15 +219,14 @@ test_mapping <- function(returned, expected, feature_id) {
 #' @param server Name of the server.
 #' @param resp Response from \code{http_request()}. A list with "status" and
 #'   "desc" strings.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
-#' @return In case of `"warn"`, the function returns `NULL`. If `"stop"` is
-#'   chosen, the function halts with an error and does not return a value.
+#' @return No return value if `on_error` is "stop". If `on_error` is "warn" or
+#'   "ignore", the function returns `NULL` after issuing a warning.
 #' @noRd
-catch_error <- function(server, resp, on_error = c("stop", "warn")) {
+catch_error <- function(server, resp, on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   st <- stringr::str_glue("Cannot access {server}. {resp$status}: {resp$description}.")
@@ -245,25 +236,27 @@ catch_error <- function(server, resp, on_error = c("stop", "warn")) {
 
 #' Error Response Handler
 #'
-#' This function handles errors by either stopping execution or issuing a warning
-#' based on the specified action. It is designed to provide a standardized way to
-#' handle error messages within functions.
+#' This function handles errors by either stopping execution or issuing a
+#' warning based on the specified action. It is designed to provide a
+#' standardized way to handle error messages within functions.
 #'
 #' @param msg A character string specifying the error message to be displayed.
 #' @param on_error A character string indicating the error handling strategy:
-#'   either "stop" to halt execution, or "warn" to issue a warning and return `NULL`.
-#'   Defaults to "stop".
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
-#' @return No return value if `on_error` is "stop". If `on_error` is "warn",
-#'   the function returns `NULL` after issuing a warning.
+#' @return No return value if `on_error` is "stop". If `on_error` is "warn" or
+#'   "ignore", the function returns `NULL` after issuing a warning.
 #' @noRd
-error_response <- function(msg, on_error = c("stop", "warn")) {
+error_response <- function(msg, on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   if(on_error == "stop") {
     stop(msg)
-  } else {
+  } else if (on_error == "warn") {
     warning(msg, "\nNULL returned.", call. = FALSE)
+    return(NULL)
+  } else {
     return(NULL)
   }
 }

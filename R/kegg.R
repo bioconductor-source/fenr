@@ -9,17 +9,16 @@ get_kegg_url <- function() {
 
 #' Find all species available from KEGG
 #'
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble, in which column \code{designation} contains species
 #'   designations used in function \code{fetch_kegg}.
 #' @export
 #' @examples
 #' spe <- fetch_kegg_species(on_error = "warn")
-fetch_kegg_species <- function(on_error = c("stop", "warn")) {
+fetch_kegg_species <- function(on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   resp <- http_request(get_kegg_url(), "list/organism")
@@ -34,10 +33,9 @@ fetch_kegg_species <- function(on_error = c("stop", "warn")) {
 #' Download pathway data from KEGG
 #'
 #' @param species A valid species designation used by KEGG.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}.
 #' @noRd
@@ -118,14 +116,13 @@ parse_kegg_genes <- function(s) {
 #' @param pathways A character vector with KEGG pathways
 #' @param batch_size Number of pathways sent to KEGG database in one query. The
 #'   maximum allowed is 10.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #' @importFrom assertthat assert_that
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_kegg_mapping <- function(pathways, batch_size, on_error = "stop") {
+fetch_kegg_mapping <- function(pathways, batch_size, on_error) {
   assert_that(is.character(pathways))
   batches <- split(pathways, ceiling(seq_along(pathways) / batch_size))
 
@@ -167,17 +164,16 @@ fetch_kegg_mapping <- function(pathways, batch_size, on_error = "stop") {
 #'   full list of available KEGG species can be found by using \code{fetch_kegg_species}.
 #' @param batch_size Number of pathways sent to KEGG database in one query. The
 #'   maximum allowed is 10.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @importFrom assertthat assert_that is.count
 #' @export
 #' @examples
 #' kegg_data <- fetch_kegg("mge", on_error = "warn")
-fetch_kegg <- function(species, batch_size = 10, on_error = c("stop", "warn")) {
+fetch_kegg <- function(species, batch_size = 10, on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   assert_that(!missing(species), msg = "Argument 'species' is missing.")

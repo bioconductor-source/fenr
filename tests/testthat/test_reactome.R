@@ -50,7 +50,7 @@ test_that("Expected behaviour from a non-responsive server", {
 test_that("Expected return from fetch_reactome_species", {
   expected_selection <- c("Homo sapiens", "Mus musculus", "Rattus norvegicus",
                           "Saccharomyces cerevisiae", "Drosophila melanogaster", "Caenorhabditis elegans")
-  spec <- fetch_reactome_species(on_error = "warn")
+  spec <- fetch_reactome_species(on_error = "ignore")
   if(!is.null(spec)) {
     expect_is(spec, "tbl")
     expect_true(all(expected_selection %in% spec$designation))
@@ -59,7 +59,7 @@ test_that("Expected return from fetch_reactome_species", {
 
 
 test_that("Correct Reactome Ensembl from yeast", {
-  re <- fetch_reactome(species, source = "ensembl", use_cache = TRUE, on_error = "warn")
+  re <- fetch_reactome(species, source = "ensembl", use_cache = TRUE, on_error = "ignore")
   if(!is.null(re)) {
     expect_is(re, "list")
     expect_length(re, 2)
@@ -89,7 +89,7 @@ test_that("Correct Reactome Ensembl from yeast", {
 
 
 test_that("Correct Reactome gene association from yeast", {
-  re <- fetch_reactome(species, source = "gene_association", use_cache = TRUE, on_error = "warn")
+  re <- fetch_reactome(species, source = "gene_association", use_cache = TRUE, on_error = "ignore")
   if(!is.null(re)) {
     expect_is(re, "list")
     expect_length(re, 2)
@@ -118,7 +118,7 @@ expected_api <- tibble::tribble(
 )
 
 test_that("Correct Reactome API from M. tuberculosis", {
-  re <- fetch_reactome(species = small_species, source = "api", on_error = "warn")
+  re <- fetch_reactome(species = small_species, source = "api", on_error = "ignore")
   mapping <- re$mapping
   if(!is.null(mapping)) {
     expect_is(mapping, "tbl")

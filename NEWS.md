@@ -150,4 +150,9 @@
 ## Version 1.0.7
 
  - Improved error handling with unresponsive servers - timeouts are now handled gracefully
- 
+
+## Version 1.0.8
+
+ - Further improving error handling, making sure `assert_url_path()` handles timeouts properly
+ - Introduced on_error = "ignore" for test purposes
+

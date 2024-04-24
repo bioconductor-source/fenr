@@ -17,6 +17,8 @@ A list of objects containing functional terms for GO and Reactome.
 Create term data for interactive example
 }
 \examples{
+\dontrun{
 data(yeast_de)
 term_data <- fetch_terms_for_example(yeast_de)
+}
 }

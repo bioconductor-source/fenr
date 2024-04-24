@@ -6,8 +6,10 @@
 #' @return A list of objects containing functional terms for GO and Reactome.
 #' @export
 #' @examples
+#' \dontrun{
 #' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
+#' }
 fetch_terms_for_example <- function(de) {
   # All gene background
   all_genes <- de$gene_id
@@ -19,7 +21,7 @@ fetch_terms_for_example <- function(de) {
 
   # load Reactome pathways
   message("Fetching Reactome data\n")
-  re <- fetch_reactome("Saccharomyces cerevisiae", on_error = "warn")
+  re <- fetch_reactome("Saccharomyces cerevisiae")
   re_data <- prepare_for_enrichment(re$terms, re$mapping, all_genes, feature_name = "gene_id")
 
   # Put all functional term data in one structure; Shiny app will access
@@ -173,9 +175,9 @@ main_plot <- function(de, input) {
 #' @importFrom assertthat assert_that
 #' @export
 #' @examples
+#' \dontrun{
 #' data(yeast_de)
 #' term_data <- fetch_terms_for_example(yeast_de)
-#' if(interactive()) {
 #'   enrichment_interactive(yeast_de, term_data)
 #' }
 enrichment_interactive <- function(de, term_data) {

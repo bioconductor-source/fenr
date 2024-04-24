@@ -36,7 +36,7 @@ test_that("Expected behaviour from a non-responsive server", {
 
 test_that("Expected return from fetch_kegg_species", {
   expected_selection <- c("hsa", "mmu", "rno", "sce", "dme", "cel")
-  spec <- fetch_kegg_species(on_error = "warn")
+  spec <- fetch_kegg_species(on_error = "ignore")
   if(!is.null(spec)) {
     expect_is(spec, "tbl")
     expect_true(all(expected_selection %in% spec$designation))
@@ -63,7 +63,7 @@ test_that("Correct response from fetch_kegg", {
     "mge03030", "polC"
   )
 
-  re <- fetch_kegg(species, on_error = "warn")
+  re <- fetch_kegg(species, on_error = "ignore")
   if(!is.null(re)) {
     test_fetched_structure(re)
     test_terms(re$terms, expected_terms)

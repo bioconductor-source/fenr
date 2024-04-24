@@ -12,15 +12,14 @@ get_bioplanet_pathway_file <- function() {
 #' (NCBI gene ID, gene symbol and pathway ID) from BioPlanet.
 #'
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #' @return A list with \code{terms} and \code{mapping} tibbles.
 #' @export
 #' @examples
 #' bioplanet_data <- fetch_bp(on_error = "warn")
-fetch_bp <- function(use_cache = TRUE, on_error = c("stop", "warn")) {
+fetch_bp <- function(use_cache = TRUE, on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   # Binding variables from non-standard evaluation locally

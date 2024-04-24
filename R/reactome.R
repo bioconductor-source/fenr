@@ -24,15 +24,15 @@ get_reactome_gaf_file <- function() {
 
 #' List of available Reactome species
 #'
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
+#'
 #' @return A tibble with species names used by Reactome.
 #' @export
 #' @examples
 #' re <- fetch_reactome_species(on_error = "warn")
-fetch_reactome_species <- function(on_error = c("stop", "warn")) {
+fetch_reactome_species <- function(on_error = c("stop", "warn", "ignore")) {
   on_error <- match.arg(on_error)
 
   # Binding variables from non-standard evaluation locally
@@ -53,14 +53,13 @@ fetch_reactome_species <- function(on_error = c("stop", "warn")) {
 #' Download pathway data from Reactome
 #'
 #' @param tax_id Taxonomy ID of the species, a string
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{term_id} and \code{term_name}
 #' @noRd
-fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
+fetch_reactome_pathways <- function(tax_id, on_error) {
   # Binding variables from non-standard evaluation locally
   stId <- displayName <- NULL
 
@@ -91,14 +90,13 @@ fetch_reactome_pathways <- function(tax_id, on_error = "stop") {
 #'
 #' @param spec Reactome species.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{gene_id} and \code{term_id}
 #' @noRd
-fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE, on_error = "stop") {
+fetch_reactome_ensembl_genes <- function(spec, use_cache, on_error) {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- gene_name <- gene_symbol <- term_id <- NULL
 
@@ -121,14 +119,13 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache = TRUE, on_error = "sto
 #'
 #' @param tax_id Taxon ID
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns \code{accession_number}, \code{gene_symbol} and \code{term_id}
 #' @noRd
-fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE, on_error = "stop") {
+fetch_reactome_gene_association <- function(tax_id, use_cache, on_error) {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
 
@@ -159,10 +156,9 @@ fetch_reactome_gene_association <- function(tax_id, use_cache = TRUE, on_error =
 #'
 #' @param pathways A character vector with Reactome patway IDs to get
 #'   corresponding genes from.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A tibble with columns\code{term_id}, \code{accession_number} and
 #'   \code{gene_symbol}.
@@ -229,10 +225,9 @@ fetch_reactome_api_genes <- function(pathways, on_error) {
 #'   'gene_association', one mapping file provided by Reactome will be
 #'   downloaded, if 'api', then Reactome API will be used. See details.
 #' @param use_cache Logical, if TRUE, the remote file will be cached locally.
-#' @param on_error A character vector specifying the error handling method. It
-#'   can take values `"stop"` or `"warn"`. The default is `"stop"`. `"stop"`
-#'   will halt the function execution and throw an error, while `"warn"` will
-#'   issue a warning and return `NULL`.
+#' @param on_error A character string indicating the error handling strategy:
+#'   either "stop" to halt execution, "warn" to issue a warning and return
+#'   `NULL` or "ignore" to return `NULL` without warnings. Defaults to "stop".
 #'
 #' @return A list with \code{terms} and \code{mapping} tibbles
 #' @importFrom assertthat assert_that
@@ -240,7 +235,7 @@ fetch_reactome_api_genes <- function(pathways, on_error) {
 #' @examples
 #' reactome_data <- fetch_reactome("Saccharomyces cerevisiae", on_error = "warn")
 fetch_reactome <- function(species, source = c("ensembl", "api", "gene_association"),
-                           use_cache = TRUE, on_error = c("stop", "warn")) {
+                           use_cache = TRUE, on_error = c("stop", "warn", "ignore")) {
   source <- match.arg(source)
   on_error <- match.arg(on_error)
   assert_that(!missing(species), msg = "Argument 'species' is missing.")
@@ -252,11 +247,11 @@ fetch_reactome <- function(species, source = c("ensembl", "api", "gene_associati
   terms <- fetch_reactome_pathways(tax_id, on_error)
 
   if (source == "ensembl") {
-    mapping <- fetch_reactome_ensembl_genes(spec = species, use_cache = use_cache)
+    mapping <- fetch_reactome_ensembl_genes(spec = species, use_cache = use_cache, on_error = on_error)
   } else if (source == "gene_association") {
-    mapping <- fetch_reactome_gene_association(tax_id = tax_id, use_cache = use_cache)
+    mapping <- fetch_reactome_gene_association(tax_id = tax_id, use_cache = use_cache, on_error = on_error)
   } else {
-    mapping <- fetch_reactome_api_genes(terms$term_id, on_error)
+    mapping <- fetch_reactome_api_genes(terms$term_id, on_error = on_error)
   }
 
   list(

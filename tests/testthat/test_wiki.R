@@ -42,7 +42,7 @@ test_that("Expected behaviour from a non-responsive server", {
 test_that("Expected return from fetch_wiki_species", {
   expected_selection <- c("Homo sapiens", "Mus musculus", "Rattus norvegicus",
                           "Saccharomyces cerevisiae", "Drosophila melanogaster", "Caenorhabditis elegans")
-  spec <- fetch_wiki_species(on_error = "warn")
+  spec <- fetch_wiki_species(on_error = "ignore")
   if(!is.null(spec)) {
     expect_is(spec, "tbl")
     expect_true(all(expected_selection %in% spec$designation))
@@ -70,7 +70,7 @@ test_that("WikiPathways correct response", {
     "WP1527", "sinI"
   )
 
-  re <- fetch_wiki(species, databases = databases, types = types, on_error = "warn")
+  re <- fetch_wiki(species, databases = databases, types = types, on_error = "ignore")
   if(!is.null(re)) {
     test_fetched_structure(re)
     test_terms(re$terms, expected_terms)
