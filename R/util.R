@@ -37,7 +37,7 @@ GAF_TYPES <- rep("c", length(GAF_COLUMNS)) |>
 #' @importFrom assertthat assert_that is.string
 #' @return TRUE if assertion passed
 #' @noRd
-assert_url_path <- function(url_path, on_error = c("stop", "warn", "ignore"), timeout = 15) {
+assert_url_path <- function(url_path, on_error = c("stop", "warn", "ignore"), timeout = 30) {
   on_error <- match.arg(on_error)
   assert_that(is.string(url_path))
 
