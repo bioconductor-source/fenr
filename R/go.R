@@ -1,3 +1,11 @@
+#' URL of GO obo top dir
+#'
+#' @return A string with URL.
+#' @noRd
+get_go_obo_dir <- function() {
+  getOption("GO_OBO_DIR", "http://purl.obolibrary.org/obo")
+}
+
 #' URL of GO gene association file
 #'
 #' @return A string with URL.
@@ -119,10 +127,10 @@ extract_obo_terms <- function(parsed) {
 #' @return A tibble with term_id and term_name.
 #' @noRd
 fetch_go_terms <- function(use_cache, on_error) {
-  obo_file <- get_go_obo_file()
-  if(!assert_url_path(obo_file, on_error))
+  if(!assert_url_path(get_go_obo_dir(), on_error))
     return(NULL)
 
+  obo_file <- get_go_obo_file()
   lpath <- cached_url_path("obo", obo_file, use_cache)
   readr::read_lines(lpath) |>
     parse_obo_file() |>
@@ -194,9 +202,9 @@ fetch_go_genes_go <- function(species, use_cache, on_error) {
   db_id <- go_term <- NULL
 
   url <- get_go_annotation_url()
-  gaf_file <- stringr::str_glue("{url}/{species}.gaf.gz")
-  if(!assert_url_path(gaf_file, on_error))
+  if(!assert_url_path(url, on_error))
     return(NULL)
+  gaf_file <- stringr::str_glue("{url}/{species}.gaf.gz")
 
   lpath <- cached_url_path(stringr::str_glue("go_gaf_{species}"), gaf_file, use_cache)
   readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS,
@@ -269,9 +277,11 @@ fetch_go_from_go <- function(species, use_cache, on_error) {
 fetch_go_genes_bm <- function(dataset, use_cache, on_error) {
   xml <- get_biomart_xml(dataset) |>
     stringr::str_replace_all("\\s", "%20")
-  req <- paste0(get_biomart_url(), "/biomart/martservice?query=", xml)
-  if(!assert_url_path(req, on_error))
+  biomart_path <- paste0(get_biomart_url(), "/biomart/martservice")
+  if(!assert_url_path(biomart_path, on_error))
     return(NULL)
+
+  req <- paste0(biomart_path, "?query=", xml)
 
   # Problems with cache, bfcneedsupdate returns error for this query
   # lpath <- cached_url_path(stringr::str_glue("biomart_{dataset}"), resp, use_cache)

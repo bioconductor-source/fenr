@@ -1,3 +1,11 @@
+#' URL of Bioplanet top dir
+#'
+#' @return A string with URL.
+#' @noRd
+get_bioplanet_download <- function() {
+  getOption("BIOPLANET_PATHWAY_DOWNLOAD", "https://tripod.nih.gov/bioplanet/download")
+}
+
 #' URL of Bioplanet pathway file
 #'
 #' @return A string with URL.
@@ -5,6 +13,7 @@
 get_bioplanet_pathway_file <- function() {
   getOption("BIOPLANET_PATHWAY_FILE", "https://tripod.nih.gov/bioplanet/download/pathway.csv")
 }
+
 
 #' Get functional term data from BioPlanet
 #'
@@ -25,9 +34,10 @@ fetch_bp <- function(use_cache = TRUE, on_error = c("stop", "warn", "ignore")) {
   # Binding variables from non-standard evaluation locally
   PATHWAY_ID <- PATHWAY_NAME <- GENE_ID <- GENE_SYMBOL <- NULL
 
-  pathway_file <- get_bioplanet_pathway_file()
-  if(!assert_url_path(pathway_file, on_error))
+  if(!assert_url_path(get_bioplanet_download(), on_error))
     return(NULL)
+
+  pathway_file <- get_bioplanet_pathway_file()
 
   lpath <- cached_url_path("bioplanet_pathway", pathway_file, use_cache)
   paths <- readr::read_csv(lpath, show_col_types = FALSE)

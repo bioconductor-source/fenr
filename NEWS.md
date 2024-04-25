@@ -155,4 +155,10 @@
 
  - Further improving error handling, making sure `assert_url_path()` handles timeouts properly
  - Introduced on_error = "ignore" for test purposes
+ 
+## Version 1.0.9
+
+ - Changed the way `assert_url_path()` handles some remote files - it turns out every time it was called, the entire file was unnecessary downloaded, leading to duplication. Now we only assert top directories. Should speed things up!
+ - Increased default timeout to 30 s.
+
 

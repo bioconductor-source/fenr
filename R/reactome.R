@@ -6,6 +6,15 @@ get_reactome_url <- function() {
   getOption("REACTOME_BASE_URL", "https://reactome.org/ContentService")
 }
 
+#' URL of Reactome download top dir
+#'
+#' @return A string with URL.
+#' @noRd
+get_reactome_download <- function() {
+  getOption("REACTOME_DOWNLOAD", "https://reactome.org/download/current/")
+}
+
+
 #' URL of Reactome Ensembl file
 #'
 #' @return A string with URL.
@@ -100,10 +109,11 @@ fetch_reactome_ensembl_genes <- function(spec, use_cache, on_error) {
   # Binding variables from non-standard evaluation locally
   species <- gene_id <- gene_name <- gene_symbol <- term_id <- NULL
 
-  ensembl_file <- get_reactome_ensembl_file()
-  if(!assert_url_path(ensembl_file, on_error))
+  reactome_topdir <- get_reactome_download()
+  if(!assert_url_path(reactome_topdir, on_error))
     return(NULL)
 
+  ensembl_file <- get_reactome_ensembl_file()
   lpath <- cached_url_path("ensembl2reactome", ensembl_file, use_cache)
   colms <- c("gene_id", "reactome_gene_id", "gene_name", "term_id", "url", "event", "evidence", "species")
   readr::read_tsv(lpath, col_names = colms, show_col_types = FALSE) |>
@@ -129,9 +139,9 @@ fetch_reactome_gene_association <- function(tax_id, use_cache, on_error) {
   # Binding variables from non-standard evaluation locally
   symbol <- taxon <- db_ref <- db_id <- NULL
 
-  gaf_file <- get_reactome_gaf_file()
-  if(!assert_url_path(gaf_file, on_error))
+  if(!assert_url_path(get_reactome_download(), on_error))
     return(NULL)
+  gaf_file <- get_reactome_gaf_file()
 
   lpath <- cached_url_path("reactome_gaf", gaf_file, use_cache)
   readr::read_tsv(lpath, comment = "!", quote = "", col_names = GAF_COLUMNS, col_types = GAF_TYPES, skip = 4) |>
