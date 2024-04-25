@@ -289,7 +289,7 @@ error_response <- function(msg, on_error = c("stop", "warn", "ignore")) {
 #'   return any code, a list with NULL response, and fixed status and
 #'   description are returned.
 #' @noRd
-http_request <- function(base_url, path, parameters = NULL, timeout = 15) {
+http_request <- function(base_url, path, parameters = NULL, timeout = 30) {
   req <- httr2::request(base_url) |>
     httr2::req_url_path_append(path) |>
     httr2::req_timeout(timeout)
