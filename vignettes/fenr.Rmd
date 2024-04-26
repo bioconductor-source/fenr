@@ -170,26 +170,25 @@ To illustrate, let's take the example of the *topGO* package.
 ```{r topGO}
 suppressPackageStartupMessages({
   library(topGO)
-  library(org.Sc.sgd.db)
 })
 
-# Convert gene symbols to gene IDs
-symbol2id <- setNames(go$mapping$gene_id, go$mapping$gene_symbol)
-all_ids <- unname(symbol2id[exmpl_all])
-sel_ids <- unname(symbol2id[exmpl_sel])
-
-# Prepare for topGO
-all_genes <- setNames(rep(0, length(all_ids)), all_ids)
-all_genes[all_ids %in% sel_ids] <- 1
+# Preparing the gene set
+all_genes <- setNames(rep(0, length(exmpl_all)), exmpl_all)
+all_genes[exmpl_all %in% exmpl_sel] <- 1
 
 # Define the gene selection function
 gene_selection <- function(genes) {
   genes > 0
 }
 
-# Mapping genes to GO
-allGO2genes <- annFUN.org(whichOnto = "BP", feasibleGenes = NULL,
-                          mapping = "org.Sc.sgd.db", ID = "ensembl")
+# Mapping genes to GO, we use the go2gene downloaded above and convert it to a
+# list
+go2gene <- go$mapping |> 
+  dplyr::select(gene_symbol, term_id) |> 
+  dplyr::distinct() |> 
+  dplyr::group_by(term_id) |> 
+  dplyr::summarise(ids = list(gene_symbol)) |> 
+  tibble::deframe()
 
 # Setting up the GO data for analysis
 go_data <- new(
@@ -198,7 +197,7 @@ go_data <- new(
   allGenes = all_genes,
   geneSel = gene_selection,
   annot = annFUN.GO2genes,
-  GO2genes = allGO2genes
+  GO2genes = go2gene
 )
 
 # Performing the enrichment test
