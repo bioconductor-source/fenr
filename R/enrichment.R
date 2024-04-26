@@ -36,10 +36,12 @@
 #' @importFrom assertthat assert_that
 #' @export
 #' @examples
+#' \dontrun{
 #' data(exmpl_all)
 #' go <- fetch_go(species = "sgd")
 #' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,
 #'                                    feature_name = "gene_symbol")
+#' }
 prepare_for_enrichment <- function(terms, mapping, all_features = NULL,
                                    feature_name = "gene_id") {
   # Binding variables from non-standard evaluation locally
@@ -176,10 +178,12 @@ prepare_for_enrichment <- function(terms, mapping, all_features = NULL,
 #' @importFrom methods is
 #' @export
 #' @examples
+#' \dontrun{
 #' data(exmpl_all, exmpl_sel)
 #' go <- fetch_go(species = "sgd")
 #' go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 #' enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
+#' }
 functional_enrichment <- function(feat_all, feat_sel, term_data, feat2name = NULL) {
 
   # Binding variables from non-standard evaluation locally

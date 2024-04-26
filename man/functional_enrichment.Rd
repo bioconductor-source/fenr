@@ -46,8 +46,10 @@ This function carries out functional enrichment analysis on a
   term information and feature-term mapping.
 }
 \examples{
+\dontrun{
 data(exmpl_all, exmpl_sel)
 go <- fetch_go(species = "sgd")
 go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all, feature_name = "gene_symbol")
 enr <- functional_enrichment(exmpl_all, exmpl_sel, go_terms)
+}
 }

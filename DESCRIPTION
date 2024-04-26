@@ -1,6 +1,6 @@
 Package: fenr
 Title: Fast functional enrichment for interactive applications
-Version: 1.1.9
+Version: 1.1.10
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
@@ -52,7 +52,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    topGO
+    topGO,
+    org.Sc.sgd.db
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 LazyData: false

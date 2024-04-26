@@ -45,7 +45,7 @@ BiocManager::install("fenr")
 
 # Overview
 
-The input data for *fenr* consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
+The input data for *fenr* consists of two tibbles or data frames (see figure below). One tibble contains functional term descriptions, while the other provides the term-to-feature mapping. Users can acquire these datasets using the convenient helper functions like `fetch_*`, which facilitate data retrieval from GO, KEGG, BioPlanet, or WikiPathways. Alternatively, users have the option to provide their own datasets. These tibbles are subsequently transformed into a fenr_terms object, specifically designed for efficient data retrieval and access. The resulting object is then employed by the functional_enrichment function to perform enrichment analysis for any chosen feature selection.
 
 ```{r figure, fig.cap="Overview of fenr data pipeline.", echo=FALSE}
 knitr::include_graphics("figures/overview.png")
@@ -62,16 +62,27 @@ data(exmpl_all, exmpl_sel)
 
 ## Data preparation
 
-The initial step involves downloading functional term data. *fenr* supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
+The initial step involves downloading functional term data. *fenr* supports data downloads from *Gene Ontology*, *Reactome*, *KEGG*, *BioPlanet*, and *WikiPathways*. Custom ontologies can also be used, provided they are converted into an appropriate format (refer to the `prepare_for_enrichment` function for more information). The command below downloads functional terms and gene mapping from Gene Ontology (GO):
 
-```{r fetch_go}
+```{r load_go_data, include=FALSE}
+library(tibble)
+data(go)
+data(go_species)
+```
+
+```{r fetch_go, eval=FALSE}
 go <- fetch_go(species = "sgd")
 ```
 
 `sgd` is a designation for yeast in Gene Ontology. The full list of available species designations can be obtain using the command:
 
-```{r species}
+```{r species, eval=FALSE}
 go_species <- fetch_go_species()
+```
+
+which returns a tibble:
+
+```{r show_species}
 go_species
 ```
 
@@ -153,31 +164,32 @@ shiny::runGitHub("bartongroup/fenr-shiny-example")
 
 There's no shortage of R packages dedicated to functional enrichment analyses, including *topGO*, *GOstats*, *clusterProfiler*, and *GOfuncR*. Many of these packages provide comprehensive analyses tailored to a single gene selection. While they offer detailed insights, their extensive computational requirements often render them slower.
 
-In exploratory data analysis, one often conducts several enrichment analyses. This might involve assessing genes that exhibit both upward and downward shifts across diverse condition pairs, while also taking into account various significance levels and fold change thresholds. Even though the underlying dataset remains the same, different gene selections come into play. To illustrate, let's take the example of the *topGO* package. 
+To illustrate, let's take the example of the *topGO* package.
 
 
 ```{r topGO}
 suppressPackageStartupMessages({
   library(topGO)
+  library(org.Sc.sgd.db)
 })
 
-# Preparing the gene set
-all_genes <- setNames(rep(0, length(exmpl_all)), exmpl_all)
-all_genes[exmpl_all %in% exmpl_sel] <- 1
+# Convert gene symbols to gene IDs
+symbol2id <- setNames(go$mapping$gene_id, go$mapping$gene_symbol)
+all_ids <- unname(symbol2id[exmpl_all])
+sel_ids <- unname(symbol2id[exmpl_sel])
+
+# Prepare for topGO
+all_genes <- setNames(rep(0, length(all_ids)), all_ids)
+all_genes[all_ids %in% sel_ids] <- 1
 
 # Define the gene selection function
 gene_selection <- function(genes) {
   genes > 0
 }
 
-# Mapping genes to GO, we use the go2gene downloaded above and convert it to a
-# list
-go2gene <- go$mapping |> 
-  dplyr::select(gene_symbol, term_id) |> 
-  dplyr::distinct() |> 
-  dplyr::group_by(term_id) |> 
-  dplyr::summarise(ids = list(gene_symbol)) |> 
-  tibble::deframe()
+# Mapping genes to GO
+allGO2genes <- annFUN.org(whichOnto = "BP", feasibleGenes = NULL,
+                          mapping = "org.Sc.sgd.db", ID = "ensembl")
 
 # Setting up the GO data for analysis
 go_data <- new(
@@ -186,7 +198,7 @@ go_data <- new(
   allGenes = all_genes,
   geneSel = gene_selection,
   annot = annFUN.GO2genes,
-  GO2genes = go2gene
+  GO2genes = allGO2genes
 )
 
 # Performing the enrichment test
@@ -197,7 +209,7 @@ Though the enrichment test (`runTest`) is fairly fast, completing in about 200 m
 
 *fenr* separates preparatory steps and gene selection and is designed with interactivity and speed in mind, particularly when users wish to execute rapid, multiple selection tests.
 
-```{r fenr_speed}
+```{r fenr_speed, eval = FALSE}
 # Setting up data for enrichment
 go <- fetch_go(species = "sgd")
 go_terms <- prepare_for_enrichment(go$terms, go$mapping, exmpl_all,

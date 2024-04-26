@@ -161,4 +161,10 @@
  - Changed the way `assert_url_path()` handles some remote files - it turns out every time it was called, the entire file was unnecessary downloaded, leading to duplication. Now we only assert top directories. Should speed things up!
  - Increased default timeout to 30 s.
 
+## Version 1.0.10
+
+ - Due to recurring issues with build and check on Bioconductor's machines, I have removed all database downloads from the vignette. Any glitch in the GO server, or simply an internet problem would cause the vignette build to crash. The GO-term information is now attached as data and loaded in the vignette.
+ - Made sure the package passes BUILD and CHECK with no internet connection.
+ - Correction in vignette: using yeast genome for `topGO`, instead of human (somehow it was not applied in 1.0.5).
+
 
